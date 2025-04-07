@@ -1,5 +1,5 @@
 package org.example.postory.domain.user.service;
 
-public interface UserService {
+public class UserServiceImpl {
 
 }
