@@ -6,14 +6,9 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ErrorType implements ExceptionStatus {
     /**
-     * 1000: 요청 성공 (OK)
+     * TODO: 도메인 별 에러타입 추가 필요
      */
-    SUCCESS(1000, HttpStatus.OK.value(), "요청에 성공하였습니다."),
-
-    /**
-     * 2000: 요청 실패
-     */
-    ARGUMENT_TYPE_MISMATCH(2001, HttpStatus.BAD_REQUEST.value(), "잘못된 파라미터 타입입니다.");
+    ;
 
     private final int code;
     private final int status;
