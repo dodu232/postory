@@ -6,9 +6,10 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ErrorType implements ExceptionStatus {
     /**
-     * TODO: 도메인 별 에러타입 추가 필요
+     * User 도메인 에러 타입
      */
-    ;
+    DUPLICATE_EMAIL(2001, HttpStatus.CONFLICT.value(), "이미 존재하는 이메일입니다."),
+    DUPLICATE_PHONE(2002, HttpStatus.CONFLICT.value(), "이미 존재하는 전화번호입니다.");
 
     private final int code;
     private final int status;
@@ -16,16 +17,16 @@ public enum ErrorType implements ExceptionStatus {
 
     @Override
     public int getCode() {
-        return 0;
+        return code;
     }
 
     @Override
     public int getStatus() {
-        return 0;
+        return status;
     }
 
     @Override
     public String getMessage() {
-        return null;
+        return message;
     }
 }
