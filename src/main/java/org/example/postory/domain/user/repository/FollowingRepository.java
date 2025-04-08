@@ -8,10 +8,10 @@ import org.springframework.data.repository.query.Param;
 public interface FollowingRepository extends JpaRepository<Following, Long> {
 
     //팔로잉 수 반환
-    Long countByFollowingUserByUser_id(Long userId);
+    Long countByUser_id(Long userId);
 
     //팔로워 수 반환
-    Long countByFollowingUserByFollowingUser_id(Long followingUserId);
+    Long countByFollowingUser_id(Long followingUserId);
 
     boolean existsByFollowingUserIdAndUserId(Long userId, Long followingUserId);
 }
