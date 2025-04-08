@@ -61,7 +61,7 @@ public class JwtProvider {
         // Access Token 생성
         String accessToken = Jwts.builder()
             .setSubject(String.valueOf(userId))
-            .claim("auth", userId)
+            .claim("auth", "ROLE_USER")
             .claim("iss", "off")
             .setExpiration(new Date(now + 1800000))
             .setIssuedAt(issuedAt)
