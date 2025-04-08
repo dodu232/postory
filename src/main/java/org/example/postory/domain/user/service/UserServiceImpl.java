@@ -19,9 +19,9 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService{
 
-    UserRepository userRepository;
-    FollowingRepository followingRepository;
-    PostRepository postRepository;
+    private final UserRepository userRepository;
+    private final FollowingRepository followingRepository;
+    private final PostRepository postRepository;
 
     /**
      * [Service] 프로필 조회 함수
@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService{
                 posts
             );
         }else{
-            List<Post> posts = postRepository.getAllPublicPostsByUser_id(UserId);
+            List<Post> posts = postRepository.getAllPublicPostsByUserId(UserId);
 
             return new UserProfileResponseDto(
                 user.getId(),

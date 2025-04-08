@@ -1,8 +1,10 @@
 package org.example.postory.domain.post.dto;
 
 import java.time.LocalDateTime;
+import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.post.entity.Post;
 
+@RequiredArgsConstructor
 public class PostResponseDto {
     private final Long id;
 
@@ -22,19 +24,6 @@ public class PostResponseDto {
 
     private final boolean isUpdated;
 
-    public PostResponseDto(Long id, String title, String content, boolean isPublic, String hashtag,
-        int postLikeCount, Long userId, LocalDateTime createAt, boolean isUpdated) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
-        this.isPublic = isPublic;
-        this.hashtag = hashtag;
-        this.postLikeCount = postLikeCount;
-        this.userId = userId;
-        this.createAt = createAt;
-        this.isUpdated = isUpdated;
-    }
-
     public PostResponseDto(Post post) {
         this.id = post.getId();
         this.title = post.getTitle();
@@ -45,6 +34,5 @@ public class PostResponseDto {
         this.userId = post.getUser().getId();
         this.createAt = post.getCreatedAt();
         this.isUpdated = !post.getCreatedAt().isEqual(post.getUpdatedAt());
-
     }
 }
