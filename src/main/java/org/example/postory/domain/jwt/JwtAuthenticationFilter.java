@@ -18,7 +18,7 @@ import org.springframework.web.filter.GenericFilterBean;
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private final JwtProvider jwtTokenProvider;
-    private static final String[] WHITELIST = {"/", "/api/users/signup", "/api/auth/login"};
+    private static final String[] WHITELIST = {"/", "/users/signup", "/auth/login"};
 
     /**
      * 1. Request Header에서 JWT 토큰 추출
@@ -31,7 +31,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String requestURI = httpRequest.getRequestURI();
 
-        if (!isLoginCheck(requestURI)) {
+        if (isLoginCheck(requestURI)) {
             chain.doFilter(request, response);
             return;
         }
