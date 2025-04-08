@@ -10,12 +10,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("auth")
+@RequestMapping("/auth")
 public class AuthController {
 
     private final AuthService service;
@@ -29,11 +30,12 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body(service.login(dto));
     }
 
-//    /**
-//     * 액세스 토큰
-//     */
-//    @PostMapping("/reissue")
-//    public ResponseEntity reIssue() {
-//
-//    }
+    /**
+     * 액세스 토큰 재발급 요청
+     */
+    @PostMapping("/reissue")
+    public ResponseEntity<JwtToken> reIssue(@RequestHeader("Authorization") String bearerToken) {
+        String refreshToken = bearerToken.replace("Bearer ", "");
+        return ResponseEntity.status(HttpStatus.OK).body(service.reIssue(refreshToken));
+    }
 }

@@ -8,6 +8,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,8 +20,8 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.example.postory.domain.auth.dto.JwtToken;
 import org.example.postory.domain.user.service.UserService;
-import org.example.postory.global.exception.ApiException;
-import org.example.postory.global.exception.ErrorType;
+import org.example.postory.global.error.ApiException;
+import org.example.postory.global.error.response.ErrorType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -68,15 +69,19 @@ public class JwtProvider {
             .signWith(key, SignatureAlgorithm.HS256)
             .compact();
 
-        // Refresh Token 생성
-        String refreshToken = Jwts.builder()
-            .claim("iss", "off")
-            .claim("add", "ref")
-            .setExpiration(new Date(now + 604800000))
-            .setIssuedAt(issuedAt)
-            .signWith(key, SignatureAlgorithm.HS256)
-            .compact();
-        userService.saveToken(userId, refreshToken);
+        // Refresh Token이 만료된 경우에만 생성
+        String refreshToken = userService.getRefreshToken(userId);
+        if(refreshToken.isEmpty() || isRefreshTokenExpired(refreshToken)){
+            refreshToken = Jwts.builder()
+                .setSubject(String.valueOf(userId))
+                .claim("iss", "off")
+                .claim("add", "ref")
+                .setExpiration(new Date(now + 604800000))
+                .setIssuedAt(issuedAt)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+            userService.saveToken(userId, refreshToken);
+        }
 
         return JwtToken.builder()
             .grantType("Bearer")
@@ -90,8 +95,6 @@ public class JwtProvider {
      */
     public Authentication getAuthentication(String token) {
         Claims claims = parseClaims(token);
-
-        System.out.println("토큰 " + token);
 
         if (claims.get("auth") == null) {
             throw new RuntimeException("권한 정보가 없는 토큰입니다.");
@@ -115,14 +118,13 @@ public class JwtProvider {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, ErrorType.TOKEN_ERROR, "토큰이 잘못되었습니다.");
+            throw new ApiException(ErrorType.TOKEN_INVALID);
         } catch (ExpiredJwtException e) {
-            throw new ApiException(HttpStatus.UNAUTHORIZED, ErrorType.TOKEN_ERROR, "토큰이 만료되었습니다.");
+            throw new ApiException(ErrorType.TOKEN_EXPIRED);
         } catch (UnsupportedJwtException | IllegalArgumentException e) {
-            throw new ApiException(HttpStatus.UNAUTHORIZED, ErrorType.TOKEN_ERROR,
-                "지원하지 않는 토큰입니다.");
+            throw new ApiException(ErrorType.TOKEN_UNSUPPORTED);
         } catch (Exception e) {
-            throw new ApiException(HttpStatus.UNAUTHORIZED, ErrorType.TOKEN_ERROR, "토큰 유효성 에러입니다.");
+            throw new ApiException(ErrorType.TOKEN_VALIDATION_FAILED);
         }
     }
 
@@ -131,29 +133,58 @@ public class JwtProvider {
      */
     public JwtToken refreshToken(String refreshToken) {
         try {
-            Authentication authentication = getAuthentication(refreshToken);
-            long id = 1;
-            String getRefreshToken = userService.getRefreshToken(id);
+            long userId = extractUserId(refreshToken);
 
-            JwtToken refreshGetToken = null;
+            String savedRefreshToken  = userService.getRefreshToken(userId);
 
-            if (refreshToken.equals(getRefreshToken)) {
-                refreshGetToken = generateToken(id);
-
-                userService.saveToken(id, refreshGetToken.getRefreshToken());
-                return refreshGetToken;
-            } else {
-                log.warn("does not exist Token");
-                throw new ApiException(HttpStatus.UNAUTHORIZED, ErrorType.TOKEN_ERROR, "에러에러");
+            if (!refreshToken.equals(savedRefreshToken)) {
+                log.warn("Refresh Token mismatch for userId={}", userId);
+                throw new ApiException(ErrorType.REFRESH_TOKEN_MISMATCH);
             }
+
+            JwtToken newToken = generateToken(userId);
+
+            return newToken;
+
         } catch (NullPointerException e) {
             log.warn("does not exist Token");
-            throw new ApiException(HttpStatus.UNAUTHORIZED, ErrorType.TOKEN_ERROR,
-                "refreshToken없음");
+            throw new ApiException(ErrorType.REFRESH_TOKEN_NOT_PROVIDED);
         } catch (NoSuchElementException e) {
             log.warn("no such Token value");
-            throw new ApiException(HttpStatus.UNAUTHORIZED, ErrorType.TOKEN_ERROR,
-                "db에 refreshToken없음");
+            throw new ApiException(ErrorType.REFRESH_TOKEN_NOT_FOUND);
+        }
+    }
+
+    /**
+     * refresh token이 만료되었는지 확인하는 메서드
+     */
+    public boolean isRefreshTokenExpired(String refreshToken){
+        try{
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(refreshToken);
+            return false;
+        } catch (ExpiredJwtException e){
+            return true;
+        } catch (Exception e){
+            throw new ApiException(ErrorType.TOKEN_VALIDATION_FAILED);
+        }
+    }
+
+    /**
+     * userId를 JWT에서 꺼내는 메서드
+     */
+    public Long extractUserId(String token){
+        try{
+            Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+            long temp = Long.valueOf(claims.getSubject());
+            return Long.valueOf(claims.getSubject());
+        } catch (SignatureException e){
+            throw new ApiException(ErrorType.INVALID_JWT_SIGNATURE);
+        } catch (Exception e) {
+            throw new ApiException(ErrorType.INVALID_JWT_TOKEN);
         }
     }
 
