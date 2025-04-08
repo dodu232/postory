@@ -3,9 +3,7 @@ package org.example.postory.domain.user.dto;
 
 import java.util.List;
 import lombok.Getter;
-import lombok.Setter;
 import org.example.postory.domain.post.dto.PostResponseDto;
-import org.example.postory.domain.post.entity.Post;
 
 /**
  * 유저 프로필 반환하는 Dto

@@ -1,6 +1,5 @@
 package org.example.postory.domain.post.dto;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import org.example.postory.domain.post.entity.Post;
 
