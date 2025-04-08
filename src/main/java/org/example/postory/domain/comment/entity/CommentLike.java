@@ -1,4 +1,4 @@
-package org.example.postory.domain.post.entity;
+package org.example.postory.domain.comment.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,26 +11,18 @@ import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.example.postory.domain.user.entity.User;
-import org.example.postory.global.common.BaseEntity;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Post extends BaseEntity {
+public class CommentLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private Long id;
-    @Column(nullable = false)
-    private String title;
-    @Column(nullable = false)
-    private String content;
-    @Column(nullable = false)
-    private boolean isPublic = true;
-    @Column(nullable = false)
-    private String hashtag;
-    @Column(nullable = false)
-    private int postLikeCount = 0;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "comment_id")
+    private Comment comment;
 }
