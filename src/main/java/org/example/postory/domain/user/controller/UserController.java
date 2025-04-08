@@ -3,6 +3,7 @@ package org.example.postory.domain.user.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.example.postory.domain.user.dto.UserProfileResponseDto;
 import org.example.postory.domain.user.dto.UserResponseDto;
 import org.example.postory.domain.user.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -20,16 +21,14 @@ public class UserController {
     UserService userService;
 
     @GetMapping("/profile/{UserId}")
-    public ResponseEntity<UserResponseDto> getUserInfo(
+    public ResponseEntity<UserProfileResponseDto> getUserInfo(
         @PathVariable Long UserId,
-        HttpServletRequest request
+        //(임시로 클래스만 붙임) 토큰정보를 받아오기
+        Authentication authentication
     ){
-        HttpSession session = request.getSession(false);
+        //토큰검증이 필터안에서 이뤄지지 않으면 필터 생성하거나 여기서 토큰 검증절차 필요
 
-        // session에 저장된 유저정보 조회
-        Long loginUserId = session.getAttribute("loginUser").getId();
-
-        return new ResponseEntity<>(userService.getProfile(loginUserId, UserId), HttpStatus.OK);
+        return new ResponseEntity<>(userService.getProfile(authentication.getId(), UserId), HttpStatus.OK);
     }
 
 }

@@ -1,7 +1,7 @@
 package org.example.postory.domain.user.service;
 
-import org.example.postory.domain.user.dto.UserResponseDto;
+import org.example.postory.domain.user.dto.UserProfileResponseDto;
 
 public interface UserService {
-    UserResponseDto getProfile(Long loginUserId, Long UserId);
+    UserProfileResponseDto getProfile(Long loginUserId, Long UserId);
 }
