@@ -32,8 +32,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({ApiException.class})
-    public ErrorResponse handle_ScheduleException(ApiException e) {
+    public ResponseEntity<ErrorResponse> handle_ScheduleException(ApiException e) {
         log.error("[handle_ApiException]", e);
-        return new ErrorResponse(e.getExceptionStatus());
+//        return new ErrorResponse(e.getExceptionStatus());
+        ErrorResponse response = new ErrorResponse(e.getExceptionStatus());
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 }
