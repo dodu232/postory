@@ -23,14 +23,25 @@ public class UserServiceImpl implements UserService{
     FollowingRepository followingRepository;
     PostRepository postRepository;
 
+    /**
+     * [Service] 프로필 조회 함수
+     * 1. controller에서 받아온 유저값 검증
+     * 2. 다른사람의 프로필 + 팔로우 안했음 + 상대방이 프로필 비공개 상태 -> 403
+     * 3. 자신의 프로필 조회일 경우
+     *      - 비공개 개시글 표시o, 팔로잉 여부 표시x
+     * 4. 타인의 프로필 조회일 경우
+     *      - 비공개 게시글 표시x, 팔로잉 여부 표시o
+     * @param loginUserId 현재 로그인 중인 유저 아이디
+     * @param UserId 프로필 조회할 유저 아이디
+     * @return UserProfileResponseDto 프로필 조회 내용
+     *      - 해당 사용자의 이름, 상태메시지, 팔로우 여부, 팔로우/팔로워 수, 게시글 목록
+     * @throws 403 해당 페이지 접근 권한이 없기 때문에 예외 발생
+     */
     @Transactional(readOnly = true)
     @Override
     public UserProfileResponseDto getProfile(Long loginUserId, Long UserId) {
-        //uri에서 받아온 유저값 검증
         User user = userRepository.findByUserIdOrElseThrow(UserId);
 
-        // 다른사람의 프로필 + 팔로우 안했음 + 상대방이 프로필 비공개 상태
-        // == 못봄
         if(!loginUserId.equals(UserId)
             && followingRepository.existsByFollowingUserIdAndUserId(loginUserId, UserId)
             && !user.isPublic()){
@@ -42,8 +53,7 @@ public class UserServiceImpl implements UserService{
         Long followingCnt = followingRepository.countByUser_id(UserId);
         Long followerCnt = followingRepository.countByFollowingUser_id(UserId);
 
-        if(loginUserId.equals(UserId)){ //로그인 한 유저가 자신의 프로필에 들어왔을 경우
-            //팔로우, 팔로잉 상태 보여주지 않는다.
+        if(loginUserId.equals(UserId)){
             //게시글 가져오기 - 자기자신의 프로필이라 isn't public 한 게시글도 다 불러옴
             List<PostResponseDto> posts = postRepository.getAllMyPosts(UserId);
 
@@ -56,8 +66,7 @@ public class UserServiceImpl implements UserService{
                 followerCnt.intValue(),
                 posts
             );
-        }else{ // 다른 사람의 프로필에 들어갔을 경우
-            //해당 사용자의 이름, 상태메시지, 팔로우 여부, 팔로우/팔로워 수, 게시글 목록
+        }else{
             List<Post> posts = postRepository.getAllPublicPostsByUser_id(UserId);
 
             return new UserProfileResponseDto(
