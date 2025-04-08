@@ -1,17 +1,16 @@
 package org.example.postory.domain.post.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.post.dto.PostResponseDto;
 import org.example.postory.domain.post.entity.Post;
 import org.example.postory.domain.post.repository.PostRepository;
 import org.example.postory.domain.post.service.PostService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 
 @RestController
@@ -24,14 +23,14 @@ public class PostController {
     // 게시물 단건 조회
     @GetMapping("/{id}")
     public ResponseEntity<PostResponseDto> getPostById(
-            @PathVariable("id") long id,
-            @AuthenticationPrincipal(expression = "id") Long userId) {
-        // @AuthenticationPrincipal : Spring Security 에서 로그인 한 사용자의 정보 주입받는 방식
-        // expression : 그 객체의 해당 필드만 추출하겠다는 뜻 (url의 id와 같은 글자여도, 로그인한 사용자의 id를 의미함)
+            @PathVariable("id") long id, HttpServletRequest request) {
 
-        Post post = postService.getPostById(id, userId);
-        // 첫번째 매개변수 : @PathVariable 에서 온 값. 게시물 id
-        // 두번째 매개변수 : @AuthenticationPrincipal 에서 온 값. 사용자 id
+        // 나중에 session 설정할 때 해당 userId 코드 수정할수도.
+        Long userId = request.getSession().getAttribute("user_id") != null
+                ? Long.valueOf(request.getSession().getAttribute("user_id").toString())
+                : null;
+
+        Post post = postService.getPostById(id, userId); // 첫번째 매개변수 : @PathVariable 에서 온 게시물 id
         return ResponseEntity.ok(PostResponseDto.fromPostEntity(post));
     }
 
