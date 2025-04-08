@@ -18,7 +18,7 @@ public class PostResponseDto {
 
     private final int postLikeCount;
 
-    private final Long userId;
+    private final String username;
 
     private final LocalDateTime createAt;
 
@@ -31,7 +31,7 @@ public class PostResponseDto {
         this.isPublic = post.isPublic();
         this.hashtag = post.getHashtag();
         this.postLikeCount = post.getPostLikeCount();
-        this.userId = post.getUser().getId();
+        this.username = post.getUser().getName();
         this.createAt = post.getCreatedAt();
         this.isUpdated = !post.getCreatedAt().isEqual(post.getUpdatedAt());
     }
