@@ -1,5 +1,5 @@
 package org.example.postory.domain.post.service;
 
-public interface PostService {
+public class PostServiceImpl {
 
 }
