@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService{
                 posts
             );
         }else{
-            List<Post> posts = postRepository.getAllPublicPostsByUserId(UserId);
+            List<PostResponseDto> posts = postRepository.getVisiblePostsByUser(UserId);
 
             return new UserProfileResponseDto(
                 user.getId(),
@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService{
                 followingCnt.intValue(),
                 followerCnt.intValue(),
                 followingRepository.existsByFollowingUserIdAndUserId(loginUserId, UserId),
-                posts.stream().map(PostResponseDto::new).collect(Collectors.toList())
+                posts
             );
         }
     }
