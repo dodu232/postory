@@ -24,25 +24,22 @@ public enum ErrorType implements ExceptionStatus {
     REFRESH_TOKEN_NOT_PROVIDED(1008, HttpStatus.UNAUTHORIZED.value(), "리프레시 토큰이 제공되지 않았습니다."),
     REFRESH_TOKEN_NOT_FOUND(1009, HttpStatus.UNAUTHORIZED.value(), "저장된 리프레시 토큰이 존재하지 않습니다."),
 
-
     INVALID_PASSWORD(1101, HttpStatus.UNAUTHORIZED.value(), "비밀번호가 일치하지 않습니다."),
     LOGIN_FAILED(1101, HttpStatus.UNAUTHORIZED.value(), "로그인에 실패했습니다."),
     /**
      * 2000: user 에러
      */
     USER_NOT_FOUND(2001, HttpStatus.NOT_FOUND.value(), "존재하지 않는 사용자입니다."),
-    EMAIL_NOT_FOUND(2002, HttpStatus.NOT_FOUND.value(), "존재하지 않는 이메일입니다.")
-   
+    EMAIL_NOT_FOUND(2002, HttpStatus.NOT_FOUND.value(), "존재하지 않는 이메일입니다."),
+
     /**
      * 3000: post 에러
      */
-    POST_NOT_FOUND(1001, 404, "게시물을 찾을 수 없습니다")
-      
-      
+    POST_NOT_FOUND(1001, HttpStatus.NOT_FOUND.value(), "게시물을 찾을 수 없습니다")
+
     /**
      * 4000: comment 에러
      */
-      
     ;
 
     private final int code;

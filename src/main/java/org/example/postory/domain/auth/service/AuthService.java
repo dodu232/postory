@@ -5,7 +5,7 @@ import org.example.postory.domain.auth.JwtProvider;
 import org.example.postory.domain.auth.dto.AuthRequestDto;
 import org.example.postory.domain.auth.dto.JwtToken;
 import org.example.postory.domain.user.entity.User;
-import org.example.postory.domain.user.service.UserService;
+import org.example.postory.domain.user.service.UserServiceImpl;
 import org.example.postory.global.error.ApiException;
 import org.example.postory.global.error.response.ErrorType;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final UserService userService;
+    private final UserServiceImpl userService;
     private final JwtProvider jwtProvider;
 
     /**

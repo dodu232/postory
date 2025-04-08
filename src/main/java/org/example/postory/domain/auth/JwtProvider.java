@@ -20,10 +20,10 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.example.postory.domain.auth.dto.JwtToken;
 import org.example.postory.domain.user.service.UserService;
+import org.example.postory.domain.user.service.UserServiceImpl;
 import org.example.postory.global.error.ApiException;
 import org.example.postory.global.error.response.ErrorType;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -37,12 +37,12 @@ import org.springframework.stereotype.Component;
 public class JwtProvider {
 
     private final Key key;
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
     /**
      * 생성자를 통한 JWT 서명용 Key 초기화 application.property에서 secret 값 가져와서 key에 저장
      */
-    public JwtProvider(@Value("${jwt.secret}") String secretKey, UserService userService) {
+    public JwtProvider(@Value("${jwt.secret}") String secretKey, UserServiceImpl userService) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.userService = userService;
