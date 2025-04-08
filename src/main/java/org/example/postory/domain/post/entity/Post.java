@@ -16,6 +16,7 @@ import org.example.postory.global.common.BaseEntity;
 
 @Getter
 @Entity
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post extends BaseEntity {
     @Id

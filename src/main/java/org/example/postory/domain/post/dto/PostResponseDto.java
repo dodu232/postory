@@ -1,27 +1,26 @@
 package org.example.postory.domain.post.dto;
 
+import lombok.Builder;
+import lombok.Data;
+import org.example.postory.domain.post.entity.Post;
+
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.post.entity.Post;
 
+@Data
+@Builder
 @RequiredArgsConstructor
 public class PostResponseDto {
+
     private final Long id;
-
     private final String title;
-
     private final String content;
-
     private final boolean isPublic;
-
     private final String hashtag;
-
     private final int postLikeCount;
-
-    private final String username;
-
+    private final String writer;
     private final LocalDateTime createAt;
-
     private final boolean isUpdated;
 
     public PostResponseDto(Post post) {
@@ -31,8 +30,19 @@ public class PostResponseDto {
         this.isPublic = post.isPublic();
         this.hashtag = post.getHashtag();
         this.postLikeCount = post.getPostLikeCount();
-        this.username = post.getUser().getName();
+        this.writer = post.getUser().getName();
         this.createAt = post.getCreatedAt();
         this.isUpdated = !post.getCreatedAt().isEqual(post.getUpdatedAt());
+    }
+
+    public static PostResponseDto fromPostEntity(Post post) {
+        return PostResponseDto.builder()   // builder() : dto 객체를 직접 new 생성하지 않고 명시적으로 필드 지정해서 생성
+            .id(post.getId())
+            .title(post.getTitle())
+            .content(post.getContent())
+            .hashtag(post.getHashtag())
+            .postLikeCount(post.getPostLikeCount())
+            .writer(post.getUser().getName())
+            .build();  // build() : builder()를 바탕으로 실제 객체를 만듦
     }
 }
