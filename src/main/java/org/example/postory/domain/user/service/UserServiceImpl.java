@@ -15,7 +15,6 @@ import static org.example.postory.global.error.response.ErrorType.*;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Override
     public SignupResponseDto signup(SignupRequestDto requestDto) {
@@ -29,7 +28,7 @@ public class UserServiceImpl implements UserService {
 
         User user = User.builder()
                 .email(requestDto.getEmail())
-                .password(passwordEncoder.encode(requestDto.getPassword()))
+                .password(PasswordEncoder.encode(requestDto.getPassword()))
                 .phone(requestDto.getPhone())
                 .build();
 
