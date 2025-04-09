@@ -11,28 +11,18 @@ import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
 import org.example.postory.domain.post.repository.PostRepository;
 import org.example.postory.domain.user.dto.SignupRequestDto;
 import org.example.postory.domain.user.dto.SignupResponseDto;
-import org.example.postory.domain.user.dto.UserRequestDto;
 import org.example.postory.domain.user.dto.UserRequestDto.PatchProfile;
 import org.example.postory.domain.user.dto.UserResponseDto;
 import org.example.postory.global.util.PasswordEncoder;
 import static org.example.postory.global.error.response.ErrorType.*;
-import org.example.postory.domain.post.dto.PostResponseDto;
-import org.example.postory.domain.post.dto.PostResponseDto.ProfileInquiry;
-import org.example.postory.domain.post.entity.Post;
-import org.example.postory.domain.post.repository.PostRepository;
 import org.example.postory.domain.user.dto.UserProfileResponseDto;
 import org.example.postory.domain.user.entity.User;
 import org.example.postory.domain.user.repository.FollowingRepository;
 import org.example.postory.domain.user.repository.UserRepository;
 import org.example.postory.global.error.ApiException;
 import org.example.postory.global.error.response.ErrorType;
-import org.example.postory.global.util.PasswordEncoder;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
-import org.example.postory.global.error.ApiException;
-import org.example.postory.global.error.response.ErrorType;
 
 @Service
 @RequiredArgsConstructor
@@ -144,6 +134,7 @@ public class UserServiceImpl implements UserService{
         }
     }
 
+    @Transactional
     @Override
     public UserResponseDto.PatchProfile updateProfile(Long userId, PatchProfile profile) {
         //유저아이디에 맞는 프로필 값 가져옴
@@ -160,7 +151,7 @@ public class UserServiceImpl implements UserService{
         }
 
         //비밀번호의 경우  :  동일한 비밀번호 변경 불가 ,
-        if( profile.getName() != null
+        if( profile.getPassword() != null
             && !PasswordEncoder.matches(profile.getPassword(), user.getPassword())){
             user.setPassword(PasswordEncoder.encode(profile.getPassword()));
         }
@@ -170,8 +161,8 @@ public class UserServiceImpl implements UserService{
         }
         //값 뭐고칠지 확인하고
         //세이브
-        user = userRepository.save(user);
-        return new UserResponseDto.PatchProfile(user);
+        User savedUser = userRepository.save(user);
+        return new UserResponseDto.PatchProfile(savedUser);
     }
 }
 

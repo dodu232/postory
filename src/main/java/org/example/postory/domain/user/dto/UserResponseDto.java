@@ -20,7 +20,7 @@ public class UserResponseDto {
         public PatchProfile(User user){
             this.id = user.getId();
             this.name = user.getName();
-            this.introduction = user.getIntroduction();
+            this.introduction = user.getIntroduction() ;
             this.gender = user.isGender();
             this.isPublic = user.isPublic();
         }

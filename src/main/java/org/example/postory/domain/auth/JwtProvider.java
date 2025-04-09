@@ -33,7 +33,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 @Slf4j
-@Component
+//@Component
 public class JwtProvider {
 
     private final Key key;
