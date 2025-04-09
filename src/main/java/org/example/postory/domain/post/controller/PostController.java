@@ -9,6 +9,7 @@ import org.example.postory.domain.post.dto.PostResponseDto.SingleQuery;
 import org.example.postory.domain.post.entity.Post;
 import org.example.postory.domain.post.service.PostService;
 import org.example.postory.global.common.pagination.CursorResponseDto;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,7 +46,7 @@ public class PostController {
         @RequestParam(required = false)Long cursorId
     ) {
         CursorResponseDto<NewsFeed> newsFeedResponse = postService.getNewsFeed(cursorUpdatedAt, cursorId);
-        return ResponseEntity.ok(newsFeedResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(postService.getNewsFeed(cursorUpdatedAt, cursorId));
     }
 
 }
