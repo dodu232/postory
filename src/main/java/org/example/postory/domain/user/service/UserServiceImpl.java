@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.post.dto.PostResponseDto;
+import org.example.postory.domain.post.dto.PostResponseDto.ProfileInquiry;
 import org.example.postory.domain.post.entity.Post;
 import org.example.postory.domain.post.repository.PostRepository;
 import org.example.postory.domain.user.dto.UserProfileResponseDto;
@@ -55,7 +56,7 @@ public class UserServiceImpl implements UserService{
 
         if(loginUserId.equals(UserId)){
             //게시글 가져오기 - 자기자신의 프로필이라 isn't public 한 게시글도 다 불러옴
-            List<PostResponseDto> posts = postRepository.getAllMyPosts(UserId);
+            List<ProfileInquiry> posts = postRepository.getAllMyPosts(UserId);
 
             return new UserProfileResponseDto(
                 user.getId(),
@@ -67,7 +68,7 @@ public class UserServiceImpl implements UserService{
                 posts
             );
         }else{
-            List<PostResponseDto> posts = postRepository.getVisiblePostsByUser(UserId);
+            List<ProfileInquiry> posts = postRepository.getVisiblePostsByUser(UserId);
 
             return new UserProfileResponseDto(
                 user.getId(),

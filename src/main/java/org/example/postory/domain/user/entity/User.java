@@ -12,7 +12,6 @@ import org.example.postory.global.common.BaseEntity;
 
 @Getter
 @Entity
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
     @Id
