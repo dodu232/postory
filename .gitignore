@@ -38,6 +38,8 @@ out/
 .vscode/
 
 src/main/resources/.env
+src/main/resources/application.properties
+src/main/resources/application-local.properties
 
 ### Mac OS ###
 .DS_Store

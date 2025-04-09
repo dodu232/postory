@@ -34,12 +34,12 @@ public enum ErrorType implements ExceptionStatus {
     /**
      * 3000: post 에러
      */
-    POST_NOT_FOUND(3001, 404, "게시물을 찾을 수 없습니다");
+    POST_NOT_FOUND(3001, 404, "게시물을 찾을 수 없습니다")
 
     /**
      * 4000: comment 에러
      */
-
+     ;
 
     private final int code;
     private final int status;

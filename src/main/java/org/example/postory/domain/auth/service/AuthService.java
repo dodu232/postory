@@ -33,7 +33,8 @@ public class AuthService {
     /**
      * accessToken을 재발급
      */
-    public JwtToken reIssue(String refreshToken){
+    public JwtToken reIssue(String bearerToken){
+        String refreshToken = bearerToken.replace("Bearer ", "");
         return jwtProvider.refreshToken(refreshToken);
     }
 }

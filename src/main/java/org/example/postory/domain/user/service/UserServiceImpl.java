@@ -1,18 +1,22 @@
 package org.example.postory.domain.user.service;
 
+import static org.example.postory.global.error.response.ErrorType.DUPLICATE_EMAIL;
+import static org.example.postory.global.error.response.ErrorType.DUPLICATE_PHONE;
+import static org.example.postory.global.error.response.ErrorType.EMAIL_NOT_FOUND;
+
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
+import org.example.postory.domain.post.repository.PostRepository;
 import org.example.postory.domain.user.dto.SignupRequestDto;
 import org.example.postory.domain.user.dto.SignupResponseDto;
-import org.example.postory.global.util.PasswordEncoder;
-import static org.example.postory.global.error.response.ErrorType.*;
-import org.example.postory.domain.post.repository.PostRepository;
 import org.example.postory.domain.user.dto.UserProfileResponseDto;
 import org.example.postory.domain.user.entity.User;
 import org.example.postory.domain.user.repository.FollowingRepository;
 import org.example.postory.domain.user.repository.UserRepository;
 import org.example.postory.global.error.ApiException;
+import org.example.postory.global.error.response.ErrorType;
+import org.example.postory.global.util.PasswordEncoder;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,13 +29,14 @@ public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
     private final FollowingRepository followingRepository;
     private final PostRepository postRepository;
-  
+
     /**
      * refreshToken 가져오기
      */
     public String getRefreshToken(long id) {
+
         User findUser = userRepository.findById(id)
-            .orElseThrow(() -> new ApiException(USER_NOT_FOUND));
+            .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
         return findUser.getRefreshToken();
     }
 
@@ -41,7 +46,7 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public void saveToken(long id, String refreshToken) {
         User findUser = userRepository.findById(id)
-            .orElseThrow(() -> new ApiException(USER_NOT_FOUND));
+            .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
         findUser.updateToken(refreshToken);
     }
 
@@ -49,8 +54,8 @@ public class UserServiceImpl implements UserService{
         return userRepository.findByEmail(email)
             .orElseThrow(() -> new ApiException(EMAIL_NOT_FOUND));
     }
-  
-      @Override
+
+    @Override
     public SignupResponseDto signup(SignupRequestDto requestDto) {
         if (userRepository.existsByEmail(requestDto.getEmail())) {
             throw new ApiException(DUPLICATE_EMAIL);
@@ -61,10 +66,10 @@ public class UserServiceImpl implements UserService{
         }
 
         User user = User.builder()
-                .email(requestDto.getEmail())
-                .password(PasswordEncoder.encode(requestDto.getPassword()))
-                .phone(requestDto.getPhone())
-                .build();
+            .email(requestDto.getEmail())
+            .password(PasswordEncoder.encode(requestDto.getPassword()))
+            .phone(requestDto.getPhone())
+            .build();
 
         User savedUser = userRepository.save(user);
         return new SignupResponseDto(savedUser.getId());
