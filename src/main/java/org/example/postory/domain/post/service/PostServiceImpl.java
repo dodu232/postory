@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.post.dto.PostResponseDto;
+import org.example.postory.domain.post.dto.PostResponseDto.ProfileInquiry;
 import org.example.postory.domain.post.entity.Post;
 import org.example.postory.domain.post.repository.PostRepository;
 import org.example.postory.global.common.pagination.CursorDto;
@@ -31,7 +32,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public CursorResponseDto<PostResponseDto> getNewsFeed(LocalDateTime cursorUpdatedAt, Long cursorId) {
+    public CursorResponseDto<ProfileInquiry> getNewsFeed(LocalDateTime cursorUpdatedAt, Long cursorId) {
 
         // 첫 번째 조회.
         if (cursorUpdatedAt == null || cursorId == null) {
@@ -43,7 +44,7 @@ public class PostServiceImpl implements PostService {
         Pageable pageable = PageRequest.of(0, 10);
 
         List<Post> newsFeed = postRepository.getNewsFeed(cursorUpdatedAt, cursorId, pageable);
-        List<PostResponseDto> newsFeedDto = newsFeed.stream().map(PostResponseDto::fromPostEntity).toList();
+        List<ProfileInquiry> newsFeedDto = newsFeed.stream().map(ProfileInquiry::new).toList();
 
         // 다음 커서 정보 저장
         CursorDto nextCursor = null;

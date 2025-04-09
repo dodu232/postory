@@ -7,9 +7,6 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum ErrorType implements ExceptionStatus {
-    /**
-     * TODO: 도메인 별 에러타입 추가 필요
-     */
 
     /**
      * 1000: auth 에러
@@ -23,14 +20,16 @@ public enum ErrorType implements ExceptionStatus {
     REFRESH_TOKEN_MISMATCH(1007, HttpStatus.UNAUTHORIZED.value(), "리프레시 토큰이 일치하지 않습니다."),
     REFRESH_TOKEN_NOT_PROVIDED(1008, HttpStatus.UNAUTHORIZED.value(), "리프레시 토큰이 제공되지 않았습니다."),
     REFRESH_TOKEN_NOT_FOUND(1009, HttpStatus.UNAUTHORIZED.value(), "저장된 리프레시 토큰이 존재하지 않습니다."),
-
     INVALID_PASSWORD(1101, HttpStatus.UNAUTHORIZED.value(), "비밀번호가 일치하지 않습니다."),
     LOGIN_FAILED(1101, HttpStatus.UNAUTHORIZED.value(), "로그인에 실패했습니다."),
+
     /**
      * 2000: user 에러
      */
     USER_NOT_FOUND(2001, HttpStatus.NOT_FOUND.value(), "존재하지 않는 사용자입니다."),
     EMAIL_NOT_FOUND(2002, HttpStatus.NOT_FOUND.value(), "존재하지 않는 이메일입니다."),
+    DUPLICATE_EMAIL(2001, HttpStatus.CONFLICT.value(), "이미 존재하는 이메일입니다."),
+    DUPLICATE_PHONE(2002, HttpStatus.CONFLICT.value(), "이미 존재하는 전화번호입니다."),
 
     /**
      * 3000: post 에러
@@ -40,9 +39,10 @@ public enum ErrorType implements ExceptionStatus {
     /**
      * 4000: comment 에러
      */
-    ;
+
 
     private final int code;
     private final int status;
     private final String message;
+
 }

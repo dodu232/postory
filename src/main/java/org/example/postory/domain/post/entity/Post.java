@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 import org.example.postory.domain.user.entity.User;
 import org.example.postory.global.common.BaseEntity;
 
-@Entity
 @Getter
+@Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post extends BaseEntity {
     @Id
