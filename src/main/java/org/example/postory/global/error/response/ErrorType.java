@@ -30,7 +30,7 @@ public enum ErrorType implements ExceptionStatus {
      * 2000: user 에러
      */
     USER_NOT_FOUND(2001, HttpStatus.NOT_FOUND.value(), "존재하지 않는 사용자입니다."),
-    EMAIL_NOT_FOUND(2002, HttpStatus.NOT_FOUND.value(), "존재하지 않는 이메일입니다.")
+    EMAIL_NOT_FOUND(2002, HttpStatus.NOT_FOUND.value(), "존재하지 않는 이메일입니다."),
 
     /**
      * 3000: post 에러

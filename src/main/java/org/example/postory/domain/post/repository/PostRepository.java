@@ -1,6 +1,9 @@
 package org.example.postory.domain.post.repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import org.example.postory.domain.post.entity.Post;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,5 +26,18 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     """)
     Optional<Post> findVisiblePost(@Param("id") Long id, @Param("userId") Long userId);
 
+
+    @Query("""
+        SELECT p FROM Post p
+        WHERE ((p.updatedAt < :cursorUpdatedAt)
+        OR (p.updatedAt = :cursorUpdatedAt AND p.id < :cursorId))
+        AND p.isPublic = true
+        ORDER BY p.updatedAt DESC, p.id DESC
+    """)
+    List<Post> getNewsFeed(
+        @Param("cursorUpdatedAt") LocalDateTime cursorUpdatedAt,
+        @Param("cursorId") Long cursorId,
+        Pageable pageable
+    );
 
 }
