@@ -50,7 +50,7 @@ public class UserController {
     @PatchMapping("/profile")
     public ResponseEntity<UserResponseDto.PatchProfile> updateProfile(
         @AuthenticationPrincipal UserDetails userDetails,
-        @RequestBody UserRequestDto.PatchProfile profile
+        @RequestBody @Valid UserRequestDto.PatchProfile profile
     ){
         return new ResponseEntity<>(userService.updateProfile(Long.parseLong(userDetails.getUsername()), profile),
                                 HttpStatus.OK);

@@ -130,10 +130,17 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /**
+     * [Service] 프로필 정보 업데이트 함수
+     * 업데이트된 데이터는 userId로 기존 정보를 가져와 필요한 값만 변경 후 저장됩니다.
+     * 비밀번호는 기존 비밀번호와 다를 경우에만 변경됩니다.
+     * @param userId 업데이트 대상 사용자 ID
+     * @param profile 업데이트할 프로필 정보 (name, introduction, gender, password, isPublic)
+     * @return 업데이트된 사용자 프로필 정보
+    */
     @Transactional
     @Override
     public UserResponseDto.PatchProfile updateProfile(Long userId, PatchProfile profile) {
-        //유저아이디에 맞는 프로필 값 가져옴
         User user = userRepository.findByUserIdOrElseThrow(userId);
 
         if( profile.getName() != null){
@@ -146,7 +153,6 @@ public class UserServiceImpl implements UserService {
             user.setGender(profile.getGender());
         }
 
-        //비밀번호의 경우  :  동일한 비밀번호 변경 불가 ,
         if( profile.getPassword() != null
             && !PasswordEncoder.matches(profile.getPassword(), user.getPassword())){
             user.setPassword(PasswordEncoder.encode(profile.getPassword()));
@@ -155,8 +161,7 @@ public class UserServiceImpl implements UserService {
         if(profile.getIsPublic() != null){
             user.setPublic(profile.getIsPublic());
         }
-        //값 뭐고칠지 확인하고
-        //세이브
+
         User savedUser = userRepository.save(user);
         return new UserResponseDto.PatchProfile(savedUser);
     }
