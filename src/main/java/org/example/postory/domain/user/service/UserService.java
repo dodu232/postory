@@ -1,7 +1,9 @@
 package org.example.postory.domain.user.service;
 
+
 import org.example.postory.domain.user.dto.SignupRequestDto;
 import org.example.postory.domain.user.dto.SignupResponseDto;
+import org.example.postory.domain.user.dto.UserProfileResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.user.entity.User;
 import org.example.postory.domain.user.repository.UserRepository;
@@ -19,4 +21,7 @@ public interface UserService {
     void saveToken(long id, String refreshToken);
 
     User getByEmail(String email);
+  
+    UserProfileResponseDto getProfile(Long loginUserId, Long UserId);
+
 }
