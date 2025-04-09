@@ -18,6 +18,7 @@ bin/
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
+application.properties
 .idea
 *.iws
 *.iml
@@ -39,3 +40,6 @@ out/
 src/main/resources/.env
 src/main/resources/application.properties
 src/main/resources/application-local.properties
+
+### Mac OS ###
+.DS_Store

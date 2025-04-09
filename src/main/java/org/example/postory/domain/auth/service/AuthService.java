@@ -1,14 +1,13 @@
 package org.example.postory.domain.auth.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.postory.domain.auth.jwt.JwtProvider;
+import org.example.postory.domain.auth.JwtProvider;
 import org.example.postory.domain.auth.dto.AuthRequestDto;
-import org.example.postory.domain.auth.jwt.JwtToken;
+import org.example.postory.domain.auth.dto.JwtToken;
 import org.example.postory.domain.user.entity.User;
 import org.example.postory.domain.user.service.UserService;
 import org.example.postory.global.error.ApiException;
 import org.example.postory.global.error.response.ErrorType;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
