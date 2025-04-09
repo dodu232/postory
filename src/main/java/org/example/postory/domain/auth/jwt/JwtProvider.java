@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.example.postory.domain.auth.dto.JwtToken;
 import org.example.postory.domain.user.service.UserService;
 import org.example.postory.global.error.ApiException;
 import org.example.postory.global.error.response.ErrorType;
@@ -28,7 +29,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsPasswordService;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -42,7 +42,7 @@ public class JwtProvider {
      * 생성자를 통한 JWT 서명용 Key 초기화 application.property에서 secret 값 가져와서 key에 저장
      */
     public JwtProvider(@Value("${jwt.secret}") String secretKey, UserService userService
-        ) {
+    ) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.userService = userService;

@@ -5,6 +5,7 @@ import org.example.postory.global.error.response.ExceptionStatus;
 
 @Getter
 public class ApiException extends RuntimeException {
+
     private final ExceptionStatus exceptionStatus;
 
     public ApiException(ExceptionStatus exceptionStatus) {

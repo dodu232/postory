@@ -8,6 +8,7 @@ import org.example.postory.domain.user.dto.UserResponseDto;
 import org.example.postory.domain.user.entity.User;
 
 public interface UserService {
+
     SignupResponseDto signup(SignupRequestDto requestDto);
 
     String getRefreshToken(long id);

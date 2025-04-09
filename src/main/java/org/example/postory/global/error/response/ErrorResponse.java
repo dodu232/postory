@@ -10,11 +10,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @JsonPropertyOrder({"code", "status", "message", "timestamp"})
 public class ErrorResponse implements ExceptionStatus {
+
     private int code;
     private int status;
     private String message;
 
-    public ErrorResponse(ExceptionStatus status){
+    public ErrorResponse(ExceptionStatus status) {
         this.code = status.getCode();
         this.status = status.getStatus();
         this.message = status.getMessage();

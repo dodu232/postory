@@ -1,17 +1,18 @@
 package org.example.postory.domain.post.dto;
 
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
-import org.example.postory.domain.post.entity.Post;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
+import org.example.postory.domain.post.entity.Post;
 
 public class PostResponseDto {
 
     @Getter
     @RequiredArgsConstructor
-    public static class NewsFeed{
+    public static class NewsFeed {
+
         private final Long id;
         private final String title;
         private final String content;
@@ -37,7 +38,8 @@ public class PostResponseDto {
 
     @Data
     @Builder
-    public static class SingleQuery{
+    public static class SingleQuery {
+
         private Long id;
         private String title;
         private String content;

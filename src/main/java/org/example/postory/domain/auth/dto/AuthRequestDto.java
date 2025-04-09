@@ -8,7 +8,8 @@ public class AuthRequestDto {
 
     @Getter
     @AllArgsConstructor
-    public static class Login{
+    public static class Login {
+
         @Email
         private String email;
 
