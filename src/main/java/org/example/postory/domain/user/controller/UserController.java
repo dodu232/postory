@@ -43,17 +43,18 @@ public class UserController {
     public ResponseEntity<UserProfileResponseDto> getUserInfo(
         @PathVariable Long UserId,
         @AuthenticationPrincipal UserDetails userDetails
-    ){
-        return new ResponseEntity<>(userService.getProfile(Long.parseLong(userDetails.getUsername()), UserId), HttpStatus.OK);
+    ) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(userService.getProfile(Long.parseLong(userDetails.getUsername()), UserId));
     }
 
     @PatchMapping("/profile")
-    public ResponseEntity<UserResponseDto.PatchProfile> updateProfile(
+    public ResponseEntity<UserResponseDto.UpdateProfile> updateProfile(
         @AuthenticationPrincipal UserDetails userDetails,
-        @RequestBody @Valid UserRequestDto.PatchProfile profile
-    ){
-        return new ResponseEntity<>(userService.updateProfile(Long.parseLong(userDetails.getUsername()), profile),
-                                HttpStatus.OK);
+        @RequestBody @Valid UserRequestDto.UpdateProfile profile
+    ) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(userService.updateProfile(Long.parseLong(userDetails.getUsername()), profile));
     }
 }
 

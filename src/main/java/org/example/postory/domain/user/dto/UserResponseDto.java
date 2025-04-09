@@ -8,17 +8,18 @@ public class UserResponseDto {
 
     @Getter
     @RequiredArgsConstructor
-    public static class PatchProfile{
+    public static class UpdateProfile {
+
         private final Long id;
         private final String name;
         private final String introduction;
         private final Boolean gender;
         private final Boolean isPublic;
 
-        public PatchProfile(User user){
+        public UpdateProfile(User user) {
             this.id = user.getId();
             this.name = user.getName();
-            this.introduction = user.getIntroduction() ;
+            this.introduction = user.getIntroduction();
             this.gender = user.isGender();
             this.isPublic = user.isPublic();
         }
