@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
 
+
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -20,15 +21,21 @@ public class User {
     @Column(nullable = false)
     private String email;
 
+    @Setter
     @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)
     private String phone;
+
+    @Setter
     private String name;
+    @Setter
     private boolean gender;
+    @Setter
     private String introduction;
 
+    @Setter
     @Column(nullable = false)
     private boolean isPublic = true;
     @Column
