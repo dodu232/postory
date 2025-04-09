@@ -1,14 +1,12 @@
 package org.example.postory.domain.user.dto;
 
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.user.entity.User;
 
 public class UserResponseDto {
 
-
+    @Getter
     @RequiredArgsConstructor
     public static class PatchProfile{
         private final Long id;
