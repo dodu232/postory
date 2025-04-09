@@ -43,10 +43,10 @@ public class PostController {
     @GetMapping
     public ResponseEntity<CursorResponseDto<NewsFeed>> getNewsFeed(
         @RequestParam(required = false)LocalDateTime cursorUpdatedAt,
-        @RequestParam(required = false)Long cursorId
+        @RequestParam(required = false)Long cursorId,
+        @RequestParam(defaultValue = "10")int size
     ) {
-        CursorResponseDto<NewsFeed> newsFeedResponse = postService.getNewsFeed(cursorUpdatedAt, cursorId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(postService.getNewsFeed(cursorUpdatedAt, cursorId));
+        return ResponseEntity.status(HttpStatus.CREATED).body(postService.getNewsFeed(cursorUpdatedAt, cursorId, size));
     }
 
 }

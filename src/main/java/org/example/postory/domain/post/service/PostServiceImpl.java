@@ -29,7 +29,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public CursorResponseDto<NewsFeed> getNewsFeed(LocalDateTime cursorUpdatedAt, Long cursorId) {
+    public CursorResponseDto<NewsFeed> getNewsFeed(LocalDateTime cursorUpdatedAt, Long cursorId, int size) {
 
         // 첫 번째 조회.
         if (cursorUpdatedAt == null || cursorId == null) {
@@ -38,7 +38,7 @@ public class PostServiceImpl implements PostService {
         }
 
         // 한 번에 10개씩 가져오도록 고정.
-        Pageable pageable = PageRequest.of(0, 10);
+        Pageable pageable = PageRequest.of(0, size);
 
         List<Post> newsFeed = postRepository.getNewsFeed(cursorUpdatedAt, cursorId, pageable);
         List<NewsFeed> newsFeedDto = newsFeed.stream().map(NewsFeed::new).toList();
