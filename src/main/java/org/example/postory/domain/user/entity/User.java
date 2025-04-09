@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
 
@@ -19,15 +18,19 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private Long id;
+
     @Column(nullable = false)
     private String email;
+
     @Column(nullable = false)
     private String password;
+
     @Column(nullable = false)
     private String phone;
     private String name;
     private boolean gender;
     private String introduction;
+
     @Column(nullable = false)
     private boolean isPublic = true;
     @Column

@@ -3,6 +3,8 @@ package org.example.postory.domain.post.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.post.dto.PostResponseDto;
+import org.example.postory.domain.post.dto.PostResponseDto.ProfileInquiry;
+import org.example.postory.domain.post.dto.PostResponseDto.SingleQuery;
 import org.example.postory.domain.post.entity.Post;
 import org.example.postory.domain.post.repository.PostRepository;
 import org.example.postory.domain.post.service.PostService;
@@ -22,7 +24,7 @@ public class PostController {
 
     // 게시물 단건 조회
     @GetMapping("/{id}")
-    public ResponseEntity<PostResponseDto> getPostById(
+    public ResponseEntity<SingleQuery> getPostById(
             @PathVariable("id") long id, HttpServletRequest request) {
 
         // 나중에 session 설정할 때 해당 userId 코드 수정할수도.
@@ -31,7 +33,7 @@ public class PostController {
                 : null;
 
         Post post = postService.getPostById(id, userId); // 첫번째 매개변수 : @PathVariable 에서 온 게시물 id
-        return ResponseEntity.ok(PostResponseDto.fromPostEntity(post));
+        return ResponseEntity.ok(PostResponseDto.SingleQuery.fromPostEntity(post));
     }
 
 }
