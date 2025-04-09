@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUserIdOrElseThrow(UserId);
 
         if (!loginUserId.equals(UserId)
-            && followingRepository.existsByFollowingUserIdAndUserId(loginUserId, UserId)
+            && !followingRepository.existsByFollowingUserIdAndUserId(loginUserId, UserId)
             && !user.isPublic()){
             throw new ApiException(FORBIDDEN_PROFILE);
         }
