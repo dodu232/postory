@@ -1,7 +1,7 @@
 package org.example.postory.domain.auth.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.postory.domain.auth.JwtProvider;
+import org.example.postory.domain.auth.jwt.JwtProvider;
 import org.example.postory.domain.auth.dto.AuthRequestDto;
 import org.example.postory.domain.auth.dto.JwtToken;
 import org.example.postory.domain.user.entity.User;
