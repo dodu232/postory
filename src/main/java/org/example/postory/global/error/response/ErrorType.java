@@ -39,7 +39,7 @@ public enum ErrorType implements ExceptionStatus {
     /**
      * 4000: comment 에러
      */
-     ;
+    ;
 
     private final int code;
     private final int status;

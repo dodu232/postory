@@ -18,6 +18,7 @@ import org.example.postory.global.common.BaseEntity;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)

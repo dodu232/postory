@@ -10,6 +10,7 @@ import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
  */
 @Getter
 public class UserProfileResponseDto {
+
     //해당 사용자의 이름, 상태메시지, 팔로우 여부, 팔로우/팔로워 수, 게시글 목록
     private final Long id;
 

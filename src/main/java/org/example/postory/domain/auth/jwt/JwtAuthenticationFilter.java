@@ -17,11 +17,11 @@ import org.springframework.web.filter.GenericFilterBean;
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private final JwtProvider jwtTokenProvider;
-    private static final String[] WHITELIST = {"/", "/users/signup", "/auth/login", "/auth/reissue"};
+    private static final String[] WHITELIST = {"/", "/users/signup", "/auth/login",
+        "/auth/reissue"};
 
     /**
-     * 1. Request Header에서 JWT 토큰 추출
-     * 2. validateToken으로 토큰 유효성 검사
+     * 1. Request Header에서 JWT 토큰 추출 2. validateToken으로 토큰 유효성 검사
      */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)

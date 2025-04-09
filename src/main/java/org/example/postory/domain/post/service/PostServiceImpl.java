@@ -23,13 +23,14 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post getPostById(long postId, Long userId) {
         return postRepository.findVisiblePost(postId, userId)
-                .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
+            .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
         // 결과는 Optional<Post> 형식으로 반환되며, 값이 존재하면 그 값을 꺼내서 return
         // 빈 Optional이 나오면 orElseThrow로 값 던지기
     }
 
     @Override
-    public CursorResponseDto<NewsFeed> getNewsFeed(LocalDateTime cursorUpdatedAt, Long cursorId, int size) {
+    public CursorResponseDto<NewsFeed> getNewsFeed(LocalDateTime cursorUpdatedAt, Long cursorId,
+        int size) {
 
         // 첫 번째 조회.
         if (cursorUpdatedAt == null || cursorId == null) {

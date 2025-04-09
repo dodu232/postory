@@ -42,7 +42,7 @@ public class JwtProvider {
      * 생성자를 통한 JWT 서명용 Key 초기화 application.property에서 secret 값 가져와서 key에 저장
      */
     public JwtProvider(@Value("${jwt.secret}") String secretKey, UserService userService
-        ) {
+    ) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.userService = userService;

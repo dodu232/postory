@@ -42,10 +42,10 @@ public class User {
         this.email = email;
         this.password = password;
         this.phone = phone;
-    } 
+    }
 
 
-    public void updateToken(String refreshToken){
+    public void updateToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
 }
