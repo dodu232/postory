@@ -19,6 +19,11 @@ public class UserController {
 
     private final UserService userService;
 
+    @GetMapping
+    public ResponseEntity<String> test(){
+        return ResponseEntity.status(HttpStatus.OK).body("Test success");
+    }
+  
     @GetMapping("/profile/{UserId}")
     public ResponseEntity<UserProfileResponseDto> getUserInfo(
         @PathVariable Long UserId
@@ -29,4 +34,3 @@ public class UserController {
         return new ResponseEntity<>(userService.getProfile(3L, UserId), HttpStatus.OK);
     }
 
-}

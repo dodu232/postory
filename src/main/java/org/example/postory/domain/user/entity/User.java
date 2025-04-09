@@ -8,12 +8,12 @@ import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.example.postory.global.common.BaseEntity;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User extends BaseEntity {
+public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
@@ -33,4 +33,10 @@ public class User extends BaseEntity {
 
     @Column(nullable = false)
     private boolean isPublic = true;
+    @Column
+    private String refreshToken;
+
+    public void updateToken(String refreshToken){
+        this.refreshToken = refreshToken;
+    }
 }

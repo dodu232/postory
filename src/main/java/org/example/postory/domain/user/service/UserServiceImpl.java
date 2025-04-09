@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import org.example.postory.global.error.ApiException;
+import org.example.postory.global.error.response.ErrorType;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +25,31 @@ public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
     private final FollowingRepository followingRepository;
     private final PostRepository postRepository;
+  
+    /**
+     * refreshToken 가져오기
+     */
+    public String getRefreshToken(long id) {
+        User findUser = repository.findById(id)
+            .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
+        return findUser.getRefreshToken();
+    }
 
+    /**
+     * refreshToken 저장
+     */
+    @Transactional
+    public void saveToken(long id, String refreshToken) {
+        User findUser = repository.findById(id)
+            .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
+        findUser.updateToken(refreshToken);
+    }
+
+    public User getByEmail(String email) {
+        return repository.findByEmail(email)
+            .orElseThrow(() -> new ApiException(ErrorType.EMAIL_NOT_FOUND));
+    }
+  
     /**
      * [Service] 프로필 조회 함수
      * 1. controller에서 받아온 유저값 검증
@@ -83,4 +109,3 @@ public class UserServiceImpl implements UserService{
         }
     }
 
-}
