@@ -17,4 +17,5 @@ public interface UserService {
 
     UserProfileResponseDto getProfile(Long loginUserId, Long UserId);
 
+
 }

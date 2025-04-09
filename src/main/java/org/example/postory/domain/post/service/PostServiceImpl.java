@@ -2,23 +2,30 @@ package org.example.postory.domain.post.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
 import org.example.postory.domain.post.entity.Post;
+import org.example.postory.domain.post.entity.PostLike;
+import org.example.postory.domain.post.repository.PostLikeRepository;
 import org.example.postory.domain.post.repository.PostRepository;
+import org.example.postory.domain.user.entity.User;
 import org.example.postory.global.common.pagination.CursorDto;
 import org.example.postory.global.common.pagination.CursorResponseDto;
 import org.example.postory.global.error.ApiException;
 import org.example.postory.global.error.response.ErrorType;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor // 생성자 주입
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
+    private final PostLikeRepository postLikeRepository;
 
     @Override
     public Post getPostById(long postId, Long userId) {
@@ -55,5 +62,18 @@ public class PostServiceImpl implements PostService {
 
     }
 
+    @Override
+    @Transactional
+    public void likePost(long postId, UserDetails userDetails){
+        long userId  = Long.parseLong(userDetails.getUsername());
+        Optional<PostLike> postLike = postLikeRepository.findByPostIdAndUserId(postId, userId);
 
+        if(postLike.isPresent()){
+            postLikeRepository.delete(postLike.get());
+        } else {
+            User user = new User(userId);
+            Post post = new Post(postId);
+            postLikeRepository.save(new PostLike(user, post));
+        }
+    }
 }
