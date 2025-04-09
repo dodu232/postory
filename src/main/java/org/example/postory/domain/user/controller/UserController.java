@@ -10,15 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
@@ -43,6 +37,24 @@ public class UserController {
     ) {
         //토큰검증이 필터안에서 이뤄지지 않으면 필터 생성하거나 여기서 토큰 검증절차 필요
         return new ResponseEntity<>(userService.getProfile(3L, UserId), HttpStatus.OK);
+    }
+
+    @PostMapping("/follow/{followingId}")
+    public ResponseEntity<String> follow(
+            @AuthenticationPrincipal UserDetails userDetail,
+            @PathVariable Long followingId
+    ) {
+        userService.follow(Long.parseLong(userDetail.getUsername()), followingId);
+        return ResponseEntity.status(HttpStatus.OK).body("팔로우 성공");
+    }
+
+    @PostMapping("/unfollow/{followingId}")
+    public ResponseEntity<String> unfollow(
+            @AuthenticationPrincipal UserDetails userDetail,
+            @PathVariable Long followingId
+    ) {
+        userService.unfollow(Long.parseLong(userDetail.getUsername()), followingId);
+        return ResponseEntity.status(HttpStatus.OK).body("언팔로우 성공");
     }
 }
 

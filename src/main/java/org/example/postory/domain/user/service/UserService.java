@@ -17,4 +17,8 @@ public interface UserService {
 
     UserProfileResponseDto getProfile(Long loginUserId, Long UserId);
 
+    void follow(Long userId, Long followingId);
+
+    void unfollow(Long userId, Long followingId);
+
 }
