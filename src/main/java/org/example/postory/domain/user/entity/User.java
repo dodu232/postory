@@ -5,11 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
 
 @Getter
 @Entity
@@ -51,8 +48,13 @@ public class User {
         this.phone = phone;
     }
 
-
     public void updateToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    public static User withId(Long id) {
+        User user = new User(); // createPost의 userId값을 위해서 생성
+        user.id = id;
+        return user;
     }
 }
