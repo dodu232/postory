@@ -5,7 +5,9 @@ import org.example.postory.domain.user.dto.SignupRequestDto;
 import org.example.postory.domain.user.dto.SignupResponseDto;
 import org.example.postory.domain.user.dto.UserProfileResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.example.postory.domain.user.dto.UserRequestDto.patchProfile;
+import org.example.postory.domain.user.dto.UserRequestDto;
+import org.example.postory.domain.user.dto.UserRequestDto.PatchProfile;
+import org.example.postory.domain.user.dto.UserResponseDto;
 import org.example.postory.domain.user.entity.User;
 import org.example.postory.domain.user.repository.UserRepository;
 import org.example.postory.global.error.ApiException;
@@ -25,5 +27,5 @@ public interface UserService {
   
     UserProfileResponseDto getProfile(Long authUserId, Long UserId);
 
-    UserProfileResponseDto updateProfile(Long authUserId, patchProfile profile);
+    UserResponseDto.PatchProfile updateProfile(Long authUserId, PatchProfile profile);
 }

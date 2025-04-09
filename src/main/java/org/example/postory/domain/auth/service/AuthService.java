@@ -8,6 +8,7 @@ import org.example.postory.domain.user.entity.User;
 import org.example.postory.domain.user.service.UserService;
 import org.example.postory.global.error.ApiException;
 import org.example.postory.global.error.response.ErrorType;
+import org.example.postory.global.util.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,7 +25,7 @@ public class AuthService {
      */
     public JwtToken login(AuthRequestDto.Login dto){
         User user = userService.getByEmail(dto.getEmail());
-        if (!user.getPassword().equals(dto.getPassword())) {
+        if (!PasswordEncoder.matches(dto.getPassword(), user.getPassword())) {
             throw new ApiException(ErrorType.INVALID_PASSWORD);
         }
         return jwtProvider.generateToken(user.getId());

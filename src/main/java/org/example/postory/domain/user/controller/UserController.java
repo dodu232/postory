@@ -6,6 +6,7 @@ import org.example.postory.domain.auth.JwtProvider;
 import org.example.postory.domain.user.dto.SignupRequestDto;
 import org.example.postory.domain.user.dto.SignupResponseDto;
 import org.example.postory.domain.user.dto.UserRequestDto;
+import org.example.postory.domain.user.dto.UserResponseDto;
 import org.example.postory.domain.user.service.UserService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -40,22 +41,16 @@ public class UserController {
     @GetMapping("/profile/{UserId}")
     public ResponseEntity<UserProfileResponseDto> getUserInfo(
         @PathVariable Long UserId,
-        @AuthenticationPrincipal Long userId
+        @AuthenticationPrincipal Long authUserId
     ){
-        //jwt 필터를 확인해보니 resolveToken 함수안에서 token 스트링값을 찾는 방법을 볼 수 있음.
-        // .substring(7); << 한게 token 스트링값이고, jwtProvider 클래스 안에 extractUserId 함수가 로그인한 유저 아이디값 돌려줌
-        //String token = authorizationHeader.substring(7);
-        //Long authUserId = jwtProvider.extractUserId(token);
-        return new ResponseEntity<>(userService.getProfile(userId, UserId), HttpStatus.OK);
+        return new ResponseEntity<>(userService.getProfile(authUserId, UserId), HttpStatus.OK);
     }
 
     @PatchMapping("/profile")
-    public ResponseEntity<UserProfileResponseDto> updateProfile(
-        @RequestHeader("Authorization") String authorizationHeader,
-        @RequestBody UserRequestDto.patchProfile profile
+    public ResponseEntity<UserResponseDto.PatchProfile> updateProfile(
+        @AuthenticationPrincipal Long authUserId,
+        @RequestBody UserRequestDto.PatchProfile profile
     ){
-        Long authUserId = jwtProvider.extractUserId(authorizationHeader.substring(7));
-
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateProfile(authUserId, profile));
     }
 }

@@ -5,7 +5,9 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.user.dto.SignupRequestDto;
 import org.example.postory.domain.user.dto.SignupResponseDto;
-import org.example.postory.domain.user.dto.UserRequestDto.patchProfile;
+import org.example.postory.domain.user.dto.UserRequestDto;
+import org.example.postory.domain.user.dto.UserRequestDto.PatchProfile;
+import org.example.postory.domain.user.dto.UserResponseDto;
 import org.example.postory.global.util.PasswordEncoder;
 import static org.example.postory.global.error.response.ErrorType.*;
 import org.example.postory.domain.post.dto.PostResponseDto;
@@ -76,7 +78,7 @@ public class UserServiceImpl implements UserService{
     }
     /**
      * [Service] 프로필 조회 함수
-     * 1. controller에서 받아온 유저값 검증
+     * 1. controller 에서 받아온 유저값 검증
      * 2. 다른사람의 프로필 + 팔로우 안했음 + 상대방이 프로필 비공개 상태 -> 403
      * 3. 자신의 프로필 조회일 경우
      *      - 비공개 개시글 표시o, 팔로잉 여부 표시x
@@ -86,7 +88,7 @@ public class UserServiceImpl implements UserService{
      * @param UserId 프로필 조회할 유저 아이디
      * @return UserProfileResponseDto 프로필 조회 내용
      *      - 해당 사용자의 이름, 상태메시지, 팔로우 여부, 팔로우/팔로워 수, 게시글 목록
-     * @throws 403 해당 페이지 접근 권한이 없기 때문에 예외 발생
+     * @throws ApiException 해당 페이지 접근 권한이 없기 때문에 예외 발생
      */
     @Transactional(readOnly = true)
     @Override
@@ -133,12 +135,33 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserProfileResponseDto updateProfile(Long userId, patchProfile profile) {
+    public UserResponseDto.PatchProfile updateProfile(Long userId, PatchProfile profile) {
+        //유저아이디에 맞는 프로필 값 가져옴
         User user = userRepository.findByUserIdOrElseThrow(userId);
 
-        //유저아이디에 맞는 프로필 값 가져옴
+        if( profile.getName() != null){
+            user.setName(profile.getName());
+        }
+        if( profile.getIntroduction() != null){
+            user.setIntroduction(profile.getIntroduction());
+        }
+        if(profile.getGender() != null){
+            user.setGender(profile.getGender());
+        }
+
+        //비밀번호의 경우  :  동일한 비밀번호 변경 불가 ,
+        if( profile.getName() != null
+            && !PasswordEncoder.matches(profile.getPassword(), user.getPassword())){
+            user.setPassword(PasswordEncoder.encode(profile.getPassword()));
+        }
+
+        if(profile.getIsPublic() != null){
+            user.setPublic(profile.getIsPublic());
+        }
         //값 뭐고칠지 확인하고
         //세이브
+        user = userRepository.save(user);
+        return new UserResponseDto.PatchProfile(user);
     }
 }
 
