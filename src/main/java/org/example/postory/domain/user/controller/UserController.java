@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.user.dto.UserProfileResponseDto;
-import org.example.postory.domain.user.dto.UserResponseDto;
 import org.example.postory.domain.user.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +26,7 @@ public class UserController {
         //Authentication authentication
     ){
         //토큰검증이 필터안에서 이뤄지지 않으면 필터 생성하거나 여기서 토큰 검증절차 필요
-
-        return new ResponseEntity<>(userService.getProfile(Long.valueOf(3L), UserId), HttpStatus.OK);
+        return new ResponseEntity<>(userService.getProfile(3L, UserId), HttpStatus.OK);
     }
 
 }
