@@ -9,13 +9,13 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.example.postory.global.common.BaseEntity;
 
 @Getter
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User extends BaseEntity {
+public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
@@ -31,11 +31,17 @@ public class User extends BaseEntity {
     private String introduction;
     @Column(nullable = false)
     private boolean isPublic = true;
+    @Column
+    private String refreshToken;
 
     @Builder
     public User(String email, String password, String phone) {
         this.email = email;
         this.password = password;
         this.phone = phone;
+    } 
+
+    public void updateToken(String refreshToken){
+        this.refreshToken = refreshToken;
     }
 }
