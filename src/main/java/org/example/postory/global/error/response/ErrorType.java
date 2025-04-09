@@ -22,7 +22,7 @@ public enum ErrorType implements ExceptionStatus {
     REFRESH_TOKEN_NOT_FOUND(1009, HttpStatus.UNAUTHORIZED.value(), "저장된 리프레시 토큰이 존재하지 않습니다."),
     INVALID_PASSWORD(1101, HttpStatus.UNAUTHORIZED.value(), "비밀번호가 일치하지 않습니다."),
     LOGIN_FAILED(1101, HttpStatus.UNAUTHORIZED.value(), "로그인에 실패했습니다."),
-  
+
     /**
      * 2000: user 에러
      */
@@ -39,7 +39,7 @@ public enum ErrorType implements ExceptionStatus {
     /**
      * 4000: comment 에러
      */
-   
+
 
     private final int code;
     private final int status;

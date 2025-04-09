@@ -1,15 +1,12 @@
 package org.example.postory.domain.user.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
 import org.example.postory.domain.user.dto.SignupRequestDto;
 import org.example.postory.domain.user.dto.SignupResponseDto;
 import org.example.postory.global.util.PasswordEncoder;
 import static org.example.postory.global.error.response.ErrorType.*;
-import org.example.postory.domain.post.dto.PostResponseDto;
-import org.example.postory.domain.post.dto.PostResponseDto.ProfileInquiry;
-import org.example.postory.domain.post.entity.Post;
 import org.example.postory.domain.post.repository.PostRepository;
 import org.example.postory.domain.user.dto.UserProfileResponseDto;
 import org.example.postory.domain.user.entity.User;
@@ -20,8 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import org.example.postory.global.error.ApiException;
-import org.example.postory.global.error.response.ErrorType;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +30,7 @@ public class UserServiceImpl implements UserService{
      * refreshToken 가져오기
      */
     public String getRefreshToken(long id) {
-        User findUser = repository.findById(id)
+        User findUser = userRepository.findById(id)
             .orElseThrow(() -> new ApiException(USER_NOT_FOUND));
         return findUser.getRefreshToken();
     }
@@ -45,13 +40,13 @@ public class UserServiceImpl implements UserService{
      */
     @Transactional
     public void saveToken(long id, String refreshToken) {
-        User findUser = repository.findById(id)
+        User findUser = userRepository.findById(id)
             .orElseThrow(() -> new ApiException(USER_NOT_FOUND));
         findUser.updateToken(refreshToken);
     }
 
     public User getByEmail(String email) {
-        return repository.findByEmail(email)
+        return userRepository.findByEmail(email)
             .orElseThrow(() -> new ApiException(EMAIL_NOT_FOUND));
     }
   
@@ -106,7 +101,7 @@ public class UserServiceImpl implements UserService{
 
         if(loginUserId.equals(UserId)){
             //게시글 가져오기 - 자기자신의 프로필이라 isn't public 한 게시글도 다 불러옴
-            List<ProfileInquiry> posts = postRepository.getAllMyPosts(UserId);
+            List<NewsFeed> posts = postRepository.getAllMyPosts(UserId);
 
             return new UserProfileResponseDto(
                 user.getId(),
@@ -118,7 +113,7 @@ public class UserServiceImpl implements UserService{
                 posts
             );
         }else{
-            List<ProfileInquiry> posts = postRepository.getVisiblePostsByUser(UserId);
+            List<NewsFeed> posts = postRepository.getVisiblePostsByUser(UserId);
 
             return new UserProfileResponseDto(
                 user.getId(),

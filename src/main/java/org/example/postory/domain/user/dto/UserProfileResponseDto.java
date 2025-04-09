@@ -3,8 +3,7 @@ package org.example.postory.domain.user.dto;
 
 import java.util.List;
 import lombok.Getter;
-import org.example.postory.domain.post.dto.PostResponseDto;
-import org.example.postory.domain.post.dto.PostResponseDto.ProfileInquiry;
+import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
 
 /**
  * 유저 프로필 반환하는 Dto
@@ -28,10 +27,10 @@ public class UserProfileResponseDto {
 
     private final int postCount;
 
-    private final List<ProfileInquiry> postList;
+    private final List<NewsFeed> postList;
 
     public UserProfileResponseDto(Long id, String username, String introduction, boolean isPublic,
-        int followingCnt, int followerCnt, List<ProfileInquiry> postList) {
+        int followingCnt, int followerCnt, List<NewsFeed> postList) {
         this.id = id;
         this.username = username;
         this.introduction = introduction;
@@ -43,7 +42,7 @@ public class UserProfileResponseDto {
     }
 
     public UserProfileResponseDto(Long id, String username, String introduction, boolean isPublic,
-        int followingCnt, int followerCnt, boolean isFollowing, List<ProfileInquiry> postList) {
+        int followingCnt, int followerCnt, boolean isFollowing, List<NewsFeed> postList) {
         this.id = id;
         this.username = username;
         this.introduction = introduction;
