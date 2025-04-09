@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Entity
@@ -23,15 +24,21 @@ public class User {
     @Column(nullable = false)
     private String email;
 
+    @Setter
     @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)
     private String phone;
+
+    @Setter
     private String name;
+    @Setter
     private boolean gender;
+    @Setter
     private String introduction;
 
+    @Setter
     @Column(nullable = false)
     private boolean isPublic = true;
     @Column
