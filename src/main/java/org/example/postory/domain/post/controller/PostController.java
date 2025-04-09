@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.post.dto.PostResponseDto;
-import org.example.postory.domain.post.dto.PostResponseDto.ProfileInquiry;
+import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
 import org.example.postory.domain.post.dto.PostResponseDto.SingleQuery;
 import org.example.postory.domain.post.entity.Post;
 import org.example.postory.domain.post.service.PostService;
@@ -40,11 +40,11 @@ public class PostController {
 
     // 뉴스피드 조회
     @GetMapping
-    public ResponseEntity<CursorResponseDto<ProfileInquiry>> getNewsFeed(
+    public ResponseEntity<CursorResponseDto<NewsFeed>> getNewsFeed(
         @RequestParam(required = false)LocalDateTime cursorUpdatedAt,
         @RequestParam(required = false)Long cursorId
     ) {
-        CursorResponseDto<ProfileInquiry> newsFeedResponse = postService.getNewsFeed(cursorUpdatedAt, cursorId);
+        CursorResponseDto<NewsFeed> newsFeedResponse = postService.getNewsFeed(cursorUpdatedAt, cursorId);
         return ResponseEntity.ok(newsFeedResponse);
     }
 

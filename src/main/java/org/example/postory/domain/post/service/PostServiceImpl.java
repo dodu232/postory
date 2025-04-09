@@ -3,8 +3,7 @@ package org.example.postory.domain.post.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.example.postory.domain.post.dto.PostResponseDto;
-import org.example.postory.domain.post.dto.PostResponseDto.ProfileInquiry;
+import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
 import org.example.postory.domain.post.entity.Post;
 import org.example.postory.domain.post.repository.PostRepository;
 import org.example.postory.global.common.pagination.CursorDto;
@@ -14,8 +13,6 @@ import org.example.postory.global.error.response.ErrorType;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor // 생성자 주입
@@ -32,7 +29,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public CursorResponseDto<ProfileInquiry> getNewsFeed(LocalDateTime cursorUpdatedAt, Long cursorId) {
+    public CursorResponseDto<NewsFeed> getNewsFeed(LocalDateTime cursorUpdatedAt, Long cursorId) {
 
         // 첫 번째 조회.
         if (cursorUpdatedAt == null || cursorId == null) {
@@ -44,7 +41,7 @@ public class PostServiceImpl implements PostService {
         Pageable pageable = PageRequest.of(0, 10);
 
         List<Post> newsFeed = postRepository.getNewsFeed(cursorUpdatedAt, cursorId, pageable);
-        List<ProfileInquiry> newsFeedDto = newsFeed.stream().map(ProfileInquiry::new).toList();
+        List<NewsFeed> newsFeedDto = newsFeed.stream().map(NewsFeed::new).toList();
 
         // 다음 커서 정보 저장
         CursorDto nextCursor = null;

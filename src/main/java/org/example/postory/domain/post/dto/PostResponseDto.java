@@ -1,6 +1,5 @@
 package org.example.postory.domain.post.dto;
 
-import com.fasterxml.jackson.core.JsonToken;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
@@ -12,7 +11,7 @@ public class PostResponseDto {
 
     @Getter
     @RequiredArgsConstructor
-    public static class ProfileInquiry{
+    public static class NewsFeed{
         private final Long id;
         private final String title;
         private final String content;
@@ -23,7 +22,7 @@ public class PostResponseDto {
         private final LocalDateTime createAt;
         private final boolean isUpdated;
 
-        public ProfileInquiry(Post post) {
+        public NewsFeed(Post post) {
             this.id = post.getId();
             this.title = post.getTitle();
             this.content = post.getContent();
