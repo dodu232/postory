@@ -6,15 +6,14 @@ import lombok.Getter;
 
 @Getter
 public class PostRequestDto {
-
-    @NotBlank
-    @Size(max = 100)
+    @NotBlank(message = "제목은 필수 입력 항목입니다.")
+    @Size(max = 100, message = "제목은 최대 100자까지 입력 가능합니다.")
     private String title;
-    @NotBlank
-    @Size(max = 500)
+    @NotBlank(message = "내용은 필수 입력 항목입니다.")
+    @Size(max = 500, message = "내용은 최대 500자까지 입력 가능합니다.")
     private String content;
     private boolean isPublic;
-    @NotBlank
-    @Size(max = 100)
+    @NotBlank(message = "해시태그는 필수 입력 항목입니다.")
+    @Size(max = 100, message = "해시태그는 최대 100자까지 입력 가능합니다.")
     private String hashtag;
 }

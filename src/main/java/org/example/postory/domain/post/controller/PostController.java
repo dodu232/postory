@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.post.dto.PostRequestDto;
 import org.example.postory.domain.post.dto.PostResponseDto;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
-import org.example.postory.domain.post.dto.PostResponseDto.SingleQuery;
+import org.example.postory.domain.post.dto.PostResponseDto.Get;
 import org.example.postory.domain.post.entity.Post;
 import org.example.postory.domain.post.service.PostService;
 import org.example.postory.global.common.pagination.CursorResponseDto;
@@ -28,12 +28,12 @@ import org.springframework.web.bind.annotation.*;
 
         // 게시물 단건 조회
         @GetMapping("/{id}")
-        public ResponseEntity<SingleQuery> getPostById(
+        public ResponseEntity<Get> getPostById(
                 @PathVariable("id") long id, @AuthenticationPrincipal UserDetails userDetails) {
             // 사용자 ID 가져오기
             Long userId = userDetails != null ? Long.valueOf(userDetails.getUsername()) : null;
             Post post = postService.getPostById(id, userId); // 첫번째 매개변수 : @PathVariable 에서 온 게시물 id
-            SingleQuery response = PostResponseDto.SingleQuery.fromPostEntity(post);
+            Get response = Get.fromPostEntity(post);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         }
 
@@ -50,12 +50,12 @@ import org.springframework.web.bind.annotation.*;
 
         // 게시물 생성
         @PostMapping
-        public ResponseEntity<SingleQuery> createPost(
+        public ResponseEntity<Get> createPost(
                 @Valid @RequestBody PostRequestDto request,
                 @AuthenticationPrincipal UserDetails userDetails) {
             Long userId = userDetails != null ? Long.valueOf(userDetails.getUsername()) : null;
             Post saved = postService.createPost(request, userId);
-            SingleQuery response = PostResponseDto.SingleQuery.fromPostEntity(saved);
+            Get response = Get.fromPostEntity(saved);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         }
     }
