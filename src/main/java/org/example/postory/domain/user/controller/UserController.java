@@ -1,5 +1,6 @@
 package org.example.postory.domain.user.controller;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.auth.JwtProvider;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
@@ -34,9 +36,8 @@ public class UserController {
     }
   
     @GetMapping
-    public ResponseEntity<String> test(){
-        return ResponseEntity.status(HttpStatus.OK).body("Test success");
-    }
+    public ResponseEntity<String> test(@AuthenticationPrincipal UserDetails userDetails){
+        return ResponseEntity.status(HttpStatus.OK).body(userDetails.getUsername());
   
     @GetMapping("/profile/{UserId}")
     public ResponseEntity<UserProfileResponseDto> getUserInfo(

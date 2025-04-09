@@ -51,6 +51,7 @@ public class User {
         this.phone = phone;
     } 
 
+
     public void updateToken(String refreshToken){
         this.refreshToken = refreshToken;
     }

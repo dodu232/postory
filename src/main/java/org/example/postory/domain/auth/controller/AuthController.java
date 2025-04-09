@@ -35,7 +35,7 @@ public class AuthController {
      */
     @PostMapping("/reissue")
     public ResponseEntity<JwtToken> reIssue(@RequestHeader("Authorization") String bearerToken) {
-        String refreshToken = bearerToken.replace("Bearer ", "");
-        return ResponseEntity.status(HttpStatus.OK).body(service.reIssue(refreshToken));
+        return ResponseEntity.status(HttpStatus.OK).body(service.reIssue(bearerToken));
+
     }
 }

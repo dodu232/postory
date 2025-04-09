@@ -1,8 +1,9 @@
 package org.example.postory.domain.auth.security;
 
 import lombok.RequiredArgsConstructor;
-import org.example.postory.domain.auth.JwtProvider;
-import org.example.postory.domain.jwt.JwtAuthenticationFilter;
+import org.example.postory.domain.auth.jwt.JwtAuthenticationFilter;
+import org.example.postory.domain.auth.jwt.JwtProvider;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,7 +30,7 @@ public class SecurityConfig {
             .sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/auth/login", "/auth/reissue", "/users/signup").permitAll()
+                .requestMatchers("/auth/login", "/auth/reissue", "/users/signup", "/posts").permitAll()
                 .anyRequest().authenticated())
             .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
                 UsernamePasswordAuthenticationFilter.class
