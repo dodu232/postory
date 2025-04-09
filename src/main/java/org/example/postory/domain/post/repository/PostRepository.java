@@ -52,6 +52,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
         WHERE ((p.updatedAt < :cursorUpdatedAt)
         OR (p.updatedAt = :cursorUpdatedAt AND p.id < :cursorId))
         AND p.isPublic = true
+        AND p.deletedAt IS NULL
         ORDER BY p.updatedAt DESC, p.id DESC
     """)
     List<Post> getNewsFeed(
