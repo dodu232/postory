@@ -28,15 +28,14 @@ public class PostController {
     // 게시물 단건 조회
     @GetMapping("/{id}")
     public ResponseEntity<SingleQuery> getPostById(
-        @PathVariable("id") long id, HttpServletRequest request) {
-
+            @PathVariable("id") long id, HttpServletRequest request) {
         // 나중에 session 설정할 때 해당 userId 코드 수정할수도.
         Long userId = request.getSession().getAttribute("user_id") != null
-            ? Long.valueOf(request.getSession().getAttribute("user_id").toString())
-            : null;
-
+                ? Long.valueOf(request.getSession().getAttribute("user_id").toString())
+                : null;
         Post post = postService.getPostById(id, userId); // 첫번째 매개변수 : @PathVariable 에서 온 게시물 id
-        return ResponseEntity.ok(PostResponseDto.SingleQuery.fromPostEntity(post));
+        SingleQuery response = PostResponseDto.SingleQuery.fromPostEntity(post);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     // 뉴스피드 조회
