@@ -1,5 +1,12 @@
 package org.example.postory.domain.user.controller;
 
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.example.postory.domain.user.dto.SignupRequestDto;
+import org.example.postory.domain.user.dto.SignupResponseDto;
+import org.example.postory.domain.user.service.UserService;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +23,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
-
     private final UserService userService;
 
+    @PostMapping("/signup")
+    public SignupResponseDto signup(@RequestBody @Valid SignupRequestDto requestDto) {
+        return userService.signup(requestDto);
+    }
+  
     @GetMapping
     public ResponseEntity<String> test(){
         return ResponseEntity.status(HttpStatus.OK).body("Test success");
@@ -33,4 +44,5 @@ public class UserController {
         //토큰검증이 필터안에서 이뤄지지 않으면 필터 생성하거나 여기서 토큰 검증절차 필요
         return new ResponseEntity<>(userService.getProfile(3L, UserId), HttpStatus.OK);
     }
+}
 
