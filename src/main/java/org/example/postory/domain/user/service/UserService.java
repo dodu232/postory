@@ -5,6 +5,7 @@ import org.example.postory.domain.user.dto.SignupRequestDto;
 import org.example.postory.domain.user.dto.SignupResponseDto;
 import org.example.postory.domain.user.dto.UserProfileResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.example.postory.domain.user.dto.UserRequestDto.patchProfile;
 import org.example.postory.domain.user.entity.User;
 import org.example.postory.domain.user.repository.UserRepository;
 import org.example.postory.global.error.ApiException;
@@ -22,6 +23,7 @@ public interface UserService {
 
     User getByEmail(String email);
   
-    UserProfileResponseDto getProfile(Long loginUserId, Long UserId);
+    UserProfileResponseDto getProfile(Long authUserId, Long UserId);
 
+    UserProfileResponseDto updateProfile(Long authUserId, patchProfile profile);
 }

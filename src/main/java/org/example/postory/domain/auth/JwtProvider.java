@@ -179,7 +179,7 @@ public class JwtProvider {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-            long temp = Long.valueOf(claims.getSubject());
+            //long temp = Long.valueOf(claims.getSubject());
             return Long.valueOf(claims.getSubject());
         } catch (SignatureException e){
             throw new ApiException(ErrorType.INVALID_JWT_SIGNATURE);

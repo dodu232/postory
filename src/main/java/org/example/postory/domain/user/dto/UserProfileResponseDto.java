@@ -24,7 +24,7 @@ public class UserProfileResponseDto {
 
     private final int followerCnt;
 
-    private boolean isFollowing;
+    private Boolean isFollowing;
 
     private final int postCount;
 

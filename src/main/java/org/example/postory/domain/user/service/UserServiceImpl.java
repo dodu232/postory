@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.user.dto.SignupRequestDto;
 import org.example.postory.domain.user.dto.SignupResponseDto;
+import org.example.postory.domain.user.dto.UserRequestDto.patchProfile;
 import org.example.postory.global.util.PasswordEncoder;
 import static org.example.postory.global.error.response.ErrorType.*;
 import org.example.postory.domain.post.dto.PostResponseDto;
@@ -35,27 +36,26 @@ public class UserServiceImpl implements UserService{
      * refreshToken 가져오기
      */
     public String getRefreshToken(long id) {
-        User findUser = repository.findById(id)
+        User findUser = userRepository.findById(id)
             .orElseThrow(() -> new ApiException(USER_NOT_FOUND));
         return findUser.getRefreshToken();
     }
-
     /**
      * refreshToken 저장
      */
     @Transactional
     public void saveToken(long id, String refreshToken) {
-        User findUser = repository.findById(id)
+        User findUser = userRepository.findById(id)
             .orElseThrow(() -> new ApiException(USER_NOT_FOUND));
         findUser.updateToken(refreshToken);
     }
 
     public User getByEmail(String email) {
-        return repository.findByEmail(email)
+        return userRepository.findByEmail(email)
             .orElseThrow(() -> new ApiException(EMAIL_NOT_FOUND));
     }
   
-      @Override
+    @Override
     public SignupResponseDto signup(SignupRequestDto requestDto) {
         if (userRepository.existsByEmail(requestDto.getEmail())) {
             throw new ApiException(DUPLICATE_EMAIL);
@@ -96,8 +96,7 @@ public class UserServiceImpl implements UserService{
         if(!loginUserId.equals(UserId)
             && followingRepository.existsByFollowingUserIdAndUserId(loginUserId, UserId)
             && !user.isPublic()){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                "이 사용자는 프로필 비공개 설정 상태이며, 친구가 아닌 경우 정보 열람이 제한됩니다.");
+            throw new ApiException(FORBIDDEN_PROFILE);
         }
 
         //팔로잉, 팔로워 수 구하기
@@ -131,6 +130,15 @@ public class UserServiceImpl implements UserService{
                 posts
             );
         }
+    }
+
+    @Override
+    public UserProfileResponseDto updateProfile(Long userId, patchProfile profile) {
+        User user = userRepository.findByUserIdOrElseThrow(userId);
+
+        //유저아이디에 맞는 프로필 값 가져옴
+        //값 뭐고칠지 확인하고
+        //세이브
     }
 }
 
