@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -52,5 +53,13 @@ public class CommentController {
         @RequestParam(defaultValue = "10")int size
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(commentService.getComments(cursorCreatedAt, cursorId, postId, size));
+    }
+
+    // 좋아요
+    @PatchMapping("/like/{id}")
+    public ResponseEntity<Void> likeComment(@PathVariable("id") long id,
+        @AuthenticationPrincipal UserDetails userDetails) {
+        commentService.likeComment(id, userDetails);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
