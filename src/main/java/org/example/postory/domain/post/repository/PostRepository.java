@@ -25,6 +25,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                 p.isPublic = true
                 OR (:userId IS NOT NULL AND p.user.id = :userId)
             )
+            AND p.deletedAt IS NULL
         """)
     Optional<Post> findVisiblePost(@Param("id") Long id, @Param("userId") Long userId);
 
@@ -58,4 +59,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
         @Param("cursorId") Long cursorId,
         Pageable pageable
     );
+
+
+
 }
