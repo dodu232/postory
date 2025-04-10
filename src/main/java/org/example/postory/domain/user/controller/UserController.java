@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
@@ -55,6 +54,24 @@ public class UserController {
     ) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(userService.updateProfile(Long.parseLong(userDetails.getUsername()), profile));
+    }
+
+    @PostMapping("/follow/{followingId}")
+    public ResponseEntity<String> follow(
+            @AuthenticationPrincipal UserDetails userDetail,
+            @PathVariable Long followingId
+    ) {
+        userService.follow(Long.parseLong(userDetail.getUsername()), followingId);
+        return ResponseEntity.status(HttpStatus.OK).body("팔로우 성공");
+    }
+
+    @PostMapping("/unfollow/{followingId}")
+    public ResponseEntity<String> unfollow(
+            @AuthenticationPrincipal UserDetails userDetail,
+            @PathVariable Long followingId
+    ) {
+        userService.unfollow(Long.parseLong(userDetail.getUsername()), followingId);
+        return ResponseEntity.status(HttpStatus.OK).body("언팔로우 성공");
     }
 }
 

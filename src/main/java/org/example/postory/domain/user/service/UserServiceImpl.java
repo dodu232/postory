@@ -1,9 +1,5 @@
 package org.example.postory.domain.user.service;
 
-import static org.example.postory.global.error.response.ErrorType.DUPLICATE_EMAIL;
-import static org.example.postory.global.error.response.ErrorType.DUPLICATE_PHONE;
-import static org.example.postory.global.error.response.ErrorType.EMAIL_NOT_FOUND;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +14,7 @@ import org.example.postory.global.util.PasswordEncoder;
 import static org.example.postory.global.error.response.ErrorType.*;
 
 import org.example.postory.domain.user.dto.UserProfileResponseDto;
+import org.example.postory.domain.user.entity.Following;
 import org.example.postory.domain.user.entity.User;
 import org.example.postory.domain.user.repository.FollowingRepository;
 import org.example.postory.domain.user.repository.UserRepository;
@@ -25,6 +22,8 @@ import org.example.postory.global.error.ApiException;
 import org.example.postory.global.error.response.ErrorType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.example.postory.global.error.response.ErrorType.*;
 
 @Service
 @RequiredArgsConstructor
@@ -150,5 +149,50 @@ public class UserServiceImpl implements UserService {
         User savedUser = userRepository.save(user);
         return new UserResponseDto.UpdateProfile(savedUser);
     }
+
+    public void follow(Long userId, Long followingId) {
+        if (userId.equals(followingId)) {
+            throw new ApiException(ErrorType.CANNOT_FOLLOW_SELF);
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
+
+        User targetUser = userRepository.findById(followingId)
+                .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
+
+        if (followingRepository.existsByFollowingUserIdAndUserId(followingId, userId)) {
+            throw new ApiException(ErrorType.ALREADY_FOLLOWING);
+        }
+
+        Following following = Following.builder()
+                .followingUser(targetUser)
+                .user(user)
+                .build();
+
+        followingRepository.save(following);
+    }
+
+    @Transactional
+    public void unfollow(Long userId, Long followingId) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
+
+        userRepository.findById(followingId)
+                .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
+
+        if (!followingRepository.existsByFollowingUserIdAndUserId(followingId, userId)) {
+            throw new ApiException(ErrorType.NOT_FOLLOWING);
+        }
+
+        Integer count = followingRepository.deleteByUserIdAndFollowingUserId(userId, followingId)
+                .orElseThrow(() -> new ApiException(UNFOLLOW_FAILED));
+
+        if (count != 1) {
+            throw new ApiException(UNFOLLOW_FAILED);
+        }
+    }
+
+
 }
 
