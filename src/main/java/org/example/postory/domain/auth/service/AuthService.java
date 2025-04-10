@@ -1,6 +1,7 @@
 package org.example.postory.domain.auth.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.postory.domain.auth.dto.AuthRequestDto;
 import org.example.postory.domain.auth.dto.JwtToken;
 import org.example.postory.domain.auth.jwt.JwtProvider;
@@ -8,8 +9,10 @@ import org.example.postory.domain.user.entity.User;
 import org.example.postory.domain.user.service.UserService;
 import org.example.postory.global.error.ApiException;
 import org.example.postory.global.error.response.ErrorType;
+import org.example.postory.global.util.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -22,7 +25,7 @@ public class AuthService {
      */
     public JwtToken login(AuthRequestDto.Login dto) {
         User user = userService.getByEmail(dto.getEmail());
-        if (!user.getPassword().equals(dto.getPassword())) {
+        if (!PasswordEncoder.matches(dto.getPassword(), user.getPassword())) {
             throw new ApiException(ErrorType.INVALID_PASSWORD);
         }
         return jwtProvider.generateToken(user.getId());

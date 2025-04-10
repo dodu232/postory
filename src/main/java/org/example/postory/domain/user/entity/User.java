@@ -5,10 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 
 @Getter
 @Entity
@@ -23,15 +21,21 @@ public class User {
     @Column(nullable = false)
     private String email;
 
+    @Setter
     @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)
     private String phone;
+
+    @Setter
     private String name;
+    @Setter
     private boolean gender;
+    @Setter
     private String introduction;
 
+    @Setter
     @Column(nullable = false)
     private boolean isPublic = true;
     @Column
@@ -50,5 +54,11 @@ public class User {
 
     public void updateToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    public static User withId(Long id) {
+        User user = new User(); // createPost의 userId값을 위해서 생성
+        user.id = id;
+        return user;
     }
 }
