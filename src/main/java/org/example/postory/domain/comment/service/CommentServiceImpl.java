@@ -12,7 +12,6 @@ import org.example.postory.domain.comment.entity.CommentLike;
 import org.example.postory.domain.comment.repository.CommentLikeRepository;
 import org.example.postory.domain.comment.repository.CommentRepository;
 import org.example.postory.domain.post.entity.Post;
-import org.example.postory.domain.post.repository.PostLikeRepository;
 import org.example.postory.domain.post.repository.PostRepository;
 import org.example.postory.domain.post.service.PostService;
 import org.example.postory.domain.user.entity.User;

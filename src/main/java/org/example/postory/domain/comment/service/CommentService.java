@@ -19,4 +19,7 @@ public interface CommentService {
 
     // 좋아요
     void likeComment(long id, UserDetails userDetails);
+
+    //댓글 수정
+    CommentItem updateComment(Long authUserId, CommentRequestDto.CommentItem requestDto, Long commentId);
 }
