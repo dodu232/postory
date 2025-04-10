@@ -1,29 +1,25 @@
 package org.example.postory.domain.comment.service;
 
-import java.util.Optional;
 import java.time.LocalDateTime;
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.comment.dto.CommentRequestDto;
 import org.example.postory.domain.comment.dto.CommentResponseDto;
+import org.example.postory.domain.comment.dto.CommentResponseDto.CommentItem;
 import org.example.postory.domain.comment.dto.CommentResponseDto.Create;
 import org.example.postory.domain.comment.entity.Comment;
 import org.example.postory.domain.comment.repository.CommentRepository;
 import org.example.postory.domain.post.entity.Post;
+import org.example.postory.domain.post.repository.PostRepository;
 import org.example.postory.domain.post.service.PostService;
 import org.example.postory.domain.user.service.UserService;
-import org.example.postory.global.error.ApiException;
-import org.springframework.stereotype.Service;
-import org.example.postory.domain.comment.dto.CommentResponseDto.CommentItem;
-import org.example.postory.domain.comment.repository.CommentRepository;
-import org.example.postory.domain.post.repository.PostRepository;
 import org.example.postory.global.common.pagination.CursorDto;
 import org.example.postory.global.common.pagination.CursorResponseDto;
 import org.example.postory.global.error.ApiException;
 import org.example.postory.global.error.response.ErrorType;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -75,7 +71,8 @@ public class CommentServiceImpl implements CommentService {
         // 한 번에 10개씩 가져오도록 고정.
         Pageable pageable = PageRequest.of(0, size);
 
-        List<Comment> comments = commentrepository.getComments(cursorUpdatedAt, cursorId, postId, pageable);
+        List<Comment> comments = commentRepository.getComments(cursorUpdatedAt, cursorId, postId,
+            pageable);
         List<CommentItem> commentsDto = comments.stream().map(CommentItem::new).toList();
 
         // 다음 커서 정보 저장
