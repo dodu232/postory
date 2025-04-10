@@ -1,12 +1,12 @@
 package org.example.postory.domain.post.repository;
 
+import static org.example.postory.global.error.response.ErrorType.POST_NOT_FOUND;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import org.example.postory.domain.post.dto.PostResponseDto;
-import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
 import org.example.postory.domain.post.entity.Post;
+import org.example.postory.global.error.ApiException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -50,6 +50,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
         Pageable pageable
     );
 
+    // 게시물 id로 게시물 조회
+    default Post findByIdOrElseThrow(long id) {
+        return findById(id).orElseThrow(() -> new ApiException(POST_NOT_FOUND));
+    }
 
 
 }

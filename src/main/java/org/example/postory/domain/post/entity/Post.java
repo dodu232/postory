@@ -23,12 +23,16 @@ public class Post extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private Long id;
+    @Setter
     @Column(nullable = false)
     private String title;
+    @Setter
     @Column(nullable = false)
     private String content;
+    @Setter
     @Column(nullable = false)
     private boolean isPublic = true;
+    @Setter
     @Column(nullable = false)
     private String hashtag;
     @Column(nullable = false)
@@ -37,7 +41,7 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Post(long id){
+    public Post(long id) {
         this.id = id;
     }
 }

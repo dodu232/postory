@@ -1,5 +1,7 @@
 package org.example.postory.domain.post.service;
 
+import static org.example.postory.global.error.response.ErrorType.FORBIDDEN_POST_UPDATE;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +15,7 @@ import org.example.postory.domain.post.entity.PostLike;
 import org.example.postory.domain.post.repository.PostLikeRepository;
 import org.example.postory.domain.post.repository.PostRepository;
 import org.example.postory.domain.user.entity.User;
+import org.example.postory.domain.user.repository.UserRepository;
 import org.example.postory.global.common.pagination.CursorDto;
 import org.example.postory.global.common.pagination.CursorResponseDto;
 import org.example.postory.global.error.ApiException;
@@ -42,14 +45,14 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post createPost(PostRequestDto dto, Long userId) {
+    public Post createPost(PostRequestDto.Create dto, Long userId) {
         Post post = Post.builder()
-                .title(dto.getTitle())
-                .content(dto.getContent())
-                .hashtag(dto.getHashtag())
-                .isPublic(dto.isPublic())
-                .user(User.withId(userId))  // 연관관계 설정을 위해 Id로 참조함
-                .build();
+            .title(dto.getTitle())
+            .content(dto.getContent())
+            .hashtag(dto.getHashtag())
+            .isPublic(dto.isPublic())
+            .user(User.withId(userId))  // 연관관계 설정을 위해 Id로 참조함
+            .build();
         return postRepository.save(post);
     }
 
@@ -80,13 +83,42 @@ public class PostServiceImpl implements PostService {
 
     }
 
+    // 게시물 수정
+    @Override
+    public void updatePost(long id, PostRequestDto.Update updatePost, Long userId) {
+
+        Post post = postRepository.findByIdOrElseThrow(id);
+
+        // 게시물 작성자인지 확인
+        if (!userId.equals(post.getId())) {
+            throw new ApiException(FORBIDDEN_POST_UPDATE);
+        }
+
+        // 수정
+        if (updatePost.getTitle() != null) {
+            post.setTitle(updatePost.getTitle());
+        }
+        if (updatePost.getContent() != null) {
+            post.setContent(updatePost.getContent());
+
+        }
+        if (updatePost.getIsPublic() != null) { // Dto Boolean 으로 설정하기!
+            post.setPublic(updatePost.getIsPublic());
+        }
+        if (updatePost.getHashtag() != null) {
+            post.setHashtag(updatePost.getHashtag());
+        }
+
+        postRepository.save(post);
+    }
+
     @Override
     @Transactional
-    public void likePost(long postId, UserDetails userDetails){
-        long userId  = Long.parseLong(userDetails.getUsername());
+    public void likePost(long postId, UserDetails userDetails) {
+        long userId = Long.parseLong(userDetails.getUsername());
         Optional<PostLike> postLike = postLikeRepository.findByPostIdAndUserId(postId, userId);
 
-        if(postLike.isPresent()){
+        if (postLike.isPresent()) {
             postLikeRepository.delete(postLike.get());
         } else {
             User user = new User(userId);
@@ -101,9 +133,11 @@ public class PostServiceImpl implements PostService {
         return postRepository.getAllByUser_IdAndDeletedAtIsNullOrderByUpdatedAt(userId)
             .stream().map(PostResponseDto.NewsFeed::new).collect(Collectors.toList());
     }
+
     //공개 게시글 + 삭제되지 않은 게시글 + 수정일 기준 최신순 정렬
     public List<NewsFeed> getVisiblePostsByUser(Long userId) {
-        return postRepository.getAllByUser_IdAndDeletedAtIsNullAndIsPublicIsTrueOrderByUpdatedAt(userId)
+        return postRepository.getAllByUser_IdAndDeletedAtIsNullAndIsPublicIsTrueOrderByUpdatedAt(
+                userId)
             .stream().map(PostResponseDto.NewsFeed::new).collect(Collectors.toList());
     }
 }
