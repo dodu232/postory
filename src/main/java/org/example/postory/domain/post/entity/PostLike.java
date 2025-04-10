@@ -15,6 +15,7 @@ import org.example.postory.domain.user.entity.User;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PostLike {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
@@ -25,4 +26,9 @@ public class PostLike {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
+
+    public PostLike(User user, Post post){
+        this.user = user;
+        this.post = post;
+    }
 }

@@ -1,4 +1,4 @@
-package org.example.postory.domain.jwt;
+package org.example.postory.domain.auth.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -7,7 +7,6 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
-import org.example.postory.domain.auth.JwtProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.PatternMatchUtils;
@@ -18,11 +17,11 @@ import org.springframework.web.filter.GenericFilterBean;
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private final JwtProvider jwtTokenProvider;
-    private static final String[] WHITELIST = {"/", "/users/signup", "/auth/login", "/posts", "/comments"};
+    private static final String[] WHITELIST = {"/", "/users/signup", "/auth/login",
+        "/auth/reissue", "/posts", "/comments"};
 
     /**
-     * 1. Request Header에서 JWT 토큰 추출
-     * 2. validateToken으로 토큰 유효성 검사
+     * 1. Request Header에서 JWT 토큰 추출 2. validateToken으로 토큰 유효성 검사
      */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)

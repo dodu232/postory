@@ -3,11 +3,10 @@ package org.example.postory.domain.auth.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.auth.dto.AuthRequestDto;
-import org.example.postory.domain.auth.dto.JwtToken;
+import org.example.postory.domain.auth.jwt.JwtToken;
 import org.example.postory.domain.auth.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -35,7 +34,7 @@ public class AuthController {
      */
     @PostMapping("/reissue")
     public ResponseEntity<JwtToken> reIssue(@RequestHeader("Authorization") String bearerToken) {
-        String refreshToken = bearerToken.replace("Bearer ", "");
-        return ResponseEntity.status(HttpStatus.OK).body(service.reIssue(refreshToken));
+        return ResponseEntity.status(HttpStatus.OK).body(service.reIssue(bearerToken));
+
     }
 }

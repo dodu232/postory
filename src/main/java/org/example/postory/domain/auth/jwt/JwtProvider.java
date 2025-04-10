@@ -1,4 +1,4 @@
-package org.example.postory.domain.auth;
+package org.example.postory.domain.auth.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -18,12 +18,10 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.example.postory.domain.auth.dto.JwtToken;
 import org.example.postory.domain.user.service.UserService;
 import org.example.postory.global.error.ApiException;
 import org.example.postory.global.error.response.ErrorType;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -42,7 +40,8 @@ public class JwtProvider {
     /**
      * 생성자를 통한 JWT 서명용 Key 초기화 application.property에서 secret 값 가져와서 key에 저장
      */
-    public JwtProvider(@Value("${jwt.secret}") String secretKey, UserService userService) {
+    public JwtProvider(@Value("${jwt.secret}") String secretKey, UserService userService
+    ) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.userService = userService;
@@ -71,7 +70,7 @@ public class JwtProvider {
 
         // Refresh Token이 만료된 경우에만 생성
         String refreshToken = userService.getRefreshToken(userId);
-        if(refreshToken.isEmpty() || isRefreshTokenExpired(refreshToken)){
+        if (refreshToken == null || isRefreshTokenExpired(refreshToken)) {
             refreshToken = Jwts.builder()
                 .setSubject(String.valueOf(userId))
                 .claim("iss", "off")
@@ -135,7 +134,7 @@ public class JwtProvider {
         try {
             long userId = extractUserId(refreshToken);
 
-            String savedRefreshToken  = userService.getRefreshToken(userId);
+            String savedRefreshToken = userService.getRefreshToken(userId);
 
             if (!refreshToken.equals(savedRefreshToken)) {
                 log.warn("Refresh Token mismatch for userId={}", userId);
@@ -158,13 +157,13 @@ public class JwtProvider {
     /**
      * refresh token이 만료되었는지 확인하는 메서드
      */
-    public boolean isRefreshTokenExpired(String refreshToken){
-        try{
+    public boolean isRefreshTokenExpired(String refreshToken) {
+        try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(refreshToken);
             return false;
-        } catch (ExpiredJwtException e){
+        } catch (ExpiredJwtException e) {
             return true;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new ApiException(ErrorType.TOKEN_VALIDATION_FAILED);
         }
     }
@@ -172,16 +171,15 @@ public class JwtProvider {
     /**
      * userId를 JWT에서 꺼내는 메서드
      */
-    public Long extractUserId(String token){
-        try{
+    private Long extractUserId(String token) {
+        try {
             Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-            long temp = Long.valueOf(claims.getSubject());
             return Long.valueOf(claims.getSubject());
-        } catch (SignatureException e){
+        } catch (SignatureException e) {
             throw new ApiException(ErrorType.INVALID_JWT_SIGNATURE);
         } catch (Exception e) {
             throw new ApiException(ErrorType.INVALID_JWT_TOKEN);

@@ -15,6 +15,7 @@ import org.example.postory.domain.user.entity.User;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CommentLike {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
