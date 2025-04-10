@@ -19,6 +19,7 @@ import org.example.postory.global.error.ApiException;
 import org.example.postory.global.error.response.ErrorType;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +32,8 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
-    private final RestClient.Builder builder;
+
+    private final int LIKE_MINIMUM = 0;
 
     @Override
     public Post getPostById(long postId, Long userId) {
@@ -105,5 +107,41 @@ public class PostServiceImpl implements PostService {
     public List<NewsFeed> getVisiblePostsByUser(Long userId) {
         return postRepository.getAllByUser_IdAndDeletedAtIsNullAndIsPublicIsTrueOrderByUpdatedAt(userId)
             .stream().map(PostResponseDto.NewsFeed::new).collect(Collectors.toList());
+    }
+
+    /**
+     * 좋아요 30개 이상 update 순으로 정렬
+     */
+    @Override
+    public CursorResponseDto<PostResponseDto.SearchList> getSearchList(PostRequestDto.Search dto,
+        LocalDateTime cursorUpdatedAt, Long cursorId) {
+
+        // 첫 번째 조회.
+        if (cursorUpdatedAt == null || cursorId == null) {
+            cursorUpdatedAt = LocalDateTime.now();
+            cursorId = Long.MAX_VALUE;
+        }
+
+        // 한 번에 10개씩 가져오도록 고정.
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("updatedAt").descending());
+
+        List<PostResponseDto.SearchList> postList = switch (dto.getSearchType()) {
+            case MENTION ->
+                postRepository.findByMention(dto.getValue(), LIKE_MINIMUM, cursorUpdatedAt,
+                    cursorId, pageable);
+            case HASHTAG ->
+                postRepository.findByHashTag(dto.getValue(), LIKE_MINIMUM, cursorUpdatedAt,
+                    cursorId, pageable);
+            default -> postRepository.findByKeyword(dto.getValue(), LIKE_MINIMUM, cursorUpdatedAt,
+                cursorId, pageable);
+        };
+
+        // 다음 커서 정보 저장
+        CursorDto nextCursor = null;
+        if (!postList.isEmpty()) {
+            PostResponseDto.SearchList lastFeed = postList.get(postList.size() - 1);
+            nextCursor = new CursorDto(lastFeed.getUpdatedAt(), lastFeed.getId());
+        }
+        return CursorResponseDto.of(postList, nextCursor);
     }
 }

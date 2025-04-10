@@ -1,6 +1,7 @@
 package org.example.postory.domain.post.dto;
 
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,7 @@ public class PostResponseDto {
     @Getter
     @Builder
     public static class Get {
+
         private Long id;
         private String title;
         private String content;
@@ -47,13 +49,23 @@ public class PostResponseDto {
 
         public static Get fromPostEntity(Post post) {
             return Get.builder()   // builder() : dto 객체를 직접 new 생성하지 않고 명시적으로 필드 지정해서 생성
-                    .id(post.getId())
-                    .title(post.getTitle())
-                    .content(post.getContent())
-                    .hashtag(post.getHashtag())
-                    .postLikeCount(post.getPostLikeCount())
-                    .writer(post.getUser().getName())
-                    .build();  // build() : builder()를 바탕으로 실제 객체를 만듦
+                .id(post.getId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .hashtag(post.getHashtag())
+                .postLikeCount(post.getPostLikeCount())
+                .writer(post.getUser().getName())
+                .build();  // build() : builder()를 바탕으로 실제 객체를 만듦
         }
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public static class SearchList {
+
+        private long id;
+        private String title;
+        private String name;
+        private LocalDateTime updatedAt;
     }
 }
