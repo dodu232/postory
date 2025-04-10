@@ -9,6 +9,7 @@ import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
 import org.example.postory.domain.post.entity.Post;
 import org.example.postory.domain.post.repository.PostRepository;
 import org.example.postory.domain.user.entity.User;
+import org.example.postory.domain.user.repository.UserRepository;
 import org.example.postory.global.common.pagination.CursorDto;
 import org.example.postory.global.common.pagination.CursorResponseDto;
 import org.example.postory.global.error.ApiException;
@@ -23,6 +24,11 @@ import org.springframework.web.client.RestClient;
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
+<<<<<<< Updated upstream
+=======
+    private final UserRepository userRepository;
+    private final PostLikeRepository postLikeRepository;
+>>>>>>> Stashed changes
     private final RestClient.Builder builder;
 
     @Override
@@ -35,12 +41,14 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post createPost(PostRequestDto dto, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
         Post post = Post.builder()
                 .title(dto.getTitle())
                 .content(dto.getContent())
                 .hashtag(dto.getHashtag())
                 .isPublic(dto.isPublic())
-                .user(User.withId(userId))  // 연관관계 설정을 위해 Id로 참조함
+                .user(user) // DB에서 실제 user객체 조회하도록 수정
                 .build();
         return postRepository.save(post);
     }
