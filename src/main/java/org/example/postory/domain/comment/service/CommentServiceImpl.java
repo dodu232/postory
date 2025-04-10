@@ -116,6 +116,7 @@ public class CommentServiceImpl implements CommentService {
      * @return 수정된 댓글 정보를 담은 CommentItem DTO
      * @throws ApiException {@code ErrorType.FORBIDDEN_COMMENT} - 요청한 사용자가 댓글의 작성자가 아닌 경우
      */
+    @Transactional
     @Override
     public CommentItem updateComment(Long authUserId,
         CommentRequestDto.CommentItem requestDto, Long commentId) {
@@ -125,8 +126,7 @@ public class CommentServiceImpl implements CommentService {
         if (!authUserId.equals(comment.getUser().getId())) {
             throw new ApiException(ErrorType.FORBIDDEN_COMMENT);
         }
-
-        comment.setContent(requestDto.getContents());
-        return new CommentItem(commentRepository.save(comment));
+        comment.updateContent(requestDto.getContents());
+        return new CommentItem(comment);
     }
 }
