@@ -12,6 +12,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.example.postory.domain.post.entity.Post;
 import org.example.postory.domain.user.entity.User;
 import org.example.postory.global.common.BaseEntity;
@@ -25,6 +26,7 @@ public class Comment extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private Long id;
+    @Setter
     @Column(nullable = false)
     private String content;
     @Column(nullable = false)
@@ -45,5 +47,9 @@ public class Comment extends BaseEntity {
 
     public Comment(Long id) {
         this.id = id;
+    }
+
+    public void updateContent(String content){
+        this.content = content;
     }
 }

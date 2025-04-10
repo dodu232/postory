@@ -40,11 +40,13 @@ public enum ErrorType implements ExceptionStatus {
      * 3000: post 에러
      */
     POST_NOT_FOUND(3001, HttpStatus.NOT_FOUND.value(), "게시물을 찾을 수 없습니다"),
-    POST_NOT_PUBLIC(3002, HttpStatus.FORBIDDEN.value(), "비공개 게시물입니다.")
+    POST_NOT_PUBLIC(3002, HttpStatus.FORBIDDEN.value(), "비공개 게시물입니다."),
 
     /**
      * 4000: comment 에러
      */
+    COMMENT_NOT_FOUND(4001, HttpStatus.NOT_FOUND.value(), "댓글을 찾을 수 없습니다."),
+    FORBIDDEN_COMMENT(4301,HttpStatus.FORBIDDEN.value(), "댓글 작성자만 댓글 수정이 가능합니다.")
     ;
 
     private final int code;
