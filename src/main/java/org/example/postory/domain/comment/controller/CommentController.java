@@ -66,4 +66,12 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.OK)
             .body(commentService.getComments(cursorCreatedAt, cursorId, postId, size));
     }
+
+    // 좋아요
+    @PatchMapping("/like/{id}")
+    public ResponseEntity<Void> likeComment(@PathVariable("id") long id,
+        @AuthenticationPrincipal UserDetails userDetails) {
+        commentService.likeComment(id, userDetails);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }
