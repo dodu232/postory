@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
 import org.example.postory.domain.post.repository.PostRepository;
 import org.example.postory.domain.user.dto.*;
+import org.example.postory.domain.post.service.PostService;
 import org.example.postory.domain.user.dto.UserRequestDto.UpdateProfile;
 import org.example.postory.global.common.pagination.CursorDto;
 import org.example.postory.global.common.pagination.CursorResponseDto;
@@ -32,7 +33,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final FollowingRepository followingRepository;
-    private final PostRepository postRepository;
+    private final PostService postService;
 
     /**
      * refreshToken 가져오기
@@ -102,12 +103,12 @@ public class UserServiceImpl implements UserService {
 
         if (loginUserId.equals(UserId)) {
             //게시글 가져오기 - 자기자신의 프로필이라 isn't public 한 게시글도 다 불러옴
-            List<NewsFeed> posts = postRepository.getAllMyPosts(UserId);
+            List<NewsFeed> posts = postService.getAllMyPosts(UserId);
 
             return new UserProfileResponseDto(user.getId(), user.getName(), user.getIntroduction(),
                 user.isPublic(), followingCnt.intValue(), followerCnt.intValue(), posts);
         } else {
-            List<NewsFeed> posts = postRepository.getVisiblePostsByUser(UserId);
+            List<NewsFeed> posts = postService.getVisiblePostsByUser(UserId);
 
             return new UserProfileResponseDto(user.getId(), user.getName(), user.getIntroduction(),
                 user.isPublic(), followingCnt.intValue(), followerCnt.intValue(),
@@ -115,6 +116,10 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public User getById(Long UserId){
+        return userRepository.findByUserIdOrElseThrow(UserId);
+    }
     /**
      * [Service] 프로필 정보 업데이트 함수 업데이트된 데이터는 userId로 기존 정보를 가져와 필요한 값만 변경 후 저장됩니다. 비밀번호는 기존 비밀번호와 다를
      * 경우에만 변경됩니다.
@@ -153,6 +158,7 @@ public class UserServiceImpl implements UserService {
 
     public void follow(Long loginUserId, Long followingId) {
         if (loginUserId.equals(followingId)) {
+
             throw new ApiException(ErrorType.CANNOT_FOLLOW_SELF);
         }
 

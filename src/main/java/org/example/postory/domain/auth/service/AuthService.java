@@ -3,7 +3,7 @@ package org.example.postory.domain.auth.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.postory.domain.auth.dto.AuthRequestDto;
-import org.example.postory.domain.auth.dto.JwtToken;
+import org.example.postory.domain.auth.jwt.JwtToken;
 import org.example.postory.domain.auth.jwt.JwtProvider;
 import org.example.postory.domain.user.entity.User;
 import org.example.postory.domain.user.service.UserService;
