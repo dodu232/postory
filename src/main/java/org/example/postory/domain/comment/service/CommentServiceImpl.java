@@ -23,10 +23,20 @@ public class CommentServiceImpl implements CommentService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
 
+    /**
+     * [service] 댓글 생성 메서드. 해당 게시글이 사용자에게 보이는 게시글인지 검증한 후, 댓글 내용을 기반으로 Comment 엔티티를 생성하고 저장. 저장된 댓글
+     * 정보를 기반으로 댓글 응답 DTO를 반환/
+     *
+     * @param authUserId 댓글을 작성하려는 인증된 사용자 ID
+     * @param requestDto 댓글 내용을 담은 요청 DTO
+     * @param postId     댓글이 작성될 게시글의 ID
+     * @return 생성된 댓글 정보를 담은 CommentResponseDto.Create 객체
+     * @throws ApiException 게시글이 존재하지 않거나 접근 권한이 없는 경우 예외 발생
+     */
     @Override
-    public CommentResponseDto.Create createComment(long authUserId, CommentRequestDto.Create requestDto,
+    public CommentResponseDto.Create createComment(long authUserId,
+        CommentRequestDto.Create requestDto,
         Long postId) {
-        //코멘트 생성하려는 포스트가 접근가능한지 확인
         Optional<Post> findPost = postRepository.findVisiblePost(postId,
             authUserId);
 
@@ -34,14 +44,11 @@ public class CommentServiceImpl implements CommentService {
             throw new ApiException(POST_NOT_FOUND);
         }
 
-        // requestDto로 코멘트 객체 생성
         Comment comment = Comment.builder().content(requestDto.getContents())
             .user(userRepository.findByUserIdOrElseThrow(authUserId))
             .post(findPost.get())
             .build();
-        //저장
         Comment savedComment = commentRepository.save(comment);
-        //반환형대로 만들어줌
         return new Create(savedComment);
     }
 }
