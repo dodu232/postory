@@ -42,4 +42,8 @@ public class Comment extends BaseEntity {
         this.user = user;
         this.post = post;
     }
+
+    public Comment(Long id) {
+        this.id = id;
+    }
 }

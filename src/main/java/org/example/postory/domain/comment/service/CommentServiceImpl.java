@@ -2,16 +2,21 @@ package org.example.postory.domain.comment.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.comment.dto.CommentRequestDto;
 import org.example.postory.domain.comment.dto.CommentResponseDto;
 import org.example.postory.domain.comment.dto.CommentResponseDto.CommentItem;
 import org.example.postory.domain.comment.dto.CommentResponseDto.Create;
 import org.example.postory.domain.comment.entity.Comment;
+import org.example.postory.domain.comment.entity.CommentLike;
+import org.example.postory.domain.comment.repository.CommentLikeRepository;
 import org.example.postory.domain.comment.repository.CommentRepository;
 import org.example.postory.domain.post.entity.Post;
+import org.example.postory.domain.post.repository.PostLikeRepository;
 import org.example.postory.domain.post.repository.PostRepository;
 import org.example.postory.domain.post.service.PostService;
+import org.example.postory.domain.user.entity.User;
 import org.example.postory.domain.user.service.UserService;
 import org.example.postory.global.common.pagination.CursorDto;
 import org.example.postory.global.common.pagination.CursorResponseDto;
@@ -19,7 +24,9 @@ import org.example.postory.global.error.ApiException;
 import org.example.postory.global.error.response.ErrorType;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +36,7 @@ public class CommentServiceImpl implements CommentService {
     private final UserService userService;
     private final PostService postService;
     private final PostRepository postRepository;
+    private final CommentLikeRepository commentLikeRepository;
   
     /**
      * [service] 댓글 생성 메서드. 해당 게시글이 사용자에게 보이는 게시글인지 검증한 후, 댓글 내용을 기반으로 Comment 엔티티를 생성하고 저장. 저장된 댓글
@@ -83,5 +91,21 @@ public class CommentServiceImpl implements CommentService {
         }
 
         return CursorResponseDto.of(commentsDto, nextCursor);
+    }
+
+    // 좋아요
+    @Transactional
+    public void likeComment(long commentId, UserDetails userDetails) {
+        long userId = Long.parseLong(userDetails.getUsername());
+        Optional<CommentLike> commentLike = commentLikeRepository.findByCommentIdAndUserId(
+            commentId, userId);
+
+        if (commentLike.isPresent()) {
+            commentLikeRepository.delete(commentLike.get());
+        } else {
+            User user = new User(userId);
+            Comment comment = new Comment(commentId);
+            commentLikeRepository.save(new CommentLike(user, comment));
+        }
     }
 }
