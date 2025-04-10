@@ -1,6 +1,7 @@
 package org.example.postory.domain.auth.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.postory.domain.auth.dto.AuthRequestDto;
 import org.example.postory.domain.auth.dto.JwtToken;
 import org.example.postory.domain.auth.jwt.JwtProvider;
@@ -11,6 +12,7 @@ import org.example.postory.global.error.response.ErrorType;
 import org.example.postory.global.util.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {

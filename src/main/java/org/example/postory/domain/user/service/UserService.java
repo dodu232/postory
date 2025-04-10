@@ -19,5 +19,10 @@ public interface UserService {
 
     UserProfileResponseDto getProfile(Long authUserId, Long UserId);
 
+    void follow(Long userId, Long followingId);
+
+    void unfollow(Long userId, Long followingId);
+
     UserResponseDto.UpdateProfile updateProfile(Long authUserId, UpdateProfile profile);
+
 }

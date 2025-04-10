@@ -3,6 +3,8 @@ package org.example.postory.domain.user.repository;
 import org.example.postory.domain.user.entity.Following;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface FollowingRepository extends JpaRepository<Following, Long> {
 
     //팔로잉 수 반환
@@ -12,4 +14,6 @@ public interface FollowingRepository extends JpaRepository<Following, Long> {
     Long countByFollowingUser_id(Long followingUserId);
 
     boolean existsByFollowingUserIdAndUserId(Long userId, Long followingUserId);
+
+    Optional<Integer> deleteByUserIdAndFollowingUserId(Long userId, Long followingUserId);
 }
