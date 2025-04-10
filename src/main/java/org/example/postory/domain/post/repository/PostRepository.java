@@ -45,6 +45,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             .stream().map(PostResponseDto.NewsFeed::new).collect(Collectors.toList());
     }
 
+    // 뉴스피드 조회
     @Query("""
             SELECT p FROM Post p
             WHERE ((p.updatedAt < :cursorUpdatedAt)
