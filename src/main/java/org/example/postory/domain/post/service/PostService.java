@@ -2,6 +2,7 @@ package org.example.postory.domain.post.service;
 
 import java.time.LocalDateTime;
 
+import java.util.List;
 import org.example.postory.domain.post.dto.PostRequestDto;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
 import org.example.postory.domain.post.entity.Post;
@@ -18,4 +19,10 @@ public interface PostService {
 
     // 게시물 좋아요
     void likePost(long id, UserDetails userDetails);
+
+    // 삭제되지 않은 게시글 + 수정일 기준 최신 정렬
+    List<NewsFeed> getAllMyPosts(Long userId);
+
+    //공개 게시글 + 삭제되지 않은 게시글 + 수정일 기준 최신순 정렬
+    List<NewsFeed> getVisiblePostsByUser(Long userId);
 }

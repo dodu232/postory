@@ -3,8 +3,10 @@ package org.example.postory.domain.post.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.post.dto.PostRequestDto;
+import org.example.postory.domain.post.dto.PostResponseDto;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
 import org.example.postory.domain.post.entity.Post;
 import org.example.postory.domain.post.entity.PostLike;
@@ -91,5 +93,17 @@ public class PostServiceImpl implements PostService {
             Post post = new Post(postId);
             postLikeRepository.save(new PostLike(user, post));
         }
+    }
+
+
+    // 삭제되지 않은 게시글 + 수정일 기준 최신 정렬 ( 함수이름 가독성이 좋지않아서 따로 함더감쌌음)
+    public List<NewsFeed> getAllMyPosts(Long userId) {
+        return postRepository.getAllByUser_IdAndDeletedAtIsNullOrderByUpdatedAt(userId)
+            .stream().map(PostResponseDto.NewsFeed::new).collect(Collectors.toList());
+    }
+    //공개 게시글 + 삭제되지 않은 게시글 + 수정일 기준 최신순 정렬
+    public List<NewsFeed> getVisiblePostsByUser(Long userId) {
+        return postRepository.getAllByUser_IdAndDeletedAtIsNullAndIsPublicIsTrueOrderByUpdatedAt(userId)
+            .stream().map(PostResponseDto.NewsFeed::new).collect(Collectors.toList());
     }
 }

@@ -25,5 +25,5 @@ public interface UserService {
 
     UserResponseDto.UpdateProfile updateProfile(Long authUserId, UpdateProfile profile);
 
-
+    User getById(Long authUserId);
 }
