@@ -4,9 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
-import org.example.postory.domain.post.repository.PostRepository;
 import org.example.postory.domain.user.dto.*;
-import org.example.postory.domain.post.service.PostService;
 import org.example.postory.domain.post.service.PostService;
 import org.example.postory.domain.user.dto.SignupRequestDto;
 import org.example.postory.domain.user.dto.SignupResponseDto;
@@ -28,8 +26,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static org.example.postory.global.error.response.ErrorType.*;
 
 @Service
 @RequiredArgsConstructor
@@ -272,6 +268,11 @@ public class UserServiceImpl implements UserService {
         }
 
         return CursorResponseDto.of(followingResponseDtos, nextCursor);
+    }
+
+    @Override
+    public User getById(Long authUserId) {
+        return userRepository.findByUserIdOrElseThrow(authUserId);
     }
 
 }
