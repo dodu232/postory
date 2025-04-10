@@ -48,6 +48,10 @@ public class User {
         this.phone = phone;
     }
 
+    public User(long id){
+        this.id = id;
+    }
+
     public void updateToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }

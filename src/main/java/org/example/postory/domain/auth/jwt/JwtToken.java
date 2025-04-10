@@ -1,4 +1,4 @@
-package org.example.postory.domain.auth.dto;
+package org.example.postory.domain.auth.jwt;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

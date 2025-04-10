@@ -1,28 +1,18 @@
 package org.example.postory.domain.user.controller;
 
-import org.example.postory.domain.user.dto.UserRequestDto;
-import org.example.postory.domain.user.dto.UserResponseDto;
+import org.example.postory.domain.user.dto.*;
+import org.example.postory.global.common.pagination.CursorResponseDto;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.postory.domain.user.dto.SignupRequestDto;
-import org.example.postory.domain.user.dto.SignupResponseDto;
-import org.example.postory.domain.user.dto.UserProfileResponseDto;
 import org.example.postory.domain.user.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
@@ -55,6 +45,46 @@ public class UserController {
     ) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(userService.updateProfile(Long.parseLong(userDetails.getUsername()), profile));
+    }
+
+    @PostMapping("/follow/{followingId}")
+    public ResponseEntity<String> follow(
+            @AuthenticationPrincipal UserDetails userDetail,
+            @PathVariable Long followingId
+    ) {
+        userService.follow(Long.parseLong(userDetail.getUsername()), followingId);
+        return ResponseEntity.status(HttpStatus.OK).body("팔로우 성공");
+    }
+
+    @PostMapping("/unfollow/{followingId}")
+    public ResponseEntity<String> unfollow(
+            @AuthenticationPrincipal UserDetails userDetail,
+            @PathVariable Long followingId
+    ) {
+        userService.unfollow(Long.parseLong(userDetail.getUsername()), followingId);
+        return ResponseEntity.status(HttpStatus.OK).body("언팔로우 성공");
+    }
+
+    @GetMapping("/following/{userId}")
+    public ResponseEntity<CursorResponseDto<FollowingResponseDto>> getFollowing(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long userId,
+            @RequestParam(required = false) Long cursorId,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userService.getFollowing(Long.parseLong(userDetails.getUsername()), userId, cursorId, size));
+    }
+
+    @GetMapping("/followers/{userId}")
+    public ResponseEntity<CursorResponseDto<FollowingResponseDto>> getFollowers(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long userId,
+            @RequestParam(required = false) Long cursorId,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userService.getFollowers(Long.parseLong(userDetails.getUsername()), userId, cursorId, size));
     }
 }
 
