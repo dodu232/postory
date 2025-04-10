@@ -25,5 +25,10 @@ public interface UserService {
 
     UserResponseDto.UpdateProfile updateProfile(Long authUserId, UpdateProfile profile);
 
+    CursorResponseDto<FollowingResponseDto> getFollowing(Long authUserId, Long userId, Long cursorId, int size);
+
+    CursorResponseDto<FollowingResponseDto> getFollowers(Long authUserId, Long userId, Long cursorId, int size);
+
     User getById(Long authUserId);
+
 }

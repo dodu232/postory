@@ -35,11 +35,12 @@ public enum ErrorType implements ExceptionStatus {
     NOT_FOLLOWING(2007, HttpStatus.BAD_REQUEST.value(), "팔로우하지 않은 사용자입니다."),
     CANNOT_FOLLOW_SELF(2008, HttpStatus.BAD_REQUEST.value(), "자기 자신을 팔로우할 수 없습니다."),
     FORBIDDEN_PROFILE(2601, HttpStatus.FORBIDDEN.value(), "이 사용자는 프로필 비공개 설정 상태이며, 친구가 아닌 경우 정보 열람이 제한됩니다."),
-  
+
     /**
      * 3000: post 에러
      */
-    POST_NOT_FOUND(3001, HttpStatus.NOT_FOUND.value(), "게시물을 찾을 수 없습니다")
+    POST_NOT_FOUND(3001, HttpStatus.NOT_FOUND.value(), "게시물을 찾을 수 없습니다"),
+    POST_NOT_PUBLIC(3002, HttpStatus.FORBIDDEN.value(), "비공개 게시물입니다.")
 
     /**
      * 4000: comment 에러

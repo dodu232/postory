@@ -3,7 +3,7 @@ package org.example.postory.domain.auth.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.auth.dto.AuthRequestDto;
-import org.example.postory.domain.auth.jwt.JwtToken;
+import org.example.postory.domain.auth.dto.JwtToken;
 import org.example.postory.domain.auth.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
