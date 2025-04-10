@@ -1,11 +1,7 @@
 package org.example.postory.domain.post.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.postory.domain.post.dto.PostRequestDto;
 import org.example.postory.domain.post.dto.PostResponseDto;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
 import org.example.postory.domain.post.dto.PostResponseDto.Get;
@@ -16,8 +12,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
     @RestController
     @RequestMapping("/posts")
@@ -57,5 +57,12 @@ import org.springframework.web.bind.annotation.*;
             Post saved = postService.createPost(request, userId);
             Get response = Get.fromPostEntity(saved);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        }
+      
+        @PatchMapping("/like/{id}")
+        public ResponseEntity<Void> likePost(@PathVariable("id") long id,
+                @AuthenticationPrincipal UserDetails userDetails) {
+                postService.likePost(id, userDetails);
+            return ResponseEntity.status(HttpStatus.OK).build();
         }
     }
