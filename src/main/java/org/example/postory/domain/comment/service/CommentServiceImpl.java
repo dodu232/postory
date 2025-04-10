@@ -11,8 +11,6 @@ import org.example.postory.domain.comment.entity.Comment;
 import org.example.postory.domain.comment.repository.CommentRepository;
 import org.example.postory.domain.post.entity.Post;
 import org.example.postory.domain.post.repository.PostRepository;
-import org.example.postory.domain.user.dto.SignupResponseDto;
-import org.example.postory.domain.user.entity.User;
 import org.example.postory.domain.user.repository.UserRepository;
 import org.example.postory.global.error.ApiException;
 import org.springframework.stereotype.Service;
@@ -26,9 +24,10 @@ public class CommentServiceImpl implements CommentService {
     private final PostRepository postRepository;
 
     @Override
-    public CommentResponseDto.Create createComment(long authUserId, CommentRequestDto.Create requestDto) {
+    public CommentResponseDto.Create createComment(long authUserId, CommentRequestDto.Create requestDto,
+        Long postId) {
         //코멘트 생성하려는 포스트가 접근가능한지 확인
-        Optional<Post> findPost = postRepository.findVisiblePost(requestDto.getPostId(),
+        Optional<Post> findPost = postRepository.findVisiblePost(postId,
             authUserId);
 
         if (findPost.isEmpty()) {

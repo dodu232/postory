@@ -16,7 +16,6 @@ public class CommentResponseDto {
         private final int commentLikeCount;
         private final LocalDateTime createAt;
         private final String username;
-        private final Long postId;
 
         public Create(Comment comment){
             this.id = comment.getId();
@@ -24,7 +23,6 @@ public class CommentResponseDto {
             this.commentLikeCount = comment.getCommentLikeCount();
             this.createAt = comment.getCreatedAt();
             this.username = comment.getUser().getName() == null ? "이름 없음": comment.getUser().getName();
-            this.postId = comment.getPost().getId();
         }
     }
 }

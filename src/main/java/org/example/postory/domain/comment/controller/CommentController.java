@@ -1,6 +1,7 @@
 package org.example.postory.domain.comment.controller;
 
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.comment.dto.CommentRequestDto;
 import org.example.postory.domain.comment.dto.CommentResponseDto;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,13 +23,14 @@ public class CommentController {
 
     private final CommentService commentService;
 
-    @PostMapping
+    @PostMapping("/{postId}")
     public ResponseEntity<CommentResponseDto.Create> createComment(
-        @RequestBody CommentRequestDto.Create requestDto,
+        @RequestBody @Valid CommentRequestDto.Create requestDto,
+        @PathVariable Long postId,
         @AuthenticationPrincipal UserDetails userDetails
     ){
         return ResponseEntity.status(HttpStatus.OK)
-            .body(commentService.createComment(Long.parseLong(userDetails.getUsername()), requestDto));
+            .body(commentService.createComment(Long.parseLong(userDetails.getUsername()), requestDto, postId));
     }
 
 
