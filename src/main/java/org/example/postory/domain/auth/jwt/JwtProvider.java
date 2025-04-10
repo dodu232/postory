@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.example.postory.domain.auth.dto.JwtToken;
 import org.example.postory.domain.user.service.UserService;
 import org.example.postory.global.error.ApiException;
 import org.example.postory.global.error.response.ErrorType;
