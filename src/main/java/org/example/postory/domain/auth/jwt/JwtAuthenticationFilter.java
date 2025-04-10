@@ -18,7 +18,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private final JwtProvider jwtTokenProvider;
     private static final String[] WHITELIST = {"/", "/users/signup", "/auth/login",
-        "/auth/reissue"};
+        "/auth/reissue", "/posts", "/comments"};
 
     /**
      * 1. Request Header에서 JWT 토큰 추출 2. validateToken으로 토큰 유효성 검사

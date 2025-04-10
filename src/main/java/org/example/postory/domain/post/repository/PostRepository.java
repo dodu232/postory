@@ -35,6 +35,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> getAllByUser_IdAndDeletedAtIsNullOrderByUpdatedAt(Long userId);
 
 
+    // 뉴스피드 조회
     @Query("""
             SELECT p FROM Post p
             WHERE ((p.updatedAt < :cursorUpdatedAt)
