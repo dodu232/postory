@@ -3,8 +3,10 @@ package org.example.postory.domain.post.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 public class PostRequestDto {
     @NotBlank(message = "제목은 필수 입력 항목입니다.")
     @Size(max = 100, message = "제목은 최대 100자까지 입력 가능합니다.")

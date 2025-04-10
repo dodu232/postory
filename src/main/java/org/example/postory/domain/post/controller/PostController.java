@@ -8,7 +8,10 @@ import org.example.postory.domain.post.dto.PostResponseDto.Get;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
 import org.example.postory.domain.post.entity.Post;
 import org.example.postory.domain.post.service.PostService;
+import org.example.postory.domain.user.entity.User;
 import org.example.postory.global.common.pagination.CursorResponseDto;
+import org.example.postory.global.error.ApiException;
+import org.example.postory.global.error.response.ErrorType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -56,8 +59,12 @@ import org.springframework.web.bind.annotation.RestController;
         public ResponseEntity<Get> createPost(
                 @Valid @RequestBody PostRequestDto request,
                 @AuthenticationPrincipal UserDetails userDetails) {
+            if (userDetails == null) {  // userId가 있는지 먼저 조회
+                throw new ApiException(ErrorType.UNAUTHORIZED_USER);
+            }
             Long userId = userDetails != null ? Long.valueOf(userDetails.getUsername()) : null;
             Post saved = postService.createPost(request, userId);
+            // User user = saved.getUser();  // 디버깅코드
             Get response = Get.fromPostEntity(saved);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         }
