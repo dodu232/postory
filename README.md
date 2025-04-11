@@ -145,7 +145,7 @@
 
 ## 📮 API 문서 (Postman)
 
-- [API 문서 보기](https://documenter.getpostman.com/view/23996630/2sB2cSh4NU)
+- [API 문서 보기](https://documenter.getpostman.com/view/43859994/2sB2cYbzfy)
 
 ---
 
