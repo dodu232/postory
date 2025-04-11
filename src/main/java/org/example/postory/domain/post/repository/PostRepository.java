@@ -53,6 +53,27 @@ public interface PostRepository extends JpaRepository<Post, Long> {
         Pageable pageable
     );
 
+    //로그인했을때뉴스피드
+    @Query("""
+            SELECT p FROM Post p
+            LEFT JOIN Following f
+                ON f.followingUser.id = p.user.id AND f.user.id = :authUserId
+            WHERE ((p.updatedAt < :cursorUpdatedAt)
+            OR (p.updatedAt = :cursorUpdatedAt AND p.id < :cursorId))
+            AND p.isPostPublic = true
+            AND p.deletedAt IS NULL
+            ORDER BY CASE
+                        WHEN f.followingUser.id IS NOT NULL THEN 1
+                        ELSE 2
+                    END, p.updatedAt DESC, p.id DESC
+        """)
+    List<Post> getLoginNewsFeed(
+        @Param("cursorUpdatedAt") LocalDateTime cursorUpdatedAt,
+        @Param("cursorId") Long cursorId,
+        @Param("authUserId") Long authUserId,
+        Pageable pageable
+    );
+
     // 게시물 id로 게시물 조회
     default Post findByIdOrElseThrow(long id) {
         return findById(id).orElseThrow(() -> new ApiException(POST_NOT_FOUND));

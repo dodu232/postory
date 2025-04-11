@@ -3,9 +3,9 @@ package org.example.postory.domain.post.service;
 import static org.example.postory.global.error.response.ErrorType.FORBIDDEN_POST_UPDATE;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.comment.dto.CommentResponseDto.CommentItem;
 import org.example.postory.domain.comment.service.CommentService;
@@ -28,7 +28,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestClient;
 
 
 @Service
@@ -102,7 +101,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public CursorResponseDto<NewsFeed> getNewsFeed(LocalDateTime cursorUpdatedAt, Long cursorId,
-        int size) {
+        int size, UserDetails userDetails) {
 
         // 첫 번째 조회.
         if (cursorUpdatedAt == null || cursorId == null) {
@@ -113,18 +112,24 @@ public class PostServiceImpl implements PostService {
         // 한 번에 10개씩 가져오도록 고정.
         Pageable pageable = PageRequest.of(0, size);
 
-        List<Post> newsFeed = postRepository.getNewsFeed(cursorUpdatedAt, cursorId, pageable);
-        List<NewsFeed> newsFeedDto = newsFeed.stream().map(NewsFeed::new).toList();
+        List<Post> newsFeed = new ArrayList<>();
+        //비로그인
+        if(userDetails.getUsername() == null){
+            newsFeed = postRepository.getNewsFeed(cursorUpdatedAt, cursorId, pageable);
+        }else{
+            newsFeed = postRepository.getLoginNewsFeed(cursorUpdatedAt, cursorId,
+                Long.valueOf(userDetails.getUsername()), pageable);
 
+        }
+
+        List<NewsFeed> newsFeedDto = newsFeed.stream().map(NewsFeed::new).toList();
         // 다음 커서 정보 저장
         CursorDto nextCursor = null;
         if (!newsFeed.isEmpty()) {
             Post lastFeed = newsFeed.get(newsFeed.size() - 1);
             nextCursor = new CursorDto(lastFeed.getUpdatedAt(), lastFeed.getId());
         }
-
         return CursorResponseDto.of(newsFeedDto, nextCursor);
-
     }
 
     // 게시물 수정
@@ -156,7 +161,6 @@ public class PostServiceImpl implements PostService {
             postLikeRepository.save(new PostLike(user, post));
         }
     }
-
 
     /**
      * 좋아요 30개 이상 update 순으로 정렬

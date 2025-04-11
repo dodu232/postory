@@ -45,10 +45,11 @@ public class PostController {
     public ResponseEntity<CursorResponseDto<NewsFeed>> getNewsFeed(
         @RequestParam(required = false) LocalDateTime cursorUpdatedAt,
         @RequestParam(required = false) Long cursorId,
-        @RequestParam(defaultValue = "10") int size
+        @RequestParam(defaultValue = "10") int size,
+        @AuthenticationPrincipal UserDetails userDetails
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(postService.getNewsFeed(cursorUpdatedAt, cursorId, size));
+            .body(postService.getNewsFeed(cursorUpdatedAt, cursorId, size,userDetails));
     }
 
     // 게시물 생성

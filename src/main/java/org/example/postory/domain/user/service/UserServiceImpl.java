@@ -126,9 +126,7 @@ public class UserServiceImpl implements UserService {
 
             if (loginUserId.equals(UserId)) {
                 //게시글 가져오기 - 자기자신의 프로필이라 isn't public 한 게시글도 다 불러옴
-                List<NewsFeed> posts = postRepository.getAllByUser_IdAndDeletedAtIsNullOrderByUpdatedAt(
-                        UserId)
-                    .stream().map(PostResponseDto.NewsFeed::new).collect(Collectors.toList());
+                List<NewsFeed> posts = postRepository.getAllMyPosts(loginUserId);
 
                 return new UserProfileResponseDto(user.getId(), user.getName(), user.getIntroduction(),
                     user.isUserPublic(), followingCnt.intValue(), followerCnt.intValue(), posts);
