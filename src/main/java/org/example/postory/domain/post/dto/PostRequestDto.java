@@ -3,7 +3,10 @@ package org.example.postory.domain.post.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@Getter
+@RequiredArgsConstructor
 public class PostRequestDto {
 
     @Getter

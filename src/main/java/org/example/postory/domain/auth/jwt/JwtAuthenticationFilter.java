@@ -18,7 +18,8 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private final JwtProvider jwtTokenProvider;
     private static final String[] WHITELIST = {"/", "/users/signup", "/auth/login",
-        "/auth/reissue", "/posts", "/comments"};
+            "/auth/reissue", "/comments"};
+    // 게시물 생성하려면 userId값을 가져오기 위해서 AuthenticationPrincipal로 userDetails에 접근해야함. 38번째줄 로직 타기 위해서 whitelist에서 /post 삭제함
 
     /**
      * 1. Request Header에서 JWT 토큰 추출 2. validateToken으로 토큰 유효성 검사
