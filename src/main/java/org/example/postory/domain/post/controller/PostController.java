@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
 
     private final PostService postService;
-    private final CommentService commentService;
 
     // 게시물 단건 조회
     @GetMapping("/{id}")
@@ -35,13 +34,8 @@ public class PostController {
         @RequestParam(defaultValue = "10") int size,
         @AuthenticationPrincipal UserDetails userDetails
     ) {
-        // 사용자 ID 가져오기
-        Long userId = userDetails != null ? Long.valueOf(userDetails.getUsername()) : null;
-        Post post = postService.getPostById(id, userId);
-        CursorResponseDto<CommentItem> comments = commentService.getComments(cursorCreatedAt, cursorId, id, size);
-        // 첫번째 매개변수 : @PathVariable 에서 온 게시물 id
-        GetPost response = new GetPost(post, comments);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(postService.getPost(id, userDetails, cursorCreatedAt, cursorId, size));
     }
 
     // 뉴스피드 조회

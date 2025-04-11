@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.example.postory.domain.comment.dto.CommentResponseDto.CommentItem;
+import org.example.postory.domain.comment.service.CommentService;
 import org.example.postory.domain.post.dto.PostRequestDto;
 import org.example.postory.domain.post.dto.PostResponseDto;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
@@ -25,7 +27,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestClient;
 
 
 @Service
@@ -35,7 +36,8 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final PostLikeRepository postLikeRepository;
-    private final RestClient.Builder builder;
+
+    private final CommentService commentService;
 
     @Override
     public Post getPostById(long postId, Long userId) {
@@ -43,6 +45,19 @@ public class PostServiceImpl implements PostService {
             .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
         // 결과는 Optional<Post> 형식으로 반환되며, 값이 존재하면 그 값을 꺼내서 return
         // 빈 Optional이 나오면 orElseThrow로 값 던지기
+    }
+
+    @Override
+    public PostResponseDto.GetPost getPost(long id, UserDetails userDetails, LocalDateTime cursorCreatedAt, Long cursorId, int size) {
+        // 로그인 한 사용자 아이디 조회
+        Long userId = Long.valueOf(userDetails.getUsername());
+
+        Post findPost = postRepository.findVisiblePost(id, userId)
+            .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
+
+        CursorResponseDto<CommentItem> comments = commentService.getComments(cursorCreatedAt, cursorId, id, size);
+
+        return new PostResponseDto.GetPost(findPost, comments);
     }
 
     @Override
