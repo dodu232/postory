@@ -46,7 +46,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostResponseDto.Get createPost(PostRequestDto.Create dto, UserDetails userDetails) {
+    public PostResponseDto.Create createPost(PostRequestDto.Create dto, UserDetails userDetails) {
         if (userDetails == null) {  // userId가 들어있는 userDetail이 null인지 먼저 확인 (인증 실패 에러)
             throw new ApiException(ErrorType.UNAUTHORIZED_USER);
         }
@@ -62,7 +62,7 @@ public class PostServiceImpl implements PostService {
             .user(user) // DB에서 실제 user객체 조회하도록 수정
             .build();
         Post saved = postRepository.save(post);
-        return PostResponseDto.Get.fromPostEntity(saved);
+        return PostResponseDto.Create.fromPostEntity(saved);
     }
 
     @Override
