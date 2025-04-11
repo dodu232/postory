@@ -9,15 +9,12 @@ import org.example.postory.domain.comment.repository.CommentLikeRepository;
 import org.example.postory.domain.comment.repository.CommentRepository;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
 import org.example.postory.domain.post.entity.Post;
-import org.example.postory.domain.post.entity.PostLike;
 import org.example.postory.domain.post.repository.PostLikeRepository;
 
 import org.example.postory.domain.post.dto.PostResponseDto;
-import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
 
 import org.example.postory.domain.post.repository.PostRepository;
 import org.example.postory.domain.user.dto.*;
-import org.example.postory.domain.post.service.PostService;
 import org.example.postory.domain.user.dto.SignupRequestDto;
 import org.example.postory.domain.user.dto.SignupResponseDto;
 import org.example.postory.domain.user.dto.UserRequestDto.UpdateProfile;
@@ -155,7 +152,7 @@ public class UserServiceImpl implements UserService {
             throw new ApiException(DISABLE_USER);
         }
       
-        if (!user.isPublic()) {
+        if (!user.isUserPublic()) {
             throw new ApiException(FORBIDDEN_PROFILE);
         }
 
@@ -163,10 +160,10 @@ public class UserServiceImpl implements UserService {
         Long followingCnt = followingRepository.countByUser_id(UserId);
         Long followerCnt = followingRepository.countByFollowingUser_id(UserId);
 
-        List<NewsFeed> posts = postService.getVisiblePostsByUser(UserId);
+        List<NewsFeed> posts = postRepository.getVisiblePostsByUser(UserId);
 
         return new UserProfileResponseDto(user.getId(), user.getName(), user.getIntroduction(),
-                user.isPublic(), followingCnt.intValue(), followerCnt.intValue(), false, posts);
+                user.isUserPublic(), followingCnt.intValue(), followerCnt.intValue(), false, posts);
     }
 
     /**
@@ -308,12 +305,12 @@ public class UserServiceImpl implements UserService {
 
             // 나 자신이 아니고 비공개이고 친구가 아니면 조회 불가
             if (!loginUserId.equals(userId)
-                    && !user.isPublic()
+                    && !user.isUserPublic()
                     && !followingRepository.existsByUserIdAndFollowingUserId(loginUserId, userId)) {
                 throw new ApiException(FORBIDDEN_PROFILE);
             }
         } else {  // 비로그인
-            if (!user.isPublic()) {
+            if (!user.isUserPublic()) {
                 throw new ApiException(FORBIDDEN_PROFILE);
             }
         }
