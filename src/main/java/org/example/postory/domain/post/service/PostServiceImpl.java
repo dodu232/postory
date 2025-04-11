@@ -52,14 +52,15 @@ public class PostServiceImpl implements PostService {
         }
         Long userId = Long.valueOf(userDetails.getUsername()); // userDetails에서 userId 추출
         User user = userRepository.findById(userId)   // userDetails에서 userId가 null인지 또 확인
-                .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND)); // db에 임의의 숫자를 입력하는 경우, 존재하지 않는 유저 에러
+            .orElseThrow(() -> new ApiException(
+                ErrorType.USER_NOT_FOUND)); // db에 임의의 숫자를 입력하는 경우, 존재하지 않는 유저 에러
         Post post = Post.builder()
-                .title(dto.getTitle())
-                .content(dto.getContent())
-                .hashtag(dto.getHashtag())
-                .isPublic(dto.isPublic())
-                .user(user) // DB에서 실제 user객체 조회하도록 수정
-                .build();
+            .title(dto.getTitle())
+            .content(dto.getContent())
+            .hashtag(dto.getHashtag())
+            .isPublic(dto.isPublic())
+            .user(user) // DB에서 실제 user객체 조회하도록 수정
+            .build();
         Post saved = postRepository.save(post);
         return PostResponseDto.Get.fromPostEntity(saved);
     }
@@ -72,7 +73,7 @@ public class PostServiceImpl implements PostService {
         }
         Long userId = Long.parseLong(userDetails.getUsername());
         Post post = postRepository.findById(postId) // 삭제할 게시물이 존재하는지 db에서 조회
-                .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
+            .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
         if (!post.getUser().getId().equals(userId)) { // 게시글 작성자 본인인지 확인
             throw new ApiException(ErrorType.NO_PERMISSION);
         }
@@ -118,21 +119,7 @@ public class PostServiceImpl implements PostService {
             throw new ApiException(FORBIDDEN_POST_UPDATE);
         }
 
-        // 수정
-        if (updatePost.getTitle() != null) {
-            post.setTitle(updatePost.getTitle());
-        }
-        if (updatePost.getContent() != null) {
-            post.setContent(updatePost.getContent());
-
-        }
-        if (updatePost.getIsPublic() != null) { // Dto Boolean 으로 설정하기!
-            post.setPublic(updatePost.getIsPublic());
-        }
-        if (updatePost.getHashtag() != null) {
-            post.setHashtag(updatePost.getHashtag());
-        }
-
+        post.updatePost(updatePost);
         postRepository.save(post);
     }
 

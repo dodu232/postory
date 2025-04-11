@@ -1,6 +1,5 @@
 package org.example.postory.domain.post.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
+import org.example.postory.domain.post.dto.PostRequestDto;
 import org.example.postory.domain.user.entity.User;
 import org.example.postory.global.common.BaseEntity;
 
@@ -26,16 +26,12 @@ public class Post extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private Long id;
-    @Setter
     @Column(nullable = false)
     private String title;
-    @Setter
     @Column(nullable = false)
     private String content;
-    @Setter
     @Column(nullable = false)
     private boolean isPublic = true;
-    @Setter
     @Column(nullable = false)
     private String hashtag;
     @Column(nullable = false)
@@ -46,6 +42,22 @@ public class Post extends BaseEntity {
 
     public Post(long id) {
         this.id = id;
+    }
+
+    public void updatePost(PostRequestDto.Update updatePost) {
+        if (updatePost.getTitle() != null) {
+            this.title = updatePost.getTitle();
+        }
+        if (updatePost.getContent() != null) {
+            this.content = updatePost.getContent();
+
+        }
+        if (updatePost.getIsPublic() != null) { // Dto Boolean 으로 설정하기!
+            this.isPublic = updatePost.getIsPublic();
+        }
+        if (updatePost.getHashtag() != null) {
+            this.hashtag = updatePost.getHashtag();
+        }
     }
 
     public void markAsDeleted() {  // soft delete 방식 : 삭제된 시간만 기록
