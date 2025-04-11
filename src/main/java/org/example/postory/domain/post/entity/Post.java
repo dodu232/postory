@@ -1,5 +1,6 @@
 package org.example.postory.domain.post.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,6 +12,8 @@ import jakarta.persistence.ManyToOne;
 import lombok.*;
 import org.example.postory.domain.user.entity.User;
 import org.example.postory.global.common.BaseEntity;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -43,5 +46,9 @@ public class Post extends BaseEntity {
 
     public Post(long id) {
         this.id = id;
+    }
+
+    public void markAsDeleted() {  // soft delete 방식 : 삭제된 시간만 기록
+        this.setDeletedAt(LocalDateTime.now());
     }
 }

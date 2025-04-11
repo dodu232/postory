@@ -46,18 +46,39 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post createPost(PostRequestDto.Create dto, Long userId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
+    public PostResponseDto.Get createPost(PostRequestDto.Create dto, UserDetails userDetails) {
+        if (userDetails == null) {  // userId가 들어있는 userDetail이 null인지 먼저 확인 (인증 실패 에러)
+            throw new ApiException(ErrorType.UNAUTHORIZED_USER);
+        }
+        Long userId = Long.valueOf(userDetails.getUsername()); // userDetails에서 userId 추출
+        User user = userRepository.findById(userId)   // userDetails에서 userId가 null인지 또 확인
+                .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND)); // db에 임의의 숫자를 입력하는 경우, 존재하지 않는 유저 에러
         Post post = Post.builder()
-            .title(dto.getTitle())
-            .content(dto.getContent())
-            .hashtag(dto.getHashtag())
-            .isPublic(dto.isPublic())
-            .user(user) // DB에서 실제 user객체 조회하도록 수정
-            .build();
-        return postRepository.save(post);
+                .title(dto.getTitle())
+                .content(dto.getContent())
+                .hashtag(dto.getHashtag())
+                .isPublic(dto.isPublic())
+                .user(user) // DB에서 실제 user객체 조회하도록 수정
+                .build();
+        Post saved = postRepository.save(post);
+        return PostResponseDto.Get.fromPostEntity(saved);
     }
+
+    @Override
+    @Transactional
+    public void deletePost(long postId, UserDetails userDetails) {
+        if (userDetails == null) {  // @AuthenticationPrincipal이 null일 때
+            throw new ApiException(ErrorType.UNAUTHORIZED_USER);  // 로그인 되지 않은 사용자 접근 차단
+        }
+        Long userId = Long.parseLong(userDetails.getUsername());
+        Post post = postRepository.findById(postId) // 삭제할 게시물이 존재하는지 db에서 조회
+                .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
+        if (!post.getUser().getId().equals(userId)) { // 게시글 작성자 본인인지 확인
+            throw new ApiException(ErrorType.NO_PERMISSION);
+        }
+        post.markAsDeleted(); // deletedAt을 현재 시각으로 기록
+    }
+
 
     @Override
     public CursorResponseDto<NewsFeed> getNewsFeed(LocalDateTime cursorUpdatedAt, Long cursorId,

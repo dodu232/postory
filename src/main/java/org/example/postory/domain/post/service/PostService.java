@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import java.util.List;
 import org.example.postory.domain.post.dto.PostRequestDto;
+import org.example.postory.domain.post.dto.PostResponseDto;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
 import org.example.postory.domain.post.entity.Post;
 import org.example.postory.global.common.pagination.CursorResponseDto;
@@ -15,7 +16,10 @@ public interface PostService {
     Post getPostById(long postId, Long userId);
 
     // 게시물 생성
-    Post createPost(PostRequestDto.Create postRequestDto, Long userId);
+    PostResponseDto.Get createPost(PostRequestDto.Create dto, UserDetails userDetails);
+
+    // 게시물 삭제
+    void deletePost(long postId, UserDetails userDetails);
 
     // 뉴스피드 조회
     CursorResponseDto<NewsFeed> getNewsFeed(LocalDateTime cursorUpdatedAt, Long cursorId, int size);

@@ -16,14 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/posts")
@@ -59,13 +52,7 @@ public class PostController {
     public ResponseEntity<Get> createPost(
         @Valid @RequestBody PostRequestDto.Create request,
         @AuthenticationPrincipal UserDetails userDetails) {
-        if (userDetails == null) {  // userId가 있는지 먼저 조회
-            throw new ApiException(ErrorType.UNAUTHORIZED_USER);
-        }
-        Long userId = userDetails != null ? Long.valueOf(userDetails.getUsername()) : null;
-        Post saved = postService.createPost(request, userId);
-        // User user = saved.getUser();  // 디버깅코드
-        Get response = Get.fromPostEntity(saved);
+        Get response =  postService.createPost(request, userDetails);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -84,6 +71,15 @@ public class PostController {
     public ResponseEntity<Void> likePost(@PathVariable("id") long id,
         @AuthenticationPrincipal UserDetails userDetails) {
         postService.likePost(id, userDetails);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    // 게시물 삭제
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deletePost(
+        @PathVariable("id") long postId,
+        @AuthenticationPrincipal UserDetails userDetails) {
+        postService.deletePost(postId, userDetails);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
