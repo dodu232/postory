@@ -40,7 +40,7 @@ public class UserController {
         @AuthenticationPrincipal UserDetails userDetails
     ) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(userService.getProfile(Long.parseLong(userDetails.getUsername()), UserId));
+                .body(userService.getProfile(userDetails, UserId));
     }
 
     /**
@@ -90,7 +90,7 @@ public class UserController {
             @RequestParam(defaultValue = "10") int size
     ) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(userService.getFollowing(Long.parseLong(userDetails.getUsername()), userId, cursorId, size));
+                .body(userService.getFollowing(userDetails, userId, cursorId, size));
     }
 
     /**
@@ -104,7 +104,7 @@ public class UserController {
             @RequestParam(defaultValue = "10") int size
     ) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(userService.getFollowers(Long.parseLong(userDetails.getUsername()), userId, cursorId, size));
+                .body(userService.getFollowers(userDetails, userId, cursorId, size));
     }
 
     /**

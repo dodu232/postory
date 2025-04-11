@@ -30,7 +30,14 @@ public class SecurityConfig {
             .sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/auth/login", "/auth/reissue", "/users/signup", "/posts", "/comments")
+                .requestMatchers("/auth/login",
+                        "/auth/reissue",
+                        "/users/signup",
+                        "/posts",
+                        "/comments",
+                        "/users/profile/*",
+                        "/users/following/*",
+                        "/users/followers/*")
                 .permitAll()
                 .anyRequest().authenticated())
             .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),

@@ -15,6 +15,7 @@ import org.example.postory.domain.post.entity.Post;
 import org.example.postory.domain.post.repository.PostRepository;
 import org.example.postory.domain.post.service.PostService;
 import org.example.postory.domain.user.entity.User;
+import org.example.postory.domain.user.repository.UserRepository;
 import org.example.postory.domain.user.service.UserService;
 import org.example.postory.global.common.pagination.CursorDto;
 import org.example.postory.global.common.pagination.CursorResponseDto;
@@ -31,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
-    private final UserService userService;
+    private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final CommentLikeRepository commentLikeRepository;
 
@@ -52,7 +53,7 @@ public class CommentServiceImpl implements CommentService {
             .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
 
         Comment comment = Comment.builder().content(requestDto.getContents())
-            .user(userService.getById(authUserId)).post(findPost).build();
+            .user(userRepository.findByUserIdOrElseThrow(authUserId)).post(findPost).build();
         Comment savedComment = commentRepository.save(comment);
         return new CommentItem(savedComment);
     }
