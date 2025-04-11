@@ -81,8 +81,8 @@ public class User extends BaseEntity {
             this.password=PasswordEncoder.encode(updateProfile.getPassword());
         }
 
-        if (updateProfile.getIsPublic() != null) {
-            this.isPublic=updateProfile.getIsPublic();
+        if (updateProfile.getIsUserPublic() != null) {
+            this.isUserPublic=updateProfile.getIsUserPublic();
         }
     }
 
