@@ -3,7 +3,9 @@ package org.example.postory.domain.user.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.example.postory.domain.post.dto.PostResponseDto;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
+import org.example.postory.domain.post.repository.PostRepository;
 import org.example.postory.domain.user.dto.*;
 import org.example.postory.domain.post.service.PostService;
 import org.example.postory.domain.user.dto.SignupRequestDto;
@@ -34,7 +36,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final FollowingRepository followingRepository;
-    private final PostService postService;
+    private final PostRepository postRepository;
 
     /**
      * refreshToken 가져오기
@@ -96,7 +98,7 @@ public class UserServiceImpl implements UserService {
             User user = userRepository.findByUserIdOrElseThrow(UserId);
 
             if (!loginUserId.equals(UserId) && !followingRepository.existsByUserIdAndFollowingUserId(
-                    loginUserId, UserId) && !user.isPublic()) {
+            loginUserId, UserId) && !user.isUserPublic()) {
                 throw new ApiException(FORBIDDEN_PROFILE);
             }
 
@@ -106,16 +108,20 @@ public class UserServiceImpl implements UserService {
 
             if (loginUserId.equals(UserId)) {
                 //게시글 가져오기 - 자기자신의 프로필이라 isn't public 한 게시글도 다 불러옴
-                List<NewsFeed> posts = postService.getAllMyPosts(UserId);
+                List<NewsFeed> posts = postRepository.getAllByUser_IdAndDeletedAtIsNullOrderByUpdatedAt(
+                        UserId)
+                    .stream().map(PostResponseDto.NewsFeed::new).collect(Collectors.toList());
 
                 return new UserProfileResponseDto(user.getId(), user.getName(), user.getIntroduction(),
-                        user.isPublic(), followingCnt.intValue(), followerCnt.intValue(), posts);
+                    user.isUserPublic(), followingCnt.intValue(), followerCnt.intValue(), posts);
             } else {
-                List<NewsFeed> posts = postService.getVisiblePostsByUser(UserId);
+                List<NewsFeed> posts = postRepository.getAllByUser_IdAndDeletedAtIsNullAndIsPostPublicIsTrueOrderByUpdatedAt(
+                        UserId)
+                    .stream().map(PostResponseDto.NewsFeed::new).collect(Collectors.toList());
 
                 return new UserProfileResponseDto(user.getId(), user.getName(), user.getIntroduction(),
-                        user.isPublic(), followingCnt.intValue(), followerCnt.intValue(),
-                        followingRepository.existsByUserIdAndFollowingUserId(loginUserId, UserId), posts);
+                    user.isUserPublic(), followingCnt.intValue(), followerCnt.intValue(),
+                    followingRepository.existsByUserIdAndFollowingUserId(loginUserId, UserId), posts);
             }
         } else {
             return getProfileByNonLoginUser(UserId);
@@ -146,7 +152,7 @@ public class UserServiceImpl implements UserService {
      * 경우에만 변경됩니다.
      *
      * @param userId  업데이트 대상 사용자 ID
-     * @param profile 업데이트할 프로필 정보 (name, introduction, gender, password, isPublic)
+     * @param profile 업데이트할 프로필 정보 (name, introduction, gender, password, isPostPublic)
      * @return 업데이트된 사용자 프로필 정보
      */
     @Transactional
@@ -169,8 +175,8 @@ public class UserServiceImpl implements UserService {
             user.setPassword(PasswordEncoder.encode(profile.getPassword()));
         }
 
-        if (profile.getIsPublic() != null) {
-            user.setPublic(profile.getIsPublic());
+        if (profile.getIsUserPublic() != null) {
+            user.setUserPublic(profile.getIsUserPublic());
         }
 
         User savedUser = userRepository.save(user);
