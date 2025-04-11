@@ -93,7 +93,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUserIdOrElseThrow(UserId);
 
         if (!loginUserId.equals(UserId) && !followingRepository.existsByUserIdAndFollowingUserId(
-            loginUserId, UserId) && !user.isPublic()) {
+            loginUserId, UserId) && !user.isUserPublic()) {
             throw new ApiException(FORBIDDEN_PROFILE);
         }
 
@@ -106,12 +106,12 @@ public class UserServiceImpl implements UserService {
             List<NewsFeed> posts = postService.getAllMyPosts(UserId);
 
             return new UserProfileResponseDto(user.getId(), user.getName(), user.getIntroduction(),
-                user.isPublic(), followingCnt.intValue(), followerCnt.intValue(), posts);
+                user.isUserPublic(), followingCnt.intValue(), followerCnt.intValue(), posts);
         } else {
             List<NewsFeed> posts = postService.getVisiblePostsByUser(UserId);
 
             return new UserProfileResponseDto(user.getId(), user.getName(), user.getIntroduction(),
-                user.isPublic(), followingCnt.intValue(), followerCnt.intValue(),
+                user.isUserPublic(), followingCnt.intValue(), followerCnt.intValue(),
                 followingRepository.existsByUserIdAndFollowingUserId(loginUserId, UserId), posts);
         }
     }
@@ -121,7 +121,7 @@ public class UserServiceImpl implements UserService {
      * 경우에만 변경됩니다.
      *
      * @param userId  업데이트 대상 사용자 ID
-     * @param profile 업데이트할 프로필 정보 (name, introduction, gender, password, isPublic)
+     * @param profile 업데이트할 프로필 정보 (name, introduction, gender, password, isPostPublic)
      * @return 업데이트된 사용자 프로필 정보
      */
     @Transactional
@@ -144,8 +144,8 @@ public class UserServiceImpl implements UserService {
             user.setPassword(PasswordEncoder.encode(profile.getPassword()));
         }
 
-        if (profile.getIsPublic() != null) {
-            user.setPublic(profile.getIsPublic());
+        if (profile.getIsUserPublic() != null) {
+            user.setUserPublic(profile.getIsUserPublic());
         }
 
         User savedUser = userRepository.save(user);
@@ -204,7 +204,7 @@ public class UserServiceImpl implements UserService {
 
         // 나 자신이 아니고 비공개이고 친구가 아니면 조회 불가
         if (!loginUserId.equals(userId)
-                && !user.isPublic()
+                && !user.isUserPublic()
                 && !followingRepository.existsByUserIdAndFollowingUserId(loginUserId, userId)) {
             throw new ApiException(FORBIDDEN_PROFILE);
         }
@@ -241,7 +241,7 @@ public class UserServiceImpl implements UserService {
 
         // 나 자신이 아니고 비공개이고 친구가 아니면 조회 불가
         if (!loginUserId.equals(userId)
-                && !user.isPublic()
+                && !user.isUserPublic()
                 && !followingRepository.existsByUserIdAndFollowingUserId(loginUserId, userId)) {
             throw new ApiException(FORBIDDEN_PROFILE);
         }

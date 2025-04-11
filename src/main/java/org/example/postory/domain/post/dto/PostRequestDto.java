@@ -1,8 +1,12 @@
 package org.example.postory.domain.post.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.example.postory.domain.post.enums.SearchType;
 import lombok.RequiredArgsConstructor;
 
 @Getter
@@ -18,7 +22,8 @@ public class PostRequestDto {
         @NotBlank(message = "내용은 필수 입력 항목입니다.")
         @Size(max = 500, message = "내용은 최대 500자까지 입력 가능합니다.")
         private String content;
-        private boolean isPublic;
+        @JsonProperty("isPostPublic")  // isPostPublic을 PostPublic으로 추론하는 에러에 대한 해결코드
+        private boolean isPostPublic;
         @NotBlank(message = "해시태그는 필수 입력 항목입니다.")
         @Size(max = 100, message = "해시태그는 최대 100자까지 입력 가능합니다.")
         private String hashtag;
@@ -31,10 +36,21 @@ public class PostRequestDto {
         private String title;
         @Size(max = 500, message = "내용은 최대 500자까지 입력 가능합니다.")
         private String content;
-        private Boolean isPublic;
+        @JsonProperty("isPostPublic")
+        private Boolean isPostPublic;
         @Size(max = 100, message = "해시태그는 최대 100자까지 입력 가능합니다.")
         private String hashtag;
     }
+    
+    @AllArgsConstructor
+    @Getter
+    public static class Search {
 
+        @NotNull(message = "searchType은 필수 입력 항목입니다.")
+        private SearchType searchType;
 
+        @NotBlank(message = "value는 필수 입력 항목입니다.")
+        private String value;
+
+    }
 }

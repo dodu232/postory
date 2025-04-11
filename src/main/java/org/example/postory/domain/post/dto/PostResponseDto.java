@@ -1,9 +1,7 @@
 package org.example.postory.domain.post.dto;
 
 import java.time.LocalDateTime;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +18,7 @@ public class PostResponseDto {
         private final Long id;
         private final String title;
         private final String content;
-        private final boolean isPublic;
+        private final boolean isPostPublic;
         private final String hashtag;
         private final int postLikeCount;
         private final String writer;
@@ -31,7 +29,7 @@ public class PostResponseDto {
             this.id = post.getId();
             this.title = post.getTitle();
             this.content = post.getContent();
-            this.isPublic = post.isPublic();
+            this.isPostPublic = post.isPostPublic();
             this.hashtag = post.getHashtag();
             this.postLikeCount = post.getPostLikeCount();
             this.writer = post.getUser().getName();
@@ -53,13 +51,8 @@ public class PostResponseDto {
         private String writer;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
-        @JsonIgnore // Lombok getter에 의해 자동 직렬화되는 걸 차단
-        private boolean isPublic;
+        private boolean isPostPublic;
 
-        @JsonProperty("isPublic")
-        public boolean getIsPublic() {
-            return isPublic;
-        }
 
 
         public static Create fromPostEntity(Post post) {
@@ -69,7 +62,7 @@ public class PostResponseDto {
                 .content(post.getContent())
                 .hashtag(post.getHashtag())
                 .postLikeCount(post.getPostLikeCount())
-                .isPublic(post.isPublic())
+                .isPostPublic(post.isPostPublic())
                 .isUpdated(!post.getCreatedAt().isEqual(post.getUpdatedAt()))
                 .writer(post.getUser().getName())
                 .createdAt(post.getCreatedAt())
@@ -85,7 +78,7 @@ public class PostResponseDto {
         private final Long id;
         private final String title;
         private final String content;
-        private final boolean isPublic;
+        private final boolean isPostPublic;
         private final String hashtag;
         private final int postLikeCount;
         private final String writer;
@@ -97,7 +90,7 @@ public class PostResponseDto {
             this.id = post.getId();
             this.title = post.getTitle();
             this.content = post.getContent();
-            this.isPublic = post.isPublic();
+            this.isPostPublic = post.isPostPublic();
             this.hashtag = post.getHashtag();
             this.postLikeCount = post.getPostLikeCount();
             this.writer = post.getUser().getName();
@@ -105,5 +98,15 @@ public class PostResponseDto {
             this.isUpdated = !post.getCreatedAt().isEqual(post.getUpdatedAt());
             this.comments = comments;
         }
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public static class SearchList {
+
+        private long id;
+        private String title;
+        private String name;
+        private LocalDateTime updatedAt;
     }
 }

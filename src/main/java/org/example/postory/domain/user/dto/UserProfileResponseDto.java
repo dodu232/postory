@@ -2,6 +2,8 @@ package org.example.postory.domain.user.dto;
 
 
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
 
@@ -18,7 +20,8 @@ public class UserProfileResponseDto {
 
     private final String introduction;
 
-    private final boolean isPublic;
+    @JsonProperty("isUserPublic")  // isUserPublic을 UserPublic으로 추론하는 에러에 대한 해결코드
+    private final boolean isUserPublic;
 
     private final int followingCnt;
 
@@ -30,24 +33,24 @@ public class UserProfileResponseDto {
 
     private final List<NewsFeed> postList;
 
-    public UserProfileResponseDto(Long id, String username, String introduction, boolean isPublic,
+    public UserProfileResponseDto(Long id, String username, String introduction, boolean isUserPublic,
         int followingCnt, int followerCnt, List<NewsFeed> postList) {
         this.id = id;
         this.username = username;
         this.introduction = introduction;
-        this.isPublic = isPublic;
+        this.isUserPublic = isUserPublic;
         this.followingCnt = followingCnt;
         this.followerCnt = followerCnt;
         this.postCount = postList.size();
         this.postList = postList;
     }
 
-    public UserProfileResponseDto(Long id, String username, String introduction, boolean isPublic,
+    public UserProfileResponseDto(Long id, String username, String introduction, boolean isUserPublic,
         int followingCnt, int followerCnt, boolean isFollowing, List<NewsFeed> postList) {
         this.id = id;
         this.username = username;
         this.introduction = introduction;
-        this.isPublic = isPublic;
+        this.isUserPublic = isUserPublic;
         this.followingCnt = followingCnt;
         this.followerCnt = followerCnt;
         this.isFollowing = isFollowing;

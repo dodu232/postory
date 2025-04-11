@@ -3,15 +3,16 @@ package org.example.postory.domain.post.controller;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
-import org.example.postory.domain.comment.dto.CommentResponseDto.CommentItem;
-import org.example.postory.domain.comment.service.CommentService;
 import org.example.postory.domain.post.dto.PostRequestDto;
-import org.example.postory.domain.post.dto.PostResponseDto.Create;
+import org.example.postory.domain.post.dto.PostResponseDto;
+import org.example.postory.domain.post.dto.PostResponseDto.SearchList;
 import org.example.postory.domain.post.dto.PostResponseDto.GetPost;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
-import org.example.postory.domain.post.entity.Post;
 import org.example.postory.domain.post.service.PostService;
+import org.example.postory.domain.user.entity.User;
 import org.example.postory.global.common.pagination.CursorResponseDto;
+import org.example.postory.global.error.ApiException;
+import org.example.postory.global.error.response.ErrorType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -69,13 +70,6 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body("게시물 수정 성공");
     }
 
-    @PatchMapping("/like/{id}")
-    public ResponseEntity<Void> likePost(@PathVariable("id") long id,
-        @AuthenticationPrincipal UserDetails userDetails) {
-        postService.likePost(id, userDetails);
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
     // 게시물 삭제
     @DeleteMapping("{id}")
     public ResponseEntity<Void> deletePost(
@@ -83,5 +77,27 @@ public class PostController {
         @AuthenticationPrincipal UserDetails userDetails) {
         postService.deletePost(postId, userDetails);
         return ResponseEntity.status(HttpStatus.OK).build();
+
     }
+
+    // 좋아요
+    @PatchMapping("/like/{id}")
+    public ResponseEntity<Void> likePost(@PathVariable("id") long id,
+        @AuthenticationPrincipal UserDetails userDetails) {
+        postService.likePost(id, userDetails);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+
+    // 검색
+    @GetMapping("/search")
+    public ResponseEntity<CursorResponseDto<PostResponseDto.SearchList>> getSearchList(
+        @Valid PostRequestDto.Search dto,
+        @RequestParam(required = false) LocalDateTime cursorUpdatedAt,
+        @RequestParam(required = false) Long cursorId) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(postService.getSearchList(dto, cursorUpdatedAt, cursorId));
+    }
+
+
 }
