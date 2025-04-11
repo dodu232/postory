@@ -17,7 +17,7 @@ public interface CommentService {
 
     // 댓글 전체 조회
     CursorResponseDto<CommentItem> getComments(LocalDateTime cursorUpdatedAt, Long cursorId,
-        Long postId, int size);
+        Long postId, int size, UserDetails userDetails);
 
     // 좋아요
     void likeComment(long id, UserDetails userDetails);

@@ -60,13 +60,15 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CursorResponseDto<CommentItem> getComments(LocalDateTime cursorUpdatedAt, Long cursorId,
-        Long postId, int size) {
+        Long postId, int size, UserDetails userDetails) {
 
         // 포스트의 공개 여부 확인
         Post post = postRepository.findById(postId)
             .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
         if (!post.isPostPublic()) {
-            throw new ApiException(ErrorType.POST_NOT_PUBLIC);
+            if (userDetails == null || !post.getUser().getId().equals(Long.valueOf(userDetails.getUsername()))) {
+                throw new ApiException(ErrorType.POST_NOT_PUBLIC);
+            }
         }
 
         // 첫 번째 조회.
