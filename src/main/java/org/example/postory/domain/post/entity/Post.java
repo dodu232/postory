@@ -50,7 +50,6 @@ public class Post extends BaseEntity {
         }
         if (updatePost.getContent() != null) {
             this.content = updatePost.getContent();
-
         }
         if (updatePost.getIsPostPublic() != null) { // Dto Boolean 으로 설정하기!
             this.isPostPublic = updatePost.getIsPostPublic();

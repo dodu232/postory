@@ -28,6 +28,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClient;
 
 
 @Service
@@ -156,19 +157,6 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-
-    // 삭제되지 않은 게시글 + 수정일 기준 최신 정렬 ( 함수이름 가독성이 좋지않아서 따로 함더감쌌음)
-    public List<NewsFeed> getAllMyPosts(Long userId) {
-        return postRepository.getAllByUser_IdAndDeletedAtIsNullOrderByUpdatedAt(userId)
-            .stream().map(PostResponseDto.NewsFeed::new).collect(Collectors.toList());
-    }
-
-    //공개 게시글 + 삭제되지 않은 게시글 + 수정일 기준 최신순 정렬
-    public List<NewsFeed> getVisiblePostsByUser(Long userId) {
-        return postRepository.getAllByUser_IdAndDeletedAtIsNullAndIsPostPublicIsTrueOrderByUpdatedAt(
-                userId)
-            .stream().map(PostResponseDto.NewsFeed::new).collect(Collectors.toList());
-    }
 
     /**
      * 좋아요 30개 이상 update 순으로 정렬
