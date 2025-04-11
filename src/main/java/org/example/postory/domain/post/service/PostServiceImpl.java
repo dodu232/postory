@@ -75,7 +75,6 @@ public class PostServiceImpl implements PostService {
             throw new ApiException(ErrorType.NO_PERMISSION);
         }
         post.markAsDeleted(); // deletedAt을 현재 시각으로 기록
-        postRepository.save(post); // 변경된 상태(deletedAt 설정)로 db에 저장
     }
 
 
