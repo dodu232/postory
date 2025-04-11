@@ -36,11 +36,11 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final CommentService commentService;
     private final PostLikeRepository postLikeRepository;
 
     private final int LIKE_MINIMUM = 0;
 
-    private final CommentService commentService;
 
     @Override
     public Post getPostById(long postId, Long userId) {

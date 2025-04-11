@@ -3,7 +3,9 @@ package org.example.postory.domain.user.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.example.postory.domain.post.dto.PostResponseDto;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
+import org.example.postory.domain.post.repository.PostRepository;
 import org.example.postory.domain.user.dto.*;
 import org.example.postory.domain.post.service.PostService;
 import org.example.postory.domain.user.dto.SignupRequestDto;
@@ -33,7 +35,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final FollowingRepository followingRepository;
-    private final PostService postService;
+    private final PostRepository postRepository;
 
     /**
      * refreshToken 가져오기
@@ -103,12 +105,16 @@ public class UserServiceImpl implements UserService {
 
         if (loginUserId.equals(UserId)) {
             //게시글 가져오기 - 자기자신의 프로필이라 isn't public 한 게시글도 다 불러옴
-            List<NewsFeed> posts = postService.getAllMyPosts(UserId);
+            List<NewsFeed> posts = postRepository.getAllByUser_IdAndDeletedAtIsNullOrderByUpdatedAt(
+                    UserId)
+                .stream().map(PostResponseDto.NewsFeed::new).collect(Collectors.toList());
 
             return new UserProfileResponseDto(user.getId(), user.getName(), user.getIntroduction(),
                 user.isUserPublic(), followingCnt.intValue(), followerCnt.intValue(), posts);
         } else {
-            List<NewsFeed> posts = postService.getVisiblePostsByUser(UserId);
+            List<NewsFeed> posts = postRepository.getAllByUser_IdAndDeletedAtIsNullAndIsPostPublicIsTrueOrderByUpdatedAt(
+                    UserId)
+                .stream().map(PostResponseDto.NewsFeed::new).collect(Collectors.toList());
 
             return new UserProfileResponseDto(user.getId(), user.getName(), user.getIntroduction(),
                 user.isUserPublic(), followingCnt.intValue(), followerCnt.intValue(),
