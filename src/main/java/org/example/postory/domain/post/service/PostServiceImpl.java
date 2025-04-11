@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.example.postory.domain.comment.dto.CommentResponseDto.CommentItem;
+import org.example.postory.domain.comment.service.CommentService;
 import org.example.postory.domain.post.dto.PostRequestDto;
 import org.example.postory.domain.post.dto.PostResponseDto;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
@@ -38,6 +40,8 @@ public class PostServiceImpl implements PostService {
 
     private final int LIKE_MINIMUM = 0;
 
+    private final CommentService commentService;
+
     @Override
     public Post getPostById(long postId, Long userId) {
         return postRepository.findVisiblePost(postId, userId)
@@ -47,7 +51,20 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostResponseDto.Get createPost(PostRequestDto.Create dto, UserDetails userDetails) {
+    public PostResponseDto.GetPost getPost(long id, UserDetails userDetails, LocalDateTime cursorCreatedAt, Long cursorId, int size) {
+        // 로그인 한 사용자 아이디 조회
+        Long userId = Long.valueOf(userDetails.getUsername());
+
+        Post findPost = postRepository.findVisiblePost(id, userId)
+            .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
+
+        CursorResponseDto<CommentItem> comments = commentService.getComments(cursorCreatedAt, cursorId, id, size);
+
+        return new PostResponseDto.GetPost(findPost, comments);
+    }
+
+    @Override
+    public PostResponseDto.Create createPost(PostRequestDto.Create dto, UserDetails userDetails) {
         if (userDetails == null) {  // userId가 들어있는 userDetail이 null인지 먼저 확인 (인증 실패 에러)
             throw new ApiException(ErrorType.UNAUTHORIZED_USER);
         }
@@ -63,7 +80,7 @@ public class PostServiceImpl implements PostService {
             .user(user) // DB에서 실제 user객체 조회하도록 수정
             .build();
         Post saved = postRepository.save(post);
-        return PostResponseDto.Get.fromPostEntity(saved);
+        return PostResponseDto.Create.fromPostEntity(saved);
     }
 
     @Override
