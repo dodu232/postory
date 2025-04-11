@@ -25,7 +25,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             SELECT p FROM Post p
             WHERE p.id = :id
             AND (
-                p.isPublic = true
+                p.isPostPublic = true
                 OR (:userId IS NOT NULL AND p.user.id = :userId)
             )
             AND p.deletedAt IS NULL
@@ -33,7 +33,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Optional<Post> findVisiblePost(@Param("id") Long id, @Param("userId") Long userId);
 
     //공개 게시글 + 삭제되지 않은 게시글 + 수정일 기준 최신순 정렬
-    List<Post> getAllByUser_IdAndDeletedAtIsNullAndIsPublicIsTrueOrderByUpdatedAt(Long userId);
+    List<Post> getAllByUser_IdAndDeletedAtIsNullAndIsPostPublicIsTrueOrderByUpdatedAt(Long userId);
 
     List<Post> getAllByUser_IdAndDeletedAtIsNullOrderByUpdatedAt(Long userId);
 
@@ -43,7 +43,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             SELECT p FROM Post p
             WHERE ((p.updatedAt < :cursorUpdatedAt)
             OR (p.updatedAt = :cursorUpdatedAt AND p.id < :cursorId))
-            AND p.isPublic = true
+            AND p.isPostPublic = true
             AND p.deletedAt IS NULL
             ORDER BY p.updatedAt DESC, p.id DESC
         """)
@@ -86,7 +86,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
              AND p.hashtag LIKE CONCAT('%', :hashTag, '%')
              AND p.postLikeCount >= :likeMinimum
              AND p.deletedAt IS NULL
-             AND p.isPublic = true
+             AND p.isPostPublic = true
         """)
     List<PostResponseDto.SearchList> findByHashTag(
         @Param("hashTag") String hashTag,
@@ -110,7 +110,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
              AND u.name LIKE CONCAT('%', :name, '%')
              AND p.postLikeCount >= :likeMinimum
              AND p.deletedAt IS NULL
-             AND p.isPublic = true
+             AND p.isPostPublic = true
         """)
     List<PostResponseDto.SearchList> findByMention(
         @Param("name") String name,
@@ -134,7 +134,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
              AND (p.title LIKE CONCAT('%', :keyword, '%') OR  p.content LIKE CONCAT('%', :keyword, '%'))
              AND p.postLikeCount >= :likeMinimum
              AND p.deletedAt IS NULL
-             AND p.isPublic = true
+             AND p.isPostPublic = true
         """)
     List<PostResponseDto.SearchList> findByKeyword(
         @Param("keyword") String keyword,

@@ -64,7 +64,7 @@ public class CommentServiceImpl implements CommentService {
         // 포스트의 공개 여부 확인
         Post post = postRepository.findById(postId)
             .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
-        if (!post.isPublic()) {
+        if (!post.isPostPublic()) {
             throw new ApiException(ErrorType.POST_NOT_PUBLIC);
         }
 

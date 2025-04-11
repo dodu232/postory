@@ -12,6 +12,7 @@ import org.example.postory.domain.post.entity.PostLike;
 import org.example.postory.domain.post.repository.PostLikeRepository;
 import org.example.postory.domain.post.repository.PostRepository;
 import org.example.postory.domain.user.dto.*;
+import org.example.postory.domain.post.service.PostService;
 import org.example.postory.domain.user.dto.SignupRequestDto;
 import org.example.postory.domain.user.dto.SignupResponseDto;
 import org.example.postory.domain.user.dto.UserRequestDto.UpdateProfile;
@@ -107,7 +108,7 @@ public class UserServiceImpl implements UserService {
         }
 
         if (!loginUserId.equals(UserId) && !followingRepository.existsByUserIdAndFollowingUserId(
-            loginUserId, UserId) && !user.isPublic()) {
+            loginUserId, UserId) && !user.isUserPublic()) {
             throw new ApiException(FORBIDDEN_PROFILE);
         }
 
@@ -120,12 +121,12 @@ public class UserServiceImpl implements UserService {
             List<NewsFeed> posts = postRepository.getAllMyPosts(UserId);
 
             return new UserProfileResponseDto(user.getId(), user.getName(), user.getIntroduction(),
-                user.isPublic(), followingCnt.intValue(), followerCnt.intValue(), posts);
+                user.isUserPublic(), followingCnt.intValue(), followerCnt.intValue(), posts);
         } else {
             List<NewsFeed> posts = postRepository.getVisiblePostsByUser(UserId);
 
             return new UserProfileResponseDto(user.getId(), user.getName(), user.getIntroduction(),
-                user.isPublic(), followingCnt.intValue(), followerCnt.intValue(),
+                user.isUserPublic(), followingCnt.intValue(), followerCnt.intValue(),
                 followingRepository.existsByUserIdAndFollowingUserId(loginUserId, UserId), posts);
         }
     }
@@ -135,7 +136,7 @@ public class UserServiceImpl implements UserService {
      * 경우에만 변경됩니다.
      *
      * @param userId  업데이트 대상 사용자 ID
-     * @param profile 업데이트할 프로필 정보 (name, introduction, gender, password, isPublic)
+     * @param profile 업데이트할 프로필 정보 (name, introduction, gender, password, isPostPublic)
      * @return 업데이트된 사용자 프로필 정보
      */
     @Transactional
@@ -205,8 +206,8 @@ public class UserServiceImpl implements UserService {
 
         // 나 자신이 아니고 비공개이고 친구가 아니면 조회 불가
         if (!loginUserId.equals(userId)
-            && !user.isPublic()
-            && !followingRepository.existsByUserIdAndFollowingUserId(loginUserId, userId)) {
+                && !user.isUserPublic()
+                && !followingRepository.existsByUserIdAndFollowingUserId(loginUserId, userId)) {
             throw new ApiException(FORBIDDEN_PROFILE);
         }
 
@@ -246,8 +247,8 @@ public class UserServiceImpl implements UserService {
 
         // 나 자신이 아니고 비공개이고 친구가 아니면 조회 불가
         if (!loginUserId.equals(userId)
-            && !user.isPublic()
-            && !followingRepository.existsByUserIdAndFollowingUserId(loginUserId, userId)) {
+                && !user.isUserPublic()
+                && !followingRepository.existsByUserIdAndFollowingUserId(loginUserId, userId)) {
             throw new ApiException(FORBIDDEN_PROFILE);
         }
 
@@ -270,8 +271,7 @@ public class UserServiceImpl implements UserService {
         CursorDto nextCursor = null;
         if (!followings.isEmpty()) {
             Long lastId = followings.get(followings.size() - 1).getId();
-            nextCursor = new CursorDto(
-                lastId); // 팔로잉 목록은 정렬 기준이 최근 업데이트된 순이 아니라 팔로잉 순서이기 때문에 id만 사용
+            nextCursor = new CursorDto(lastId); // 팔로잉 목록은 정렬 기준이 최근 업데이트된 순이 아니라 팔로잉 순서이기 때문에 id만 사용
         }
 
         return CursorResponseDto.of(followingResponseDtos, nextCursor);

@@ -41,7 +41,7 @@ public class User extends BaseEntity {
     private String introduction;
 
     @Column(nullable = false)
-    private boolean isPublic = true;
+    private boolean isUserPublic = true;
     @Column
     private String refreshToken;
 

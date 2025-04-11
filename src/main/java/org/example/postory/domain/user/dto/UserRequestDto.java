@@ -1,5 +1,6 @@
 package org.example.postory.domain.user.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -23,7 +24,8 @@ public class UserRequestDto {
         @Size(max = 20, message = "비밀번호는 최대 20글자까지만 가능합니다.")
         private String password;
 
-        private Boolean isPublic;
+        @JsonProperty("isUserPublic")  // isUserPublic을 UserPublic으로 추론하는 에러에 대한 해결코드
+        private Boolean isUserPublic;
 
     }
 
