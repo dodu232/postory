@@ -1,7 +1,6 @@
 package org.example.postory.domain.post.service;
 
 import java.time.LocalDateTime;
-
 import java.util.List;
 import org.example.postory.domain.post.dto.PostRequestDto;
 import org.example.postory.domain.post.dto.PostResponseDto;
@@ -35,4 +34,12 @@ public interface PostService {
 
     //공개 게시글 + 삭제되지 않은 게시글 + 수정일 기준 최신순 정렬
     List<NewsFeed> getVisiblePostsByUser(Long userId);
+
+    /**
+     * 타입에 따른 검색
+     *
+     * @{keyword}: 유저 검색 #{keyword}: 해시태그 검색 {keyword}: 게시물 검색
+     */
+    CursorResponseDto<PostResponseDto.SearchList> getSearchList(PostRequestDto.Search dto,
+        LocalDateTime cursorUpdatedAt, Long cursorId);
 }

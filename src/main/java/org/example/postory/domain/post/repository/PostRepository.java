@@ -5,6 +5,7 @@ import static org.example.postory.global.error.response.ErrorType.POST_NOT_FOUND
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.example.postory.domain.post.dto.PostResponseDto;
 import org.example.postory.domain.post.entity.Post;
 import org.example.postory.global.error.ApiException;
 import org.springframework.data.domain.Pageable;
@@ -54,6 +55,77 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     default Post findByIdOrElseThrow(long id) {
         return findById(id).orElseThrow(() -> new ApiException(POST_NOT_FOUND));
     }
+           
 
+    // 해시태그 검색
+    @Query("""
+             SELECT new org.example.postory.domain.post.dto.PostResponseDto$SearchList(
+                 p.id, p.title, u.name, p.updatedAt
+             )
+             FROM Post p
+             JOIN User u ON p.user.id = u.id
+             WHERE (
+                (p.updatedAt < :cursorUpdatedAt)
+                OR (p.updatedAt = :cursorUpdatedAt AND p.id < :cursorId)
+             )
+             AND p.hashtag LIKE CONCAT('%', :hashTag, '%')
+             AND p.postLikeCount >= :likeMinimum
+             AND p.deletedAt IS NULL
+             AND p.isPublic = true
+        """)
+    List<PostResponseDto.SearchList> findByHashTag(
+        @Param("hashTag") String hashTag,
+        @Param("likeMinimum") int likeMinimum,
+        @Param("cursorUpdatedAt") LocalDateTime cursorUpdatedAt,
+        @Param("cursorId") Long cursorId,
+        Pageable pageable
+    );
 
+    // @검색
+    @Query("""
+             SELECT new org.example.postory.domain.post.dto.PostResponseDto$SearchList(
+                 p.id, p.title, u.name, p.updatedAt
+             )
+             FROM Post p
+             JOIN User u ON p.user.id = u.id
+             WHERE (
+                (p.updatedAt < :cursorUpdatedAt)
+                OR (p.updatedAt = :cursorUpdatedAt AND p.id < :cursorId)
+             )
+             AND u.name LIKE CONCAT('%', :name, '%')
+             AND p.postLikeCount >= :likeMinimum
+             AND p.deletedAt IS NULL
+             AND p.isPublic = true
+        """)
+    List<PostResponseDto.SearchList> findByMention(
+        @Param("name") String name,
+        @Param("likeMinimum") int likeMinimum,
+        @Param("cursorUpdatedAt") LocalDateTime cursorUpdatedAt,
+        @Param("cursorId") Long cursorId,
+        Pageable pageable
+    );
+
+    // 기본 검색
+    @Query("""
+             SELECT new org.example.postory.domain.post.dto.PostResponseDto$SearchList(
+                 p.id, p.title, u.name, p.updatedAt
+             )
+             FROM Post p
+             JOIN User u ON p.user.id = u.id
+             WHERE (
+                 (p.updatedAt < :cursorUpdatedAt)
+                 OR (p.updatedAt = :cursorUpdatedAt AND p.id < :cursorId)
+             )
+             AND (p.title LIKE CONCAT('%', :keyword, '%') OR  p.content LIKE CONCAT('%', :keyword, '%'))
+             AND p.postLikeCount >= :likeMinimum
+             AND p.deletedAt IS NULL
+             AND p.isPublic = true
+        """)
+    List<PostResponseDto.SearchList> findByKeyword(
+        @Param("keyword") String keyword,
+        @Param("likeMinimum") int likeMinimum,
+        @Param("cursorUpdatedAt") LocalDateTime cursorUpdatedAt,
+        @Param("cursorId") Long cursorId,
+        Pageable pageable
+    );
 }

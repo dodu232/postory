@@ -1,7 +1,7 @@
 package org.example.postory.domain.post.dto;
 
 import java.time.LocalDateTime;
-
+import lombok.AllArgsConstructor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
@@ -74,5 +74,15 @@ public class PostResponseDto {
                 .updatedAt(post.getUpdatedAt())
                 .build();  // build() : builder()를 바탕으로 실제 객체를 만듦
         }
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public static class SearchList {
+
+        private long id;
+        private String title;
+        private String name;
+        private LocalDateTime updatedAt;
     }
 }

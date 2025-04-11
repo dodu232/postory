@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.post.dto.PostRequestDto;
+import org.example.postory.domain.post.dto.PostResponseDto;
 import org.example.postory.domain.post.dto.PostResponseDto.Get;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
 import org.example.postory.domain.post.entity.Post;
@@ -66,14 +67,7 @@ public class PostController {
         postService.updatePost(id, request, Long.valueOf(userDetails.getUsername()));
         return ResponseEntity.status(HttpStatus.OK).body("게시물 수정 성공");
     }
-
-    @PatchMapping("/like/{id}")
-    public ResponseEntity<Void> likePost(@PathVariable("id") long id,
-        @AuthenticationPrincipal UserDetails userDetails) {
-        postService.likePost(id, userDetails);
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
+  
     // 게시물 삭제
     @DeleteMapping("{id}")
     public ResponseEntity<Void> deletePost(
@@ -81,5 +75,27 @@ public class PostController {
         @AuthenticationPrincipal UserDetails userDetails) {
         postService.deletePost(postId, userDetails);
         return ResponseEntity.status(HttpStatus.OK).build();
+
     }
+
+    // 좋아요
+    @PatchMapping("/like/{id}")
+    public ResponseEntity<Void> likePost(@PathVariable("id") long id,
+        @AuthenticationPrincipal UserDetails userDetails) {
+        postService.likePost(id, userDetails);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+
+    // 검색
+    @GetMapping("/search")
+    public ResponseEntity<CursorResponseDto<PostResponseDto.SearchList>> getSearchList(
+        @Valid PostRequestDto.Search dto,
+        @RequestParam(required = false) LocalDateTime cursorUpdatedAt,
+        @RequestParam(required = false) Long cursorId) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(postService.getSearchList(dto, cursorUpdatedAt, cursorId));
+    }
+
+
 }

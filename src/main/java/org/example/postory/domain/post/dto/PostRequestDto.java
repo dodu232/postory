@@ -1,8 +1,11 @@
 package org.example.postory.domain.post.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.example.postory.domain.post.enums.SearchType;
 import lombok.RequiredArgsConstructor;
 
 @Getter
@@ -35,6 +38,16 @@ public class PostRequestDto {
         @Size(max = 100, message = "해시태그는 최대 100자까지 입력 가능합니다.")
         private String hashtag;
     }
+    
+    @AllArgsConstructor
+    @Getter
+    public static class Search {
+
+        @NotNull(message = "searchType은 필수 입력 항목입니다.")
+        private SearchType searchType;
+
+        @NotBlank(message = "value는 필수 입력 항목입니다.")
+        private String value;
 
 
 }
