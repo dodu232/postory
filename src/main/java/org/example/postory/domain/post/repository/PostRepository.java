@@ -5,7 +5,9 @@ import static org.example.postory.global.error.response.ErrorType.POST_NOT_FOUND
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.example.postory.domain.post.dto.PostResponseDto;
+import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
 import org.example.postory.domain.post.entity.Post;
 import org.example.postory.global.error.ApiException;
 import org.springframework.data.domain.Pageable;
@@ -55,7 +57,20 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     default Post findByIdOrElseThrow(long id) {
         return findById(id).orElseThrow(() -> new ApiException(POST_NOT_FOUND));
     }
-           
+
+    // 삭제되지 않은 게시글 + 수정일 기준 최신 정렬 ( 함수이름 가독성이 좋지않아서 따로 함더감쌌음)
+    default List<NewsFeed> getAllMyPosts(Long userId) {
+        return getAllByUser_IdAndDeletedAtIsNullOrderByUpdatedAt(userId)
+            .stream().map(PostResponseDto.NewsFeed::new).collect(Collectors.toList());
+    }
+
+    //공개 게시글 + 삭제되지 않은 게시글 + 수정일 기준 최신순 정렬
+    default List<NewsFeed> getVisiblePostsByUser(Long userId) {
+        return getAllByUser_IdAndDeletedAtIsNullAndIsPostPublicIsTrueOrderByUpdatedAt(
+                userId)
+            .stream().map(PostResponseDto.NewsFeed::new).collect(Collectors.toList());
+    }
+
 
     // 해시태그 검색
     @Query("""

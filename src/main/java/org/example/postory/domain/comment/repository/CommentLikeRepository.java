@@ -9,4 +9,8 @@ import org.springframework.stereotype.Repository;
 public interface CommentLikeRepository extends JpaRepository<CommentLike, Long> {
 
     Optional<CommentLike> findByCommentIdAndUserId(Long commentId, Long userId);
+
+    void deleteAllByUser_Id(Long authUserId);
+
+    void deleteAllByComment_Id(Long id);
 }

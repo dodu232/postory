@@ -36,7 +36,8 @@ public enum ErrorType implements ExceptionStatus {
     NOT_FOLLOWING(2007, HttpStatus.BAD_REQUEST.value(), "팔로우하지 않은 사용자입니다."),
     CANNOT_FOLLOW_SELF(2008, HttpStatus.BAD_REQUEST.value(), "자기 자신을 팔로우할 수 없습니다."),
     FORBIDDEN_PROFILE(2601, HttpStatus.FORBIDDEN.value(), "이 사용자는 프로필 비공개 설정 상태이며, 친구가 아닌 경우 정보 열람이 제한됩니다."),
-
+    DISABLE_USER(2602, HttpStatus.FORBIDDEN.value(), "비활성화 계정입니다. 서비스 이용을 원하시면 문의하세요."),
+    ALREADY_DEACTIVATED_ACCOUNT(2603, HttpStatus.CONFLICT.value(), "이미 비활성화 계정입니다. 요청을 처리할 수 없습니다."),
     /**
      * 3000: post 에러
      */
