@@ -59,4 +59,12 @@ public class Comment extends BaseEntity {
     public void markAsDeleted() { // soft delete
         this.setDeletedAt(LocalDateTime.now());
     }
+
+    public void upLikeCount() {
+        this.commentLikeCount++;
+    }
+
+    public void downLikeCount() {
+        this.commentLikeCount--;
+    }
 }

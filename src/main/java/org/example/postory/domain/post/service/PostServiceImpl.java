@@ -143,15 +143,20 @@ public class PostServiceImpl implements PostService {
         postRepository.save(post);
     }
 
+    // 좋아요
     @Override
     @Transactional
     public void likePost(long postId, UserDetails userDetails) {
         long userId = Long.parseLong(userDetails.getUsername());
+        Post findPost = postRepository.findById(postId)
+            .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
         Optional<PostLike> postLike = postLikeRepository.findByPostIdAndUserId(postId, userId);
 
         if (postLike.isPresent()) {
+            findPost.downLikeCount();
             postLikeRepository.delete(postLike.get());
         } else {
+            findPost.upLikeCount();
             User user = new User(userId);
             Post post = new Post(postId);
             postLikeRepository.save(new PostLike(user, post));
