@@ -53,7 +53,7 @@ public class PostServiceImpl implements PostService {
             }
         }
         Post findPost = postRepository.findVisiblePost(id, userId)
-                .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
+            .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
         CursorResponseDto<CommentItem> comments = commentService.getComments(cursorCreatedAt, cursorId, id, size, userDetails);
 
         return new PostResponseDto.GetPost(findPost, comments);
