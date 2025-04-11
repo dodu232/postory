@@ -61,6 +61,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
              )
              AND p.hashtag LIKE CONCAT('%', :hashTag, '%')
              AND p.postLikeCount >= :likeMinimum
+             AND p.deletedAt IS NULL
+             AND p.isPublic = true
         """)
     List<PostResponseDto.SearchList> findByHashTag(
         @Param("hashTag") String hashTag,
@@ -83,6 +85,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
              )
              AND u.name LIKE CONCAT('%', :name, '%')
              AND p.postLikeCount >= :likeMinimum
+             AND p.deletedAt IS NULL
+             AND p.isPublic = true
         """)
     List<PostResponseDto.SearchList> findByMention(
         @Param("name") String name,
@@ -105,6 +109,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
              )
              AND (p.title LIKE CONCAT('%', :keyword, '%') OR  p.content LIKE CONCAT('%', :keyword, '%'))
              AND p.postLikeCount >= :likeMinimum
+             AND p.deletedAt IS NULL
+             AND p.isPublic = true
         """)
     List<PostResponseDto.SearchList> findByKeyword(
         @Param("keyword") String keyword,
