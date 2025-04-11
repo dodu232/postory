@@ -42,15 +42,6 @@ public class PostServiceImpl implements PostService {
 
     private final int LIKE_MINIMUM = 0;
 
-
-//    @Override
-//    public Post getPostById(long postId, Long userId) {
-//        return postRepository.findVisiblePost(postId, userId)
-//            .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
-//        // 결과는 Optional<Post> 형식으로 반환되며, 값이 존재하면 그 값을 꺼내서 return
-//        // 빈 Optional이 나오면 orElseThrow로 값 던지기
-//    }
-
     @Override
     public PostResponseDto.GetPost getPost(long id, UserDetails userDetails, LocalDateTime cursorCreatedAt, Long cursorId, int size) {
         Long userId = null;
