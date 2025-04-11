@@ -37,7 +37,7 @@ public class User {
 
     @Setter
     @Column(nullable = false)
-    private boolean isPublic = true;
+    private boolean isUserPublic = true;
     @Column
     private String refreshToken;
 

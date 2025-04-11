@@ -31,7 +31,7 @@ public class Post extends BaseEntity {
     @Column(nullable = false)
     private String content;
     @Column(nullable = false)
-    private boolean isPublic = true;
+    private boolean isPostPublic;
     @Column(nullable = false)
     private String hashtag;
     @Column(nullable = false)
@@ -52,8 +52,8 @@ public class Post extends BaseEntity {
             this.content = updatePost.getContent();
 
         }
-        if (updatePost.getIsPublic() != null) { // Dto Boolean 으로 설정하기!
-            this.isPublic = updatePost.getIsPublic();
+        if (updatePost.getIsPostPublic() != null) { // Dto Boolean 으로 설정하기!
+            this.isPostPublic = updatePost.getIsPostPublic();
         }
         if (updatePost.getHashtag() != null) {
             this.hashtag = updatePost.getHashtag();
