@@ -62,6 +62,21 @@ public class PostServiceImpl implements PostService {
         return PostResponseDto.Get.fromPostEntity(saved);
     }
 
+    @Override
+    @Transactional
+    public void deletePost(long postId, UserDetails userDetails) {
+        if (userDetails == null) {  // @AuthenticationPrincipal이 null일 때
+            throw new ApiException(ErrorType.UNAUTHORIZED_USER);  // 로그인 되지 않은 사용자 접근 차단
+        }
+        Long userId = Long.parseLong(userDetails.getUsername());
+        Post post = postRepository.findById(postId) // 삭제할 게시물이 존재하는지 db에서 조회
+                .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
+        if (!post.getUser().getId().equals(userId)) { // 게시글 작성자 본인인지 확인
+            throw new ApiException(ErrorType.NO_PERMISSION);
+        }
+        post.markAsDeleted(); // deletedAt을 현재 시각으로 기록
+    }
+
 
     @Override
     public CursorResponseDto<NewsFeed> getNewsFeed(LocalDateTime cursorUpdatedAt, Long cursorId,
@@ -116,4 +131,6 @@ public class PostServiceImpl implements PostService {
         return postRepository.getAllByUser_IdAndDeletedAtIsNullAndIsPublicIsTrueOrderByUpdatedAt(userId)
             .stream().map(PostResponseDto.NewsFeed::new).collect(Collectors.toList());
     }
+
+
 }

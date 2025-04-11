@@ -1,6 +1,9 @@
 package org.example.postory.domain.post.dto;
 
 import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +46,18 @@ public class PostResponseDto {
         private String content;
         private String hashtag;
         private int postLikeCount;
+        private boolean isUpdated;
         private String writer;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
+        @JsonIgnore // Lombok getter에 의해 자동 직렬화되는 걸 차단
+        private boolean isPublic;
+        @JsonProperty("isPublic")
+        public boolean getIsPublic() {
+            return isPublic;
+        }
+
+
 
         public static Get fromPostEntity(Post post) {
             return Get.builder()   // builder() : dto 객체를 직접 new 생성하지 않고 명시적으로 필드 지정해서 생성
@@ -52,7 +66,11 @@ public class PostResponseDto {
                     .content(post.getContent())
                     .hashtag(post.getHashtag())
                     .postLikeCount(post.getPostLikeCount())
+                    .isPublic(post.isPublic())
+                    .isUpdated(!post.getCreatedAt().isEqual(post.getUpdatedAt()))
                     .writer(post.getUser().getName())
+                    .createdAt(post.getCreatedAt())
+                    .updatedAt(post.getUpdatedAt())
                     .build();  // build() : builder()를 바탕으로 실제 객체를 만듦
         }
     }

@@ -16,16 +16,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-    @RestController
+@RestController
     @RequestMapping("/posts")
     @RequiredArgsConstructor  // 생성자 주입
     public class PostController {
@@ -67,6 +60,15 @@ import org.springframework.web.bind.annotation.RestController;
         public ResponseEntity<Void> likePost(@PathVariable("id") long id,
                 @AuthenticationPrincipal UserDetails userDetails) {
                 postService.likePost(id, userDetails);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
+
+        // 게시물 삭제
+        @DeleteMapping("{id}")
+        public ResponseEntity<Void> deletePost(
+                @PathVariable("id") long postId,
+                @AuthenticationPrincipal UserDetails userDetails) {
+            postService.deletePost(postId, userDetails);
             return ResponseEntity.status(HttpStatus.OK).build();
         }
     }
