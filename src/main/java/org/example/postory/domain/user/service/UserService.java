@@ -8,6 +8,7 @@ import org.example.postory.domain.user.dto.UserRequestDto.UpdateProfile;
 import org.example.postory.domain.user.dto.UserResponseDto;
 import org.example.postory.domain.user.entity.User;
 import org.example.postory.global.common.pagination.CursorResponseDto;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public interface UserService {
 
@@ -19,7 +20,9 @@ public interface UserService {
 
     User getByEmail(String email);
 
-    UserProfileResponseDto getProfile(Long authUserId, Long UserId);
+    UserProfileResponseDto getProfile(UserDetails userDetails, Long UserId);
+
+    UserProfileResponseDto getProfileByNonLoginUser(Long UserId);
 
     void follow(Long userId, Long followingId);
 

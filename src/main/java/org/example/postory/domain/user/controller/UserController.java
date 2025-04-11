@@ -35,7 +35,7 @@ public class UserController {
         @AuthenticationPrincipal UserDetails userDetails
     ) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(userService.getProfile(Long.parseLong(userDetails.getUsername()), UserId));
+                .body(userService.getProfile(userDetails, UserId));
     }
 
     @PatchMapping("/profile")

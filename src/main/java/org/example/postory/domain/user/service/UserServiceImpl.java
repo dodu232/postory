@@ -24,6 +24,7 @@ import org.example.postory.global.error.ApiException;
 import org.example.postory.global.error.response.ErrorType;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -89,11 +90,44 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional(readOnly = true)
     @Override
-    public UserProfileResponseDto getProfile(Long loginUserId, Long UserId) {
+    public UserProfileResponseDto getProfile(UserDetails userDetails, Long UserId) {
+        if (userDetails != null) {
+            Long loginUserId = Long.parseLong(userDetails.getUsername());
+            User user = userRepository.findByUserIdOrElseThrow(UserId);
+
+            if (!loginUserId.equals(UserId) && !followingRepository.existsByUserIdAndFollowingUserId(
+                    loginUserId, UserId) && !user.isPublic()) {
+                throw new ApiException(FORBIDDEN_PROFILE);
+            }
+
+            //팔로잉, 팔로워 수 구하기
+            Long followingCnt = followingRepository.countByUser_id(UserId);
+            Long followerCnt = followingRepository.countByFollowingUser_id(UserId);
+
+            if (loginUserId.equals(UserId)) {
+                //게시글 가져오기 - 자기자신의 프로필이라 isn't public 한 게시글도 다 불러옴
+                List<NewsFeed> posts = postService.getAllMyPosts(UserId);
+
+                return new UserProfileResponseDto(user.getId(), user.getName(), user.getIntroduction(),
+                        user.isPublic(), followingCnt.intValue(), followerCnt.intValue(), posts);
+            } else {
+                List<NewsFeed> posts = postService.getVisiblePostsByUser(UserId);
+
+                return new UserProfileResponseDto(user.getId(), user.getName(), user.getIntroduction(),
+                        user.isPublic(), followingCnt.intValue(), followerCnt.intValue(),
+                        followingRepository.existsByUserIdAndFollowingUserId(loginUserId, UserId), posts);
+            }
+        } else {
+            return getProfileByNonLoginUser(UserId);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public UserProfileResponseDto getProfileByNonLoginUser(Long UserId) {
         User user = userRepository.findByUserIdOrElseThrow(UserId);
 
-        if (!loginUserId.equals(UserId) && !followingRepository.existsByUserIdAndFollowingUserId(
-            loginUserId, UserId) && !user.isPublic()) {
+        if (!user.isPublic()) {
             throw new ApiException(FORBIDDEN_PROFILE);
         }
 
@@ -101,19 +135,10 @@ public class UserServiceImpl implements UserService {
         Long followingCnt = followingRepository.countByUser_id(UserId);
         Long followerCnt = followingRepository.countByFollowingUser_id(UserId);
 
-        if (loginUserId.equals(UserId)) {
-            //게시글 가져오기 - 자기자신의 프로필이라 isn't public 한 게시글도 다 불러옴
-            List<NewsFeed> posts = postService.getAllMyPosts(UserId);
+        List<NewsFeed> posts = postService.getVisiblePostsByUser(UserId);
 
-            return new UserProfileResponseDto(user.getId(), user.getName(), user.getIntroduction(),
-                user.isPublic(), followingCnt.intValue(), followerCnt.intValue(), posts);
-        } else {
-            List<NewsFeed> posts = postService.getVisiblePostsByUser(UserId);
-
-            return new UserProfileResponseDto(user.getId(), user.getName(), user.getIntroduction(),
-                user.isPublic(), followingCnt.intValue(), followerCnt.intValue(),
-                followingRepository.existsByUserIdAndFollowingUserId(loginUserId, UserId), posts);
-        }
+        return new UserProfileResponseDto(user.getId(), user.getName(), user.getIntroduction(),
+                user.isPublic(), followingCnt.intValue(), followerCnt.intValue(), false, posts);
     }
 
     /**
