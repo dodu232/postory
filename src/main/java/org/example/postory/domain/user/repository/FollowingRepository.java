@@ -35,4 +35,8 @@ public interface FollowingRepository extends JpaRepository<Following, Long> {
         ORDER BY f.id DESC
     """)
     List<Following> findFollowersByCursor(Long userId, Long cursorId, Pageable pageable);
+
+    void deleteAllByUser_Id(Long authUserId);
+
+    void deleteAllByFollowingUser_Id(Long authUserId);
 }

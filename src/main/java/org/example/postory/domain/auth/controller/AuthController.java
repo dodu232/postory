@@ -7,6 +7,8 @@ import org.example.postory.domain.auth.jwt.JwtToken;
 import org.example.postory.domain.auth.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -27,6 +29,15 @@ public class AuthController {
     public ResponseEntity<JwtToken> login(@Valid @RequestBody AuthRequestDto.Login dto
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(service.login(dto));
+    }
+
+    /**
+     * 로그아웃
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<Void> login(@AuthenticationPrincipal UserDetails userDetails) {
+        service.logout(userDetails);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     /**

@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.example.postory.domain.comment.dto.CommentResponseDto.CommentItem;
+import org.example.postory.domain.comment.service.CommentService;
 import org.example.postory.domain.post.dto.PostRequestDto;
 import org.example.postory.domain.post.dto.PostResponseDto;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
@@ -26,6 +28,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClient;
 
 
 @Service
@@ -34,9 +37,11 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final CommentService commentService;
     private final PostLikeRepository postLikeRepository;
 
     private final int LIKE_MINIMUM = 0;
+
 
     @Override
     public Post getPostById(long postId, Long userId) {
@@ -47,7 +52,20 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostResponseDto.Get createPost(PostRequestDto.Create dto, UserDetails userDetails) {
+    public PostResponseDto.GetPost getPost(long id, UserDetails userDetails, LocalDateTime cursorCreatedAt, Long cursorId, int size) {
+        // 로그인 한 사용자 아이디 조회
+        Long userId = Long.valueOf(userDetails.getUsername());
+
+        Post findPost = postRepository.findVisiblePost(id, userId)
+            .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
+
+        CursorResponseDto<CommentItem> comments = commentService.getComments(cursorCreatedAt, cursorId, id, size);
+
+        return new PostResponseDto.GetPost(findPost, comments);
+    }
+
+    @Override
+    public PostResponseDto.Create createPost(PostRequestDto.Create dto, UserDetails userDetails) {
         if (userDetails == null) {  // userId가 들어있는 userDetail이 null인지 먼저 확인 (인증 실패 에러)
             throw new ApiException(ErrorType.UNAUTHORIZED_USER);
         }
@@ -63,7 +81,7 @@ public class PostServiceImpl implements PostService {
             .user(user) // DB에서 실제 user객체 조회하도록 수정
             .build();
         Post saved = postRepository.save(post);
-        return PostResponseDto.Get.fromPostEntity(saved);
+        return PostResponseDto.Create.fromPostEntity(saved);
     }
 
     @Override
@@ -139,19 +157,6 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-
-    // 삭제되지 않은 게시글 + 수정일 기준 최신 정렬 ( 함수이름 가독성이 좋지않아서 따로 함더감쌌음)
-    public List<NewsFeed> getAllMyPosts(Long userId) {
-        return postRepository.getAllByUser_IdAndDeletedAtIsNullOrderByUpdatedAt(userId)
-            .stream().map(PostResponseDto.NewsFeed::new).collect(Collectors.toList());
-    }
-
-    //공개 게시글 + 삭제되지 않은 게시글 + 수정일 기준 최신순 정렬
-    public List<NewsFeed> getVisiblePostsByUser(Long userId) {
-        return postRepository.getAllByUser_IdAndDeletedAtIsNullAndIsPostPublicIsTrueOrderByUpdatedAt(
-                userId)
-            .stream().map(PostResponseDto.NewsFeed::new).collect(Collectors.toList());
-    }
 
     /**
      * 좋아요 30개 이상 update 순으로 정렬

@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -41,7 +42,7 @@ public class Comment extends BaseEntity {
     private Post post;
 
     @Builder
-    public Comment(String content, User user, Post post){
+    public Comment(String content, User user, Post post) {
         this.content = content;
         this.user = user;
         this.post = post;
@@ -51,7 +52,7 @@ public class Comment extends BaseEntity {
         this.id = id;
     }
 
-    public void updateContent(String content){
+    public void updateContent(String content) {
         this.content = content;
     }
 
