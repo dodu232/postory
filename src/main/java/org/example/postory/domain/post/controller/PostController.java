@@ -52,10 +52,10 @@ public class PostController {
 
     // 게시물 생성
     @PostMapping
-    public ResponseEntity<Create> createPost(
+    public ResponseEntity<PostResponseDto.Create> createPost(
         @Valid @RequestBody PostRequestDto.Create request,
         @AuthenticationPrincipal UserDetails userDetails) {
-        Create response =  postService.createPost(request, userDetails);
+        PostResponseDto.Create response = postService.createPost(request, userDetails);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
