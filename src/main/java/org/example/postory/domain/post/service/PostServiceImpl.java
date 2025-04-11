@@ -26,7 +26,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestClient;
 
 
 @Service
@@ -60,7 +59,7 @@ public class PostServiceImpl implements PostService {
             .title(dto.getTitle())
             .content(dto.getContent())
             .hashtag(dto.getHashtag())
-            .isPublic(dto.isPublic())
+            .isPostPublic(dto.isPostPublic())
             .user(user) // DB에서 실제 user객체 조회하도록 수정
             .build();
         Post saved = postRepository.save(post);
@@ -149,7 +148,7 @@ public class PostServiceImpl implements PostService {
 
     //공개 게시글 + 삭제되지 않은 게시글 + 수정일 기준 최신순 정렬
     public List<NewsFeed> getVisiblePostsByUser(Long userId) {
-        return postRepository.getAllByUser_IdAndDeletedAtIsNullAndIsPublicIsTrueOrderByUpdatedAt(
+        return postRepository.getAllByUser_IdAndDeletedAtIsNullAndIsPostPublicIsTrueOrderByUpdatedAt(
                 userId)
             .stream().map(PostResponseDto.NewsFeed::new).collect(Collectors.toList());
     }
