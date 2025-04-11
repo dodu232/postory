@@ -34,6 +34,7 @@ public class SecurityConfig {
                         "/auth/reissue",
                         "/users/signup",
                         "/posts",
+                        "/posts/**",
                         "/comments",
                         "/users/profile/*",
                         "/users/following/*",
