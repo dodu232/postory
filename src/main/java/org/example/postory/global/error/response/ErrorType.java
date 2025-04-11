@@ -42,7 +42,8 @@ public enum ErrorType implements ExceptionStatus {
      */
     POST_NOT_FOUND(3001, HttpStatus.NOT_FOUND.value(), "게시물을 찾을 수 없습니다"),
     POST_NOT_PUBLIC(3002, HttpStatus.FORBIDDEN.value(), "비공개 게시물입니다."),
-    NO_PERMISSION(3003,HttpStatus.FORBIDDEN.value(), "게시물 작성자만 게시물 삭제가 가능합니다."),
+    FORBIDDEN_POST_UPDATE(3003, HttpStatus.FORBIDDEN.value(), "게시물 작성자만 수정할 수 있습니다."),
+    NO_PERMISSION(3004,HttpStatus.FORBIDDEN.value(), "게시물 작성자만 게시물 삭제가 가능합니다."),
 
     /**
      * 4000: comment 에러
