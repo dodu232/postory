@@ -18,9 +18,13 @@ public class SignupRequestDto {
         regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
         message = "비밀번호는 대소문자, 숫자, 특수문자를 포함한 8자 이상이어야 합니다."
     )
-    @Size(max = 20)
+    @Size(max = 20, message = "비밀번호는 20자 이하여야 합니다.")
     @NotBlank(message = "비밀번호는 필수입니다.")
     private String password;
+
+    @Size(max = 20, message = "이름은 20자 이하여야 합니다.")
+    @NotBlank(message = "이름은 필수입니다.")
+    private String name;
 
     @Pattern(
         regexp = "^01[016789]-\\d{3,4}-\\d{4}$",
