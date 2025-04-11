@@ -26,6 +26,4 @@ public interface CommentService {
     CommentItem updateComment(Long authUserId, CommentRequestDto.CommentItem requestDto,
         Long commentId);
 
-    //삭제 표시 안된 내 댓글 몽땅 삭제표시
-    void deleteAllMyComments(Long authUserId);
 }

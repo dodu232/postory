@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 import lombok.*;
 import org.example.postory.domain.user.dto.UserRequestDto.UpdateProfile;
 import org.example.postory.global.common.BaseEntity;
-import org.example.postory.global.error.ApiException;
 import org.example.postory.global.util.PasswordEncoder;
 
 

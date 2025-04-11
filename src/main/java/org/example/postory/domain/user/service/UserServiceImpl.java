@@ -3,10 +3,15 @@ package org.example.postory.domain.user.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.example.postory.domain.comment.service.CommentService;
+import org.example.postory.domain.comment.entity.Comment;
+import org.example.postory.domain.comment.repository.CommentLikeRepository;
+import org.example.postory.domain.comment.repository.CommentRepository;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
+import org.example.postory.domain.post.entity.Post;
+import org.example.postory.domain.post.entity.PostLike;
+import org.example.postory.domain.post.repository.PostLikeRepository;
+import org.example.postory.domain.post.repository.PostRepository;
 import org.example.postory.domain.user.dto.*;
-import org.example.postory.domain.post.service.PostService;
 import org.example.postory.domain.user.dto.SignupRequestDto;
 import org.example.postory.domain.user.dto.SignupResponseDto;
 import org.example.postory.domain.user.dto.UserRequestDto.UpdateProfile;
@@ -34,8 +39,11 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final FollowingRepository followingRepository;
-    private final PostService postService;
-    private final CommentService commentService;
+    private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
+
+    private final PostLikeRepository postLikeRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     /**
      * refreshToken 가져오기
@@ -109,12 +117,12 @@ public class UserServiceImpl implements UserService {
 
         if (loginUserId.equals(UserId)) {
             //게시글 가져오기 - 자기자신의 프로필이라 isn't public 한 게시글도 다 불러옴
-            List<NewsFeed> posts = postService.getAllMyPosts(UserId);
+            List<NewsFeed> posts = postRepository.getAllMyPosts(UserId);
 
             return new UserProfileResponseDto(user.getId(), user.getName(), user.getIntroduction(),
                 user.isPublic(), followingCnt.intValue(), followerCnt.intValue(), posts);
         } else {
-            List<NewsFeed> posts = postService.getVisiblePostsByUser(UserId);
+            List<NewsFeed> posts = postRepository.getVisiblePostsByUser(UserId);
 
             return new UserProfileResponseDto(user.getId(), user.getName(), user.getIntroduction(),
                 user.isPublic(), followingCnt.intValue(), followerCnt.intValue(),
@@ -139,27 +147,8 @@ public class UserServiceImpl implements UserService {
             throw new ApiException(DISABLE_USER);
         }
 
-        if (profile.getName() != null) {
-            user.setName(profile.getName());
-        }
-        if (profile.getIntroduction() != null) {
-            user.setIntroduction(profile.getIntroduction());
-        }
-        if (profile.getGender() != null) {
-            user.setGender(profile.getGender());
-        }
-
-        if (profile.getPassword() != null && !PasswordEncoder.matches(profile.getPassword(),
-            user.getPassword())) {
-            user.setPassword(PasswordEncoder.encode(profile.getPassword()));
-        }
-
-        if (profile.getIsPublic() != null) {
-            user.setPublic(profile.getIsPublic());
-        }
-
-        User savedUser = userRepository.save(user);
-        return new UserResponseDto.UpdateProfile(savedUser);
+        user.updateProfile(profile);
+        return new UserResponseDto.UpdateProfile(user);
     }
 
     public void follow(Long loginUserId, Long followingId) {
@@ -307,14 +296,34 @@ public class UserServiceImpl implements UserService {
         if (user.getDeletedAt() != null) {
             throw new ApiException(ALREADY_DEACTIVATED_ACCOUNT);
         }
-
         user.markAsDeleted();
 
+        //해당 유저가 표시한 게시글 좋아요 삭제
+        postLikeRepository.deleteAllByUser_Id(authUserId);
         //게시글 모두 비활성화
-        postService.deleteALlMyPosts(authUserId);
+        List<Post> myAllPosts = postRepository.getAllByUser_IdAndDeletedAtIsNullOrderByUpdatedAt(
+            authUserId);
+        for( Post post : myAllPosts){
+            post.markAsDeleted();
+            //해당 게시글이나 유저와 관련된 게시글 좋아요 삭제
+            postLikeRepository.deleteAllByPost_Id(post.getId());
+        }
 
+        //해당 유저가 표시한 댓글 좋아요 삭제
+        commentLikeRepository.deleteAllByUser_Id(authUserId);
         //덧글 모두 비활성화
-        commentService.deleteAllMyComments(authUserId);
+        List<Comment> myAllComments = commentRepository.getAllByUser_IdAndDeletedAtIsNull(
+            authUserId);
+        myAllComments.forEach(Comment::markAsDeleted);
+        for( Comment comment : myAllComments){
+            comment.markAsDeleted();
+            //해당 게시글이나 유저와 관련된 게시글 좋아요 삭제
+            commentLikeRepository.deleteAllByComment_Id(comment.getId());
+        }
+
+        //유저의 팔로우관계 모두 종료
+        followingRepository.deleteAllByUser_Id(authUserId); //팔로잉
+        followingRepository.deleteAllByFollowingUser_Id(authUserId); // 팔로워
     }
 }
 
