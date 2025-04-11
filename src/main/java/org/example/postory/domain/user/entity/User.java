@@ -5,13 +5,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.time.LocalDateTime;
 import lombok.*;
+import org.example.postory.global.common.BaseEntity;
 
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,4 +58,7 @@ public class User {
         this.refreshToken = refreshToken;
     }
 
+    public void markAsDeleted() {  // soft delete 방식 : 삭제된 시간만 기록
+        this.setDeletedAt(LocalDateTime.now());
+    }
 }

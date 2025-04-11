@@ -33,4 +33,5 @@ public interface UserService {
 
     User getById(Long authUserId);
 
+    void deactivateUser(Long authUserId);
 }

@@ -90,7 +90,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     @Override
     public UserProfileResponseDto getProfile(Long loginUserId, Long UserId) {
-        User user = userRepository.findByUserIdOrElseThrow(UserId);
+        User user = getById(UserId);
 
         if (!loginUserId.equals(UserId) && !followingRepository.existsByUserIdAndFollowingUserId(
             loginUserId, UserId) && !user.isPublic()) {
@@ -273,6 +273,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getById(Long authUserId) {
         return userRepository.findByUserIdOrElseThrow(authUserId);
+    }
+
+    /**
+     * [Service] 계정비활성화하기
+     * @param authUserId 로그인 한 사용자
+     */
+    @Transactional
+    @Override
+    public void deactivateUser(Long authUserId) {
+        User user = getById(authUserId);
+
     }
 
 }
