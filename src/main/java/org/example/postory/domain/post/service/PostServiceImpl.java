@@ -147,6 +147,14 @@ public class PostServiceImpl implements PostService {
             .stream().map(PostResponseDto.NewsFeed::new).collect(Collectors.toList());
     }
 
+    //삭제표시 안된 내 게시글 몽땅 삭제표시
+    @Transactional
+    public void deleteALlMyPosts(Long userId) {
+        List<Post> myAllPosts = postRepository.getAllByUser_IdAndDeletedAtIsNullOrderByUpdatedAt(
+            userId);
+        myAllPosts.forEach(Post::markAsDeleted);
+    }
+
     //공개 게시글 + 삭제되지 않은 게시글 + 수정일 기준 최신순 정렬
     public List<NewsFeed> getVisiblePostsByUser(Long userId) {
         return postRepository.getAllByUser_IdAndDeletedAtIsNullAndIsPublicIsTrueOrderByUpdatedAt(

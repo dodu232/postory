@@ -33,4 +33,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     default Comment getCommentByIdOrElseThrow(Long commentId) {
         return findById(commentId).orElseThrow(() -> new ApiException(ErrorType.COMMENT_NOT_FOUND));
     }
+
+    List<Comment> getAllByUser_IdAndDeletedAtIsNull(Long userId);
 }

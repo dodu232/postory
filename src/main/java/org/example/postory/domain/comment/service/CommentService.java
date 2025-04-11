@@ -12,14 +12,20 @@ import org.springframework.security.core.userdetails.UserDetails;
 public interface CommentService {
 
     //댓글 생성
-    CommentResponseDto.CommentItem createComment(long authUserId, CommentRequestDto.CommentItem requestDto, Long postId);
+    CommentResponseDto.CommentItem createComment(long authUserId,
+        CommentRequestDto.CommentItem requestDto, Long postId);
 
     // 댓글 전체 조회
-    CursorResponseDto<CommentItem> getComments(LocalDateTime cursorUpdatedAt, Long cursorId, Long postId, int size);
+    CursorResponseDto<CommentItem> getComments(LocalDateTime cursorUpdatedAt, Long cursorId,
+        Long postId, int size);
 
     // 좋아요
     void likeComment(long id, UserDetails userDetails);
 
     //댓글 수정
-    CommentItem updateComment(Long authUserId, CommentRequestDto.CommentItem requestDto, Long commentId);
+    CommentItem updateComment(Long authUserId, CommentRequestDto.CommentItem requestDto,
+        Long commentId);
+
+    //삭제 표시 안된 내 댓글 몽땅 삭제표시
+    void deleteAllMyComments(Long authUserId);
 }

@@ -3,6 +3,7 @@ package org.example.postory.domain.user.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.example.postory.domain.comment.service.CommentService;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
 import org.example.postory.domain.user.dto.*;
 import org.example.postory.domain.post.service.PostService;
@@ -34,6 +35,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final FollowingRepository followingRepository;
     private final PostService postService;
+    private final CommentService commentService;
 
     /**
      * refreshToken 가져오기
@@ -92,6 +94,10 @@ public class UserServiceImpl implements UserService {
     public UserProfileResponseDto getProfile(Long loginUserId, Long UserId) {
         User user = getById(UserId);
 
+        if (user.getDeletedAt() != null) {
+            throw new ApiException(DISABLE_USER);
+        }
+
         if (!loginUserId.equals(UserId) && !followingRepository.existsByUserIdAndFollowingUserId(
             loginUserId, UserId) && !user.isPublic()) {
             throw new ApiException(FORBIDDEN_PROFILE);
@@ -129,6 +135,10 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto.UpdateProfile updateProfile(Long userId, UpdateProfile profile) {
         User user = userRepository.findByUserIdOrElseThrow(userId);
 
+        if (user.getDeletedAt() != null) {
+            throw new ApiException(DISABLE_USER);
+        }
+
         if (profile.getName() != null) {
             user.setName(profile.getName());
         }
@@ -159,19 +169,19 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = userRepository.findById(loginUserId)
-                .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
+            .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
 
         User targetUser = userRepository.findById(followingId)
-                .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
+            .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
 
         if (followingRepository.existsByUserIdAndFollowingUserId(loginUserId, followingId)) {
             throw new ApiException(ErrorType.ALREADY_FOLLOWING);
         }
 
         Following following = Following.builder()
-                .followingUser(targetUser)
-                .user(user)
-                .build();
+            .followingUser(targetUser)
+            .user(user)
+            .build();
 
         followingRepository.save(following);
     }
@@ -179,33 +189,35 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void unfollow(Long loginUserId, Long followingId) {
         userRepository.findById(loginUserId)
-                .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
+            .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
 
         userRepository.findById(followingId)
-                .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
+            .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
 
         if (!followingRepository.existsByUserIdAndFollowingUserId(loginUserId, followingId)) {
             throw new ApiException(ErrorType.NOT_FOLLOWING);
         }
 
-        Integer count = followingRepository.deleteByUserIdAndFollowingUserId(loginUserId, followingId)
-                .orElseThrow(() -> new ApiException(UNFOLLOW_FAILED));
+        Integer count = followingRepository.deleteByUserIdAndFollowingUserId(loginUserId,
+                followingId)
+            .orElseThrow(() -> new ApiException(UNFOLLOW_FAILED));
 
         if (count != 1) {
             throw new ApiException(UNFOLLOW_FAILED);
         }
     }
 
-    public CursorResponseDto<FollowingResponseDto> getFollowing(Long loginUserId, Long userId, Long cursorId, int size) {
+    public CursorResponseDto<FollowingResponseDto> getFollowing(Long loginUserId, Long userId,
+        Long cursorId, int size) {
         userRepository.findById(loginUserId)
-                .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
+            .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(USER_NOT_FOUND));
+            .orElseThrow(() -> new ApiException(USER_NOT_FOUND));
 
         // 나 자신이 아니고 비공개이고 친구가 아니면 조회 불가
         if (!loginUserId.equals(userId)
-                && !user.isPublic()
-                && !followingRepository.existsByUserIdAndFollowingUserId(loginUserId, userId)) {
+            && !user.isPublic()
+            && !followingRepository.existsByUserIdAndFollowingUserId(loginUserId, userId)) {
             throw new ApiException(FORBIDDEN_PROFILE);
         }
 
@@ -217,32 +229,36 @@ public class UserServiceImpl implements UserService {
         Pageable pageable = PageRequest.of(0, size);
 
         // 커서 기반으로 팔로잉 유저 목록 조회 (최근에 팔로우한 순)
-        List<Following> followings = followingRepository.findFollowingsByCursor(userId, cursorId, pageable);
+        List<Following> followings = followingRepository.findFollowingsByCursor(userId, cursorId,
+            pageable);
 
         List<FollowingResponseDto> followingResponseDtos = followings.stream()
-                .map(f -> new FollowingResponseDto(f.getFollowingUser().getId(), f.getFollowingUser().getName()))
-                .collect(Collectors.toList());
+            .map(f -> new FollowingResponseDto(f.getFollowingUser().getId(),
+                f.getFollowingUser().getName()))
+            .collect(Collectors.toList());
 
         // 다음 커서 설정
         CursorDto nextCursor = null;
         if (!followings.isEmpty()) {
             Long lastId = followings.get(followings.size() - 1).getId();
-            nextCursor = new CursorDto(lastId); // 팔로잉 목록은 정렬 기준이 최근 업데이트된 순이 아니라 팔로잉 순서이기 때문에 id만 사용
+            nextCursor = new CursorDto(
+                lastId); // 팔로잉 목록은 정렬 기준이 최근 업데이트된 순이 아니라 팔로잉 순서이기 때문에 id만 사용
         }
 
         return CursorResponseDto.of(followingResponseDtos, nextCursor);
     }
 
-    public CursorResponseDto<FollowingResponseDto> getFollowers(Long loginUserId, Long userId, Long cursorId, int size) {
+    public CursorResponseDto<FollowingResponseDto> getFollowers(Long loginUserId, Long userId,
+        Long cursorId, int size) {
         userRepository.findById(loginUserId)
-                .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
+            .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
+            .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
 
         // 나 자신이 아니고 비공개이고 친구가 아니면 조회 불가
         if (!loginUserId.equals(userId)
-                && !user.isPublic()
-                && !followingRepository.existsByUserIdAndFollowingUserId(loginUserId, userId)) {
+            && !user.isPublic()
+            && !followingRepository.existsByUserIdAndFollowingUserId(loginUserId, userId)) {
             throw new ApiException(FORBIDDEN_PROFILE);
         }
 
@@ -254,17 +270,19 @@ public class UserServiceImpl implements UserService {
         Pageable pageable = PageRequest.of(0, size);
 
         // 커서 기반으로 팔로잉 유저 목록 조회 (최근에 팔로우한 순)
-        List<Following> followings = followingRepository.findFollowersByCursor(userId, cursorId, pageable);
+        List<Following> followings = followingRepository.findFollowersByCursor(userId, cursorId,
+            pageable);
 
         List<FollowingResponseDto> followingResponseDtos = followings.stream()
-                .map(f -> new FollowingResponseDto(f.getUser().getId(), f.getUser().getName()))
-                .collect(Collectors.toList());
+            .map(f -> new FollowingResponseDto(f.getUser().getId(), f.getUser().getName()))
+            .collect(Collectors.toList());
 
         // 다음 커서 설정
         CursorDto nextCursor = null;
         if (!followings.isEmpty()) {
             Long lastId = followings.get(followings.size() - 1).getId();
-            nextCursor = new CursorDto(lastId); // 팔로잉 목록은 정렬 기준이 최근 업데이트된 순이 아니라 팔로잉 순서이기 때문에 id만 사용
+            nextCursor = new CursorDto(
+                lastId); // 팔로잉 목록은 정렬 기준이 최근 업데이트된 순이 아니라 팔로잉 순서이기 때문에 id만 사용
         }
 
         return CursorResponseDto.of(followingResponseDtos, nextCursor);
@@ -277,14 +295,26 @@ public class UserServiceImpl implements UserService {
 
     /**
      * [Service] 계정비활성화하기
+     *
      * @param authUserId 로그인 한 사용자
      */
     @Transactional
     @Override
     public void deactivateUser(Long authUserId) {
+        //사용자 비활성화
         User user = getById(authUserId);
 
-    }
+        if (user.getDeletedAt() != null) {
+            throw new ApiException(ALREADY_DEACTIVATED_ACCOUNT);
+        }
 
+        user.markAsDeleted();
+
+        //게시글 모두 비활성화
+        postService.deleteALlMyPosts(authUserId);
+
+        //덧글 모두 비활성화
+        commentService.deleteAllMyComments(authUserId);
+    }
 }
 
