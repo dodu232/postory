@@ -299,19 +299,19 @@ public class UserServiceImpl implements UserService {
         user.markAsDeleted();
 
         //해당 유저가 표시한 게시글 좋아요 삭제
-        postLikeRepository.deleteAllByUser_Id(authUserId);
+        //postLikeRepository.deleteAllByUser_Id(authUserId);
         //게시글 모두 비활성화
         List<Post> myAllPosts = postRepository.getAllByUser_IdAndDeletedAtIsNullOrderByUpdatedAt(
             authUserId);
         for( Post post : myAllPosts){
             post.markAsDeleted();
             //해당 게시글이나 유저와 관련된 게시글 좋아요 삭제
-            postLikeRepository.deleteAllByPost_Id(post.getId());
+            //postLikeRepository.deleteAllByPost_Id(post.getId());
             commentRepository.findAllByPost_Id(post.getId()).forEach(Comment::markAsDeleted);
         }
 
         //해당 유저가 표시한 댓글 좋아요 삭제
-        commentLikeRepository.deleteAllByUser_Id(authUserId);
+        //commentLikeRepository.deleteAllByUser_Id(authUserId);
         //덧글 모두 비활성화
         List<Comment> myAllComments = commentRepository.getAllByUser_IdAndDeletedAtIsNull(
             authUserId);
@@ -319,7 +319,7 @@ public class UserServiceImpl implements UserService {
         for( Comment comment : myAllComments){
             comment.markAsDeleted();
             //해당 게시글이나 유저와 관련된 게시글 좋아요 삭제
-            commentLikeRepository.deleteAllByComment_Id(comment.getId());
+            //commentLikeRepository.deleteAllByComment_Id(comment.getId());
         }
 
         //유저의 팔로우관계 모두 종료
