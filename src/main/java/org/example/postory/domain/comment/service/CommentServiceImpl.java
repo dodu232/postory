@@ -32,7 +32,6 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
     private final UserService userService;
-    private final PostService postService;
     private final PostRepository postRepository;
     private final CommentLikeRepository commentLikeRepository;
 
@@ -49,7 +48,8 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentResponseDto.CommentItem createComment(long authUserId,
         CommentRequestDto.CommentItem requestDto, Long postId) {
-        Post findPost = postService.getPostById(postId, authUserId);
+        Post findPost = postRepository.findVisiblePost(postId, authUserId)
+            .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
 
         Comment comment = Comment.builder().content(requestDto.getContents())
             .user(userService.getById(authUserId)).post(findPost).build();
