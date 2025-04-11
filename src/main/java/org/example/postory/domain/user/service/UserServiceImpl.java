@@ -72,9 +72,12 @@ public class UserServiceImpl implements UserService {
             throw new ApiException(DUPLICATE_PHONE);
         }
 
-        User user = User.builder().email(requestDto.getEmail())
-            .password(PasswordEncoder.encode(requestDto.getPassword())).phone(requestDto.getPhone())
-            .build();
+        User user = User.builder()
+                .email(requestDto.getEmail())
+                .password(PasswordEncoder.encode(requestDto.getPassword()))
+                .name(requestDto.getName())
+                .phone(requestDto.getPhone())
+                .build();
 
         User savedUser = userRepository.save(user);
         return new SignupResponseDto(savedUser.getId());
