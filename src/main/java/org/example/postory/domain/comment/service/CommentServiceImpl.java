@@ -133,6 +133,15 @@ public class CommentServiceImpl implements CommentService {
         return new CommentItem(comment);
     }
 
+    @Transactional
+    @Override
+    public void deleteComment(Long authUserId, Long commentId) {
+        Comment comment = commentRepository.getCommentByIdOrElseThrow(commentId);
+        if (!authUserId.equals(comment.getUser().getId())) {
+            throw new ApiException(ErrorType.FORBIDDEN_COMMENT);
+        }
+        comment.markAsDeleted();
+      
     //삭제표시 안된 내 게시글 몽땅 삭제표시
     @Transactional
     public void deleteAllMyComments(Long authUserId) {

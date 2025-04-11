@@ -18,6 +18,8 @@ import org.example.postory.domain.post.entity.Post;
 import org.example.postory.domain.user.entity.User;
 import org.example.postory.global.common.BaseEntity;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -54,7 +56,7 @@ public class Comment extends BaseEntity {
         this.content = content;
     }
 
-    public void markAsDeleted() {  // soft delete 방식 : 삭제된 시간만 기록
+    public void markAsDeleted() { // soft delete
         this.setDeletedAt(LocalDateTime.now());
     }
 }

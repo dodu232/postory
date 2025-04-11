@@ -23,7 +23,8 @@ public interface CommentService {
     void likeComment(long id, UserDetails userDetails);
 
     //댓글 수정
-    CommentItem updateComment(Long authUserId, CommentRequestDto.CommentItem requestDto,
-        Long commentId);
+    CommentItem updateComment(Long authUserId, CommentRequestDto.CommentItem requestDto, Long commentId);
 
+    // 댓글 삭제
+    void deleteComment(Long authUserId, Long commentId);
 }
