@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.post.dto.PostRequestDto;
 import org.example.postory.domain.post.dto.PostResponseDto;
+import org.example.postory.domain.post.dto.PostResponseDto.Create;
 import org.example.postory.domain.post.dto.PostResponseDto.SearchList;
 import org.example.postory.domain.post.dto.PostResponseDto.GetPost;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;

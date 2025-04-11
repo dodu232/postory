@@ -32,12 +32,6 @@ public interface PostService {
     // 게시물 좋아요
     void likePost(long id, UserDetails userDetails);
 
-    // 삭제되지 않은 게시글 + 수정일 기준 최신 정렬
-    List<NewsFeed> getAllMyPosts(Long userId);
-
-    //공개 게시글 + 삭제되지 않은 게시글 + 수정일 기준 최신순 정렬
-    List<NewsFeed> getVisiblePostsByUser(Long userId);
-
     /**
      * 타입에 따른 검색
      *

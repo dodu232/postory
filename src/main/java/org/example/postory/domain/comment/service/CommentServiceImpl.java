@@ -130,4 +130,12 @@ public class CommentServiceImpl implements CommentService {
         comment.updateContent(requestDto.getContents());
         return new CommentItem(comment);
     }
+
+    //삭제표시 안된 내 게시글 몽땅 삭제표시
+    @Transactional
+    public void deleteAllMyComments(Long authUserId) {
+        List<Comment> myAllComments = commentRepository.getAllByUser_IdAndDeletedAtIsNull(
+            authUserId);
+        myAllComments.forEach(Comment::markAsDeleted);
+    }
 }
