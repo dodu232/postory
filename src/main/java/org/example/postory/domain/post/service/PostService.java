@@ -15,7 +15,6 @@ public interface PostService {
     Post getPostById(long postId, Long userId);
 
     // 게시물 생성
-//    Post createPost(PostRequestDto postRequestDto, Long userId);
     PostResponseDto.Get createPost(PostRequestDto dto, UserDetails userDetails);
 
     // 게시물 삭제
