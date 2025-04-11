@@ -129,6 +129,7 @@ public class PostServiceImpl implements PostService {
 
     // 게시물 수정
     @Override
+    @Transactional
     public void updatePost(long id, PostRequestDto.Update updatePost, Long userId) {
 
         Post post = postRepository.findByIdOrElseThrow(id);
