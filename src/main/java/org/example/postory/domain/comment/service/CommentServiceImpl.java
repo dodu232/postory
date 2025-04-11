@@ -96,14 +96,18 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public void likeComment(long commentId, UserDetails userDetails) {
         long userId = Long.parseLong(userDetails.getUsername());
+        Comment findComment = commentRepository.findById(commentId)
+            .orElseThrow(() -> new ApiException(ErrorType.COMMENT_NOT_FOUND));
         Optional<CommentLike> commentLike = commentLikeRepository.findByCommentIdAndUserId(
             commentId, userId);
 
         if (commentLike.isPresent()) {
+            findComment.downLikeCount();
             commentLikeRepository.delete(commentLike.get());
         } else {
             User user = new User(userId);
             Comment comment = new Comment(commentId);
+            findComment.upLikeCount();
             commentLikeRepository.save(new CommentLike(user, comment));
         }
     }

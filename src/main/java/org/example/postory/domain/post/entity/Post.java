@@ -63,4 +63,12 @@ public class Post extends BaseEntity {
     public void markAsDeleted() {  // soft delete 방식 : 삭제된 시간만 기록
         this.setDeletedAt(LocalDateTime.now());
     }
+
+    public void upLikeCount() {
+        this.postLikeCount++;
+    }
+
+    public void downLikeCount() {
+        this.postLikeCount--;
+    }
 }
