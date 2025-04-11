@@ -1,5 +1,7 @@
 package org.example.postory.domain.user.entity;
 
+import static org.example.postory.global.error.response.ErrorType.DISABLE_USER;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,7 +9,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.time.LocalDateTime;
 import lombok.*;
+import org.example.postory.domain.user.dto.UserRequestDto.UpdateProfile;
 import org.example.postory.global.common.BaseEntity;
+import org.example.postory.global.error.ApiException;
+import org.example.postory.global.util.PasswordEncoder;
 
 
 @Getter
@@ -23,21 +28,19 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String email;
 
-    @Setter
     @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)
     private String phone;
 
-    @Setter
+    @Column
     private String name;
-    @Setter
+    @Column
     private boolean gender;
-    @Setter
+    @Column
     private String introduction;
 
-    @Setter
     @Column(nullable = false)
     private boolean isPublic = true;
     @Column
@@ -61,4 +64,27 @@ public class User extends BaseEntity {
     public void markAsDeleted() {  // soft delete 방식 : 삭제된 시간만 기록
         this.setDeletedAt(LocalDateTime.now());
     }
+
+    public void updateProfile(UpdateProfile updateProfile){
+
+        if (updateProfile.getName() != null) {
+            this.name = updateProfile.getName();
+        }
+        if (updateProfile.getIntroduction() != null) {
+            this.introduction=updateProfile.getIntroduction();
+        }
+        if (updateProfile.getGender() != null) {
+            this.gender=updateProfile.getGender();
+        }
+
+        if (updateProfile.getPassword() != null && !PasswordEncoder.matches(updateProfile.getPassword(),
+            this.getPassword())) {
+            this.password=PasswordEncoder.encode(updateProfile.getPassword());
+        }
+
+        if (updateProfile.getIsPublic() != null) {
+            this.isPublic=updateProfile.getIsPublic();
+        }
+    }
+
 }
