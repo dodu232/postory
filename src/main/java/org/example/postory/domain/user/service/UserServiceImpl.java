@@ -307,6 +307,7 @@ public class UserServiceImpl implements UserService {
             post.markAsDeleted();
             //해당 게시글이나 유저와 관련된 게시글 좋아요 삭제
             postLikeRepository.deleteAllByPost_Id(post.getId());
+            commentRepository.findAllByPost_Id(post.getId()).forEach(Comment::markAsDeleted);
         }
 
         //해당 유저가 표시한 댓글 좋아요 삭제
