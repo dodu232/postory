@@ -59,14 +59,6 @@ import org.springframework.web.bind.annotation.RestController;
         public ResponseEntity<Get> createPost(
                 @Valid @RequestBody PostRequestDto request,
                 @AuthenticationPrincipal UserDetails userDetails) {
-//            if (userDetails == null) {  // userId가 있는지 먼저 조회
-//                throw new ApiException(ErrorType.UNAUTHORIZED_USER);
-//            }
-//            Long userId = userDetails != null ? Long.valueOf(userDetails.getUsername()) : null;
-//            Post saved = postService.createPost(request, userId);
-//            // User user = saved.getUser();  // 디버깅코드
-//            Get response = Get.fromPostEntity(saved);
-//            return ResponseEntity.status(HttpStatus.CREATED).body(response);
             Get response = postService.createPost(request, userDetails);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         }
