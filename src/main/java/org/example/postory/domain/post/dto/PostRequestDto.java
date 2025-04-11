@@ -49,5 +49,5 @@ public class PostRequestDto {
         @NotBlank(message = "value는 필수 입력 항목입니다.")
         private String value;
 
-
+    }
 }
