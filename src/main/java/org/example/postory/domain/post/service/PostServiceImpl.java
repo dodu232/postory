@@ -58,7 +58,7 @@ public class PostServiceImpl implements PostService {
         Post findPost = postRepository.findVisiblePost(id, userId)
             .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
 
-        CursorResponseDto<CommentItem> comments = commentService.getComments(cursorCreatedAt, cursorId, id, size);
+        CursorResponseDto<CommentItem> comments = commentService.getComments(cursorCreatedAt, cursorId, id, size, userDetails);
 
         return new PostResponseDto.GetPost(findPost, comments);
     }
@@ -133,7 +133,7 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findByIdOrElseThrow(id);
 
         // 게시물 작성자인지 확인
-        if (!userId.equals(post.getId())) {
+        if (!userId.equals(post.getUser().getId())) {
             throw new ApiException(FORBIDDEN_POST_UPDATE);
         }
 

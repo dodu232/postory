@@ -61,10 +61,11 @@ public class CommentController {
         @RequestParam(required = false) LocalDateTime cursorCreatedAt,
         @RequestParam(required = false) Long cursorId,
         @RequestParam Long postId,
-        @RequestParam(defaultValue = "10") int size
+        @RequestParam(defaultValue = "10") int size,
+        @AuthenticationPrincipal UserDetails userDetails
     ) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(commentService.getComments(cursorCreatedAt, cursorId, postId, size));
+            .body(commentService.getComments(cursorCreatedAt, cursorId, postId, size, userDetails));
     }
 
     // 좋아요
