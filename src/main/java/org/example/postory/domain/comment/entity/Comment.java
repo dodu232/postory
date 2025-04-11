@@ -17,6 +17,8 @@ import org.example.postory.domain.post.entity.Post;
 import org.example.postory.domain.user.entity.User;
 import org.example.postory.global.common.BaseEntity;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -51,5 +53,9 @@ public class Comment extends BaseEntity {
 
     public void updateContent(String content){
         this.content = content;
+    }
+
+    public void markAsDeleted() { // soft delete
+        this.setDeletedAt(LocalDateTime.now());
     }
 }

@@ -129,4 +129,14 @@ public class CommentServiceImpl implements CommentService {
         comment.updateContent(requestDto.getContents());
         return new CommentItem(comment);
     }
+
+    @Transactional
+    @Override
+    public void deleteComment(Long authUserId, Long commentId) {
+        Comment comment = commentRepository.getCommentByIdOrElseThrow(commentId);
+        if (!authUserId.equals(comment.getUser().getId())) {
+            throw new ApiException(ErrorType.FORBIDDEN_COMMENT);
+        }
+        comment.markAsDeleted();
+    }
 }
