@@ -4,9 +4,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
-import org.example.postory.domain.post.repository.PostRepository;
 import org.example.postory.domain.user.dto.*;
 import org.example.postory.domain.post.service.PostService;
+import org.example.postory.domain.user.dto.SignupRequestDto;
+import org.example.postory.domain.user.dto.SignupResponseDto;
 import org.example.postory.domain.user.dto.UserRequestDto.UpdateProfile;
 import org.example.postory.global.common.pagination.CursorDto;
 import org.example.postory.global.common.pagination.CursorResponseDto;
@@ -14,6 +15,7 @@ import org.example.postory.global.util.PasswordEncoder;
 
 import static org.example.postory.global.error.response.ErrorType.*;
 
+import org.example.postory.domain.user.dto.UserProfileResponseDto;
 import org.example.postory.domain.user.entity.Following;
 import org.example.postory.domain.user.entity.User;
 import org.example.postory.domain.user.repository.FollowingRepository;
@@ -24,8 +26,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static org.example.postory.global.error.response.ErrorType.*;
 
 @Service
 @RequiredArgsConstructor
@@ -116,10 +116,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Override
-    public User getById(Long UserId){
-        return userRepository.findByUserIdOrElseThrow(UserId);
-    }
     /**
      * [Service] 프로필 정보 업데이트 함수 업데이트된 데이터는 userId로 기존 정보를 가져와 필요한 값만 변경 후 저장됩니다. 비밀번호는 기존 비밀번호와 다를
      * 경우에만 변경됩니다.
@@ -272,6 +268,11 @@ public class UserServiceImpl implements UserService {
         }
 
         return CursorResponseDto.of(followingResponseDtos, nextCursor);
+    }
+
+    @Override
+    public User getById(Long authUserId) {
+        return userRepository.findByUserIdOrElseThrow(authUserId);
     }
 
 }

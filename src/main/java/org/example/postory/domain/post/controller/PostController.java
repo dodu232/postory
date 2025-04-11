@@ -9,19 +9,15 @@ import org.example.postory.domain.post.dto.PostResponseDto.Get;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
 import org.example.postory.domain.post.entity.Post;
 import org.example.postory.domain.post.service.PostService;
+import org.example.postory.domain.user.entity.User;
 import org.example.postory.global.common.pagination.CursorResponseDto;
+import org.example.postory.global.error.ApiException;
+import org.example.postory.global.error.response.ErrorType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/posts")
@@ -55,12 +51,31 @@ public class PostController {
     // 게시물 생성
     @PostMapping
     public ResponseEntity<Get> createPost(
-        @Valid @RequestBody PostRequestDto request,
+        @Valid @RequestBody PostRequestDto.Create request,
         @AuthenticationPrincipal UserDetails userDetails) {
-        Long userId = userDetails != null ? Long.valueOf(userDetails.getUsername()) : null;
-        Post saved = postService.createPost(request, userId);
-        Get response = Get.fromPostEntity(saved);
+        Get response =  postService.createPost(request, userDetails);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    // 게시물 수정
+    @PatchMapping("/{id}")
+    public ResponseEntity<String> updatePost(
+        @PathVariable("id") long id,
+        @RequestBody @Valid PostRequestDto.Update request,
+        @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        postService.updatePost(id, request, Long.valueOf(userDetails.getUsername()));
+        return ResponseEntity.status(HttpStatus.OK).body("게시물 수정 성공");
+    }
+  
+    // 게시물 삭제
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deletePost(
+        @PathVariable("id") long postId,
+        @AuthenticationPrincipal UserDetails userDetails) {
+        postService.deletePost(postId, userDetails);
+        return ResponseEntity.status(HttpStatus.OK).build();
+
     }
 
     // 좋아요
@@ -71,6 +86,7 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+
     // 검색
     @GetMapping("/search")
     public ResponseEntity<CursorResponseDto<PostResponseDto.SearchList>> getSearchList(
@@ -80,4 +96,6 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK)
             .body(postService.getSearchList(dto, cursorUpdatedAt, cursorId));
     }
+
+
 }

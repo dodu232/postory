@@ -1,5 +1,7 @@
 package org.example.postory.domain.post.service;
 
+import static org.example.postory.global.error.response.ErrorType.FORBIDDEN_POST_UPDATE;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +15,7 @@ import org.example.postory.domain.post.entity.PostLike;
 import org.example.postory.domain.post.repository.PostLikeRepository;
 import org.example.postory.domain.post.repository.PostRepository;
 import org.example.postory.domain.user.entity.User;
+import org.example.postory.domain.user.repository.UserRepository;
 import org.example.postory.global.common.pagination.CursorDto;
 import org.example.postory.global.common.pagination.CursorResponseDto;
 import org.example.postory.global.error.ApiException;
@@ -31,6 +34,7 @@ import org.springframework.web.client.RestClient;
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
     private final PostLikeRepository postLikeRepository;
 
     private final int LIKE_MINIMUM = 0;
@@ -44,16 +48,40 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post createPost(PostRequestDto dto, Long userId) {
+    public PostResponseDto.Get createPost(PostRequestDto.Create dto, UserDetails userDetails) {
+        if (userDetails == null) {  // userId가 들어있는 userDetail이 null인지 먼저 확인 (인증 실패 에러)
+            throw new ApiException(ErrorType.UNAUTHORIZED_USER);
+        }
+        Long userId = Long.valueOf(userDetails.getUsername()); // userDetails에서 userId 추출
+        User user = userRepository.findById(userId)   // userDetails에서 userId가 null인지 또 확인
+            .orElseThrow(() -> new ApiException(
+                ErrorType.USER_NOT_FOUND)); // db에 임의의 숫자를 입력하는 경우, 존재하지 않는 유저 에러
         Post post = Post.builder()
-                .title(dto.getTitle())
-                .content(dto.getContent())
-                .hashtag(dto.getHashtag())
-                .isPublic(dto.isPublic())
-                .user(User.withId(userId))  // 연관관계 설정을 위해 Id로 참조함
-                .build();
-        return postRepository.save(post);
+            .title(dto.getTitle())
+            .content(dto.getContent())
+            .hashtag(dto.getHashtag())
+            .isPublic(dto.isPublic())
+            .user(user) // DB에서 실제 user객체 조회하도록 수정
+            .build();
+        Post saved = postRepository.save(post);
+        return PostResponseDto.Get.fromPostEntity(saved);
     }
+
+    @Override
+    @Transactional
+    public void deletePost(long postId, UserDetails userDetails) {
+        if (userDetails == null) {  // @AuthenticationPrincipal이 null일 때
+            throw new ApiException(ErrorType.UNAUTHORIZED_USER);  // 로그인 되지 않은 사용자 접근 차단
+        }
+        Long userId = Long.parseLong(userDetails.getUsername());
+        Post post = postRepository.findById(postId) // 삭제할 게시물이 존재하는지 db에서 조회
+            .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
+        if (!post.getUser().getId().equals(userId)) { // 게시글 작성자 본인인지 확인
+            throw new ApiException(ErrorType.NO_PERMISSION);
+        }
+        post.markAsDeleted(); // deletedAt을 현재 시각으로 기록
+    }
+
 
     @Override
     public CursorResponseDto<NewsFeed> getNewsFeed(LocalDateTime cursorUpdatedAt, Long cursorId,
@@ -82,13 +110,28 @@ public class PostServiceImpl implements PostService {
 
     }
 
+    // 게시물 수정
+    @Override
+    public void updatePost(long id, PostRequestDto.Update updatePost, Long userId) {
+
+        Post post = postRepository.findByIdOrElseThrow(id);
+
+        // 게시물 작성자인지 확인
+        if (!userId.equals(post.getId())) {
+            throw new ApiException(FORBIDDEN_POST_UPDATE);
+        }
+
+        post.updatePost(updatePost);
+        postRepository.save(post);
+    }
+
     @Override
     @Transactional
-    public void likePost(long postId, UserDetails userDetails){
-        long userId  = Long.parseLong(userDetails.getUsername());
+    public void likePost(long postId, UserDetails userDetails) {
+        long userId = Long.parseLong(userDetails.getUsername());
         Optional<PostLike> postLike = postLikeRepository.findByPostIdAndUserId(postId, userId);
 
-        if(postLike.isPresent()){
+        if (postLike.isPresent()) {
             postLikeRepository.delete(postLike.get());
         } else {
             User user = new User(userId);
@@ -103,9 +146,11 @@ public class PostServiceImpl implements PostService {
         return postRepository.getAllByUser_IdAndDeletedAtIsNullOrderByUpdatedAt(userId)
             .stream().map(PostResponseDto.NewsFeed::new).collect(Collectors.toList());
     }
+
     //공개 게시글 + 삭제되지 않은 게시글 + 수정일 기준 최신순 정렬
     public List<NewsFeed> getVisiblePostsByUser(Long userId) {
-        return postRepository.getAllByUser_IdAndDeletedAtIsNullAndIsPublicIsTrueOrderByUpdatedAt(userId)
+        return postRepository.getAllByUser_IdAndDeletedAtIsNullAndIsPublicIsTrueOrderByUpdatedAt(
+                userId)
             .stream().map(PostResponseDto.NewsFeed::new).collect(Collectors.toList());
     }
 

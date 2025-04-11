@@ -15,10 +15,16 @@ public interface PostService {
     Post getPostById(long postId, Long userId);
 
     // 게시물 생성
-    Post createPost(PostRequestDto postRequestDto, Long userId);
+    PostResponseDto.Get createPost(PostRequestDto.Create dto, UserDetails userDetails);
+
+    // 게시물 삭제
+    void deletePost(long postId, UserDetails userDetails);
 
     // 뉴스피드 조회
     CursorResponseDto<NewsFeed> getNewsFeed(LocalDateTime cursorUpdatedAt, Long cursorId, int size);
+
+    // 게시물 수정
+    void updatePost(long id, PostRequestDto.Update postRequestDto, Long userId);
 
     // 게시물 좋아요
     void likePost(long id, UserDetails userDetails);
