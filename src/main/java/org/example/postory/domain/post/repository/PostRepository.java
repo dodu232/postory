@@ -26,7 +26,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             WHERE p.id = :id
             AND (
                 p.isPostPublic = true
-                OR (:userId IS NOT NULL AND p.user.id = :userId)
+                OR p.user.id = :userId
             )
             AND p.deletedAt IS NULL
         """)

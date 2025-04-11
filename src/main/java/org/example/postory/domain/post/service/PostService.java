@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 public interface PostService {
 
     // 게시물 id와 사용자 id로 게시물 조회
-    Post getPostById(long postId, Long userId);
+//    Post getPostById(long postId, Long userId);
 
     // 게시물 단건 조회
     PostResponseDto.GetPost getPost(long id, UserDetails userDetails, LocalDateTime cursorCreatedAt, Long cursorId, int size);
