@@ -36,13 +36,6 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             return;
         }
 
-        // 토큰 없이도 허용 : 게시물 단건 조회, 뉴스피드 조회
-        String method = httpRequest.getMethod();
-        if (requestURI.startsWith("/posts") && "GET".equalsIgnoreCase(method)) {
-            chain.doFilter(request, response);
-            return;
-        }
-
         String token = resolveToken((HttpServletRequest) request);
 
         if (token != null && jwtTokenProvider.validateToken(token)) {

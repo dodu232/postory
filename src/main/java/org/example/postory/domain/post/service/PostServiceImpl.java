@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.comment.dto.CommentResponseDto.CommentItem;
 import org.example.postory.domain.comment.service.CommentService;
@@ -28,6 +29,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClient;
 
 
 @Service
@@ -41,23 +43,18 @@ public class PostServiceImpl implements PostService {
 
     private final int LIKE_MINIMUM = 0;
 
-
-    @Override
-    public Post getPostById(long postId, Long userId) {
-        return postRepository.findVisiblePost(postId, userId)
-            .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
-        // 결과는 Optional<Post> 형식으로 반환되며, 값이 존재하면 그 값을 꺼내서 return
-        // 빈 Optional이 나오면 orElseThrow로 값 던지기
-    }
-
     @Override
     public PostResponseDto.GetPost getPost(long id, UserDetails userDetails, LocalDateTime cursorCreatedAt, Long cursorId, int size) {
-        // 로그인 한 사용자 아이디 조회
-        Long userId = Long.valueOf(userDetails.getUsername());
-
+        Long userId = null;
+        if (userDetails != null) {
+            try {
+                userId = Long.valueOf(userDetails.getUsername());
+            } catch (NumberFormatException e) {
+                throw new ApiException(ErrorType.UNAUTHORIZED_USER);
+            }
+        }
         Post findPost = postRepository.findVisiblePost(id, userId)
             .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
-
         CursorResponseDto<CommentItem> comments = commentService.getComments(cursorCreatedAt, cursorId, id, size, userDetails);
 
         return new PostResponseDto.GetPost(findPost, comments);
@@ -133,6 +130,7 @@ public class PostServiceImpl implements PostService {
 
     // 게시물 수정
     @Override
+    @Transactional
     public void updatePost(long id, PostRequestDto.Update updatePost, Long userId) {
 
         Post post = postRepository.findByIdOrElseThrow(id);
@@ -146,15 +144,20 @@ public class PostServiceImpl implements PostService {
         postRepository.save(post);
     }
 
+    // 좋아요
     @Override
     @Transactional
     public void likePost(long postId, UserDetails userDetails) {
         long userId = Long.parseLong(userDetails.getUsername());
+        Post findPost = postRepository.findById(postId)
+            .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
         Optional<PostLike> postLike = postLikeRepository.findByPostIdAndUserId(postId, userId);
 
         if (postLike.isPresent()) {
+            findPost.downLikeCount();
             postLikeRepository.delete(postLike.get());
         } else {
+            findPost.upLikeCount();
             User user = new User(userId);
             Post post = new Post(postId);
             postLikeRepository.save(new PostLike(user, post));
