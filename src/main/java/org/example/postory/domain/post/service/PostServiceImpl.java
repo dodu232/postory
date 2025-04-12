@@ -5,7 +5,7 @@ import static org.example.postory.global.error.response.ErrorType.FORBIDDEN_POST
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.comment.dto.CommentResponseDto.CommentItem;
 import org.example.postory.domain.comment.service.CommentService;
@@ -28,7 +28,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestClient;
 
 
 @Service
@@ -143,15 +142,20 @@ public class PostServiceImpl implements PostService {
         postRepository.save(post);
     }
 
+    // 좋아요
     @Override
     @Transactional
     public void likePost(long postId, UserDetails userDetails) {
         long userId = Long.parseLong(userDetails.getUsername());
+        Post findPost = postRepository.findById(postId)
+            .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
         Optional<PostLike> postLike = postLikeRepository.findByPostIdAndUserId(postId, userId);
 
         if (postLike.isPresent()) {
+            findPost.downLikeCount();
             postLikeRepository.delete(postLike.get());
         } else {
+            findPost.upLikeCount();
             User user = new User(userId);
             Post post = new Post(postId);
             postLikeRepository.save(new PostLike(user, post));

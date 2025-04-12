@@ -13,10 +13,8 @@ import org.example.postory.domain.comment.repository.CommentLikeRepository;
 import org.example.postory.domain.comment.repository.CommentRepository;
 import org.example.postory.domain.post.entity.Post;
 import org.example.postory.domain.post.repository.PostRepository;
-import org.example.postory.domain.post.service.PostService;
 import org.example.postory.domain.user.entity.User;
 import org.example.postory.domain.user.repository.UserRepository;
-import org.example.postory.domain.user.service.UserService;
 import org.example.postory.global.common.pagination.CursorDto;
 import org.example.postory.global.common.pagination.CursorResponseDto;
 import org.example.postory.global.error.ApiException;
@@ -98,14 +96,18 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public void likeComment(long commentId, UserDetails userDetails) {
         long userId = Long.parseLong(userDetails.getUsername());
+        Comment findComment = commentRepository.findById(commentId)
+            .orElseThrow(() -> new ApiException(ErrorType.COMMENT_NOT_FOUND));
         Optional<CommentLike> commentLike = commentLikeRepository.findByCommentIdAndUserId(
             commentId, userId);
 
         if (commentLike.isPresent()) {
+            findComment.downLikeCount();
             commentLikeRepository.delete(commentLike.get());
         } else {
             User user = new User(userId);
             Comment comment = new Comment(commentId);
+            findComment.upLikeCount();
             commentLikeRepository.save(new CommentLike(user, comment));
         }
     }
