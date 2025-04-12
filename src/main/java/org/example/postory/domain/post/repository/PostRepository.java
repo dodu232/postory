@@ -56,8 +56,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     //로그인했을때뉴스피드
     @Query("""
             SELECT p FROM Post p
-            LEFT JOIN Following f
-                ON f.followingUser.id = p.user.id AND f.user.id = :authUserId
+            LEFT JOIN (SELECT f FROM Following f WHERE f.user.id = :authUserId) f
+                ON f.followingUser.id = p.user.id
             WHERE ((p.updatedAt < :cursorUpdatedAt)
             OR (p.updatedAt = :cursorUpdatedAt AND p.id < :cursorId))
             AND p.isPostPublic = true

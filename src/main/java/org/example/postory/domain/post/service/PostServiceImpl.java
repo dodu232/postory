@@ -114,7 +114,7 @@ public class PostServiceImpl implements PostService {
 
         List<Post> newsFeed = new ArrayList<>();
         //비로그인
-        if(userDetails.getUsername() == null){
+        if(userDetails == null){
             newsFeed = postRepository.getNewsFeed(cursorUpdatedAt, cursorId, pageable);
         }else{
             newsFeed = postRepository.getLoginNewsFeed(cursorUpdatedAt, cursorId,
