@@ -47,19 +47,8 @@ public class PostController {
         @RequestParam(defaultValue = "10") int size,
         @AuthenticationPrincipal UserDetails userDetails
     ) {
-        // 로그인 여부 확인
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        log.info("Authentication: {}", authentication);
-//
-//        UserDetails userDetails = null;
-//
-//        if (authentication != null && authentication.isAuthenticated()
-//            && !(authentication instanceof AnonymousAuthenticationToken)) {
-//            userDetails = (UserDetails) authentication.getPrincipal();
-//        }
-
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(postService.getNewsFeed(cursorUpdatedAt, cursorId, size,userDetails));
+            .body(postService.getNewsFeed(cursorUpdatedAt, cursorId, size, userDetails));
     }
 
     // 게시물 생성

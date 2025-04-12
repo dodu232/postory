@@ -44,7 +44,8 @@ public class PostServiceImpl implements PostService {
     private final int LIKE_MINIMUM = 0;
 
     @Override
-    public PostResponseDto.GetPost getPost(long id, UserDetails userDetails, LocalDateTime cursorCreatedAt, Long cursorId, int size) {
+    public PostResponseDto.GetPost getPost(long id, UserDetails userDetails,
+        LocalDateTime cursorCreatedAt, Long cursorId, int size) {
         Long userId = null;
         if (userDetails != null) {
             try {
@@ -55,7 +56,8 @@ public class PostServiceImpl implements PostService {
         }
         Post findPost = postRepository.findVisiblePost(id, userId)
             .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
-        CursorResponseDto<CommentItem> comments = commentService.getComments(cursorCreatedAt, cursorId, id, size, userDetails);
+        CursorResponseDto<CommentItem> comments = commentService.getComments(cursorCreatedAt,
+            cursorId, id, size, userDetails);
 
         return new PostResponseDto.GetPost(findPost, comments);
     }
@@ -109,10 +111,10 @@ public class PostServiceImpl implements PostService {
         // 한 번에 10개씩 가져오도록 고정.
         Pageable pageable = PageRequest.of(0, size);
 
-        List<Post> newsFeed = new ArrayList<>();
+        List<Post> newsFeed;
         //로그인 여부확인
-        if(userDetails != null){
-            Long userId = null;
+        if (userDetails != null) {
+            Long userId;
             try {
                 userId = Long.valueOf(userDetails.getUsername());
             } catch (NumberFormatException e) {
@@ -121,7 +123,7 @@ public class PostServiceImpl implements PostService {
 
             newsFeed = postRepository.getLoginNewsFeed(cursorUpdatedAt, cursorId,
                 userId, pageable);
-        }else{
+        } else {
             newsFeed = postRepository.getNewsFeed(cursorUpdatedAt, cursorId, pageable);
         }
 
