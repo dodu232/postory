@@ -8,7 +8,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+
 import java.time.LocalDateTime;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,8 +19,6 @@ import lombok.Setter;
 import org.example.postory.domain.post.entity.Post;
 import org.example.postory.domain.user.entity.User;
 import org.example.postory.global.common.BaseEntity;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Entity

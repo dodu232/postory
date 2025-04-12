@@ -1,13 +1,14 @@
 package org.example.postory.domain.user.entity;
 
-import static org.example.postory.global.error.response.ErrorType.DISABLE_USER;
+
+
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import java.time.LocalDateTime;
 import lombok.*;
 import org.example.postory.domain.user.dto.UserRequestDto.UpdateProfile;
 import org.example.postory.global.common.BaseEntity;
@@ -21,7 +22,6 @@ public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
     private Long id;
 
     @Column(nullable = false)
@@ -53,7 +53,7 @@ public class User extends BaseEntity {
         this.phone = phone;
     }
 
-    public User(long id){
+    public User(long id) {
         this.id = id;
     }
 
@@ -65,25 +65,25 @@ public class User extends BaseEntity {
         this.setDeletedAt(LocalDateTime.now());
     }
 
-    public void updateProfile(UpdateProfile updateProfile){
+    public void updateProfile(UpdateProfile updateProfile) {
 
         if (updateProfile.getName() != null) {
             this.name = updateProfile.getName();
         }
         if (updateProfile.getIntroduction() != null) {
-            this.introduction=updateProfile.getIntroduction();
+            this.introduction = updateProfile.getIntroduction();
         }
         if (updateProfile.getGender() != null) {
-            this.gender=updateProfile.getGender();
+            this.gender = updateProfile.getGender();
         }
 
         if (updateProfile.getPassword() != null && !PasswordEncoder.matches(updateProfile.getPassword(),
-            this.getPassword())) {
-            this.password=PasswordEncoder.encode(updateProfile.getPassword());
+                this.getPassword())) {
+            this.password = PasswordEncoder.encode(updateProfile.getPassword());
         }
 
         if (updateProfile.getIsUserPublic() != null) {
-            this.isUserPublic=updateProfile.getIsUserPublic();
+            this.isUserPublic = updateProfile.getIsUserPublic();
         }
     }
 
