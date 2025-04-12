@@ -3,6 +3,7 @@ package org.example.postory.domain.post.controller;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.postory.domain.post.dto.PostRequestDto;
 import org.example.postory.domain.post.dto.PostResponseDto;
 import org.example.postory.domain.post.dto.PostResponseDto.Create;
@@ -16,10 +17,14 @@ import org.example.postory.global.error.ApiException;
 import org.example.postory.global.error.response.ErrorType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/posts")
 @RequiredArgsConstructor  // 생성자 주입
@@ -45,9 +50,19 @@ public class PostController {
     public ResponseEntity<CursorResponseDto<NewsFeed>> getNewsFeed(
         @RequestParam(required = false) LocalDateTime cursorUpdatedAt,
         @RequestParam(required = false) Long cursorId,
-        @RequestParam(defaultValue = "10") int size,
-        @AuthenticationPrincipal UserDetails userDetails
+        @RequestParam(defaultValue = "10") int size
     ) {
+        // 로그인 여부 확인
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        log.info("Authentication: {}", authentication);
+
+        UserDetails userDetails = null;
+
+        if (authentication != null && authentication.isAuthenticated()
+            && !(authentication instanceof AnonymousAuthenticationToken)) {
+            userDetails = (UserDetails) authentication.getPrincipal();
+        }
+
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(postService.getNewsFeed(cursorUpdatedAt, cursorId, size,userDetails));
     }

@@ -113,13 +113,12 @@ public class PostServiceImpl implements PostService {
         Pageable pageable = PageRequest.of(0, size);
 
         List<Post> newsFeed = new ArrayList<>();
-        //비로그인
-        if(userDetails == null){
-            newsFeed = postRepository.getNewsFeed(cursorUpdatedAt, cursorId, pageable);
-        }else{
+        //로그인 여부확인
+        if(userDetails != null){
             newsFeed = postRepository.getLoginNewsFeed(cursorUpdatedAt, cursorId,
                 Long.valueOf(userDetails.getUsername()), pageable);
-
+        }else{
+            newsFeed = postRepository.getNewsFeed(cursorUpdatedAt, cursorId, pageable);
         }
 
         List<NewsFeed> newsFeedDto = newsFeed.stream().map(NewsFeed::new).toList();
