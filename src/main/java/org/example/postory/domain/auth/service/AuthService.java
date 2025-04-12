@@ -28,7 +28,7 @@ public class AuthService {
      */
     public JwtToken login(AuthRequestDto.Login dto) {
         User findUser = userRepository.findByEmail(dto.getEmail())
-            .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
         if (!PasswordEncoder.matches(dto.getPassword(), findUser.getPassword())) {
             throw new ApiException(ErrorType.INVALID_PASSWORD);
         }
@@ -42,7 +42,7 @@ public class AuthService {
     public void logout(UserDetails userDetails) {
         long userId = Long.parseLong(userDetails.getUsername());
         User findUser = userRepository.findById(userId)
-            .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
         findUser.updateToken(null);
     }
 

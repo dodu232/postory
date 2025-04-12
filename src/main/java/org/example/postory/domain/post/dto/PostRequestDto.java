@@ -7,8 +7,8 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.example.postory.domain.post.enums.SearchType;
 import lombok.RequiredArgsConstructor;
+import org.example.postory.domain.post.enums.SearchType;
 
 @Getter
 @RequiredArgsConstructor
@@ -45,7 +45,7 @@ public class PostRequestDto {
         @Pattern(regexp = "^(?!\\s*$).+", message = "수정할 내용을 입력해주세요.")
         private String hashtag;
     }
-    
+
     @AllArgsConstructor
     @Getter
     public static class Search {

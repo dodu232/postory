@@ -1,12 +1,12 @@
 package org.example.postory.domain.post.service;
 
-import java.time.LocalDateTime;
 import org.example.postory.domain.post.dto.PostRequestDto;
 import org.example.postory.domain.post.dto.PostResponseDto;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
-import org.example.postory.domain.post.entity.Post;
 import org.example.postory.global.common.pagination.CursorResponseDto;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.time.LocalDateTime;
 
 public interface PostService {
 
@@ -21,7 +21,7 @@ public interface PostService {
 
     // 뉴스피드 조회
     CursorResponseDto<NewsFeed> getNewsFeed(LocalDateTime cursorUpdatedAt, Long cursorId, int size,
-        UserDetails userDetails);
+                                            UserDetails userDetails);
 
     // 게시물 수정
     void updatePost(long id, PostRequestDto.Update postRequestDto, Long userId);
@@ -35,5 +35,5 @@ public interface PostService {
      * @{keyword}: 유저 검색 #{keyword}: 해시태그 검색 {keyword}: 게시물 검색
      */
     CursorResponseDto<PostResponseDto.SearchList> getSearchList(PostRequestDto.Search dto,
-        LocalDateTime cursorUpdatedAt, Long cursorId);
+                                                                LocalDateTime cursorUpdatedAt, Long cursorId);
 }

@@ -1,7 +1,8 @@
 package org.example.postory.global.common.pagination;
 
-import java.time.LocalDateTime;
 import lombok.Getter;
+
+import java.time.LocalDateTime;
 
 @Getter
 public class CursorDto {

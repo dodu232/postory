@@ -1,12 +1,5 @@
 package org.example.postory.domain.post.service;
 
-import static org.example.postory.global.error.response.ErrorType.FORBIDDEN_POST_UPDATE;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.comment.dto.CommentResponseDto.CommentItem;
 import org.example.postory.domain.comment.service.CommentService;
@@ -29,7 +22,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestClient;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import static org.example.postory.global.error.response.ErrorType.FORBIDDEN_POST_UPDATE;
 
 
 @Service
@@ -45,7 +43,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostResponseDto.GetPost getPost(long id, UserDetails userDetails,
-        LocalDateTime cursorCreatedAt, Long cursorId, int size) {
+                                           LocalDateTime cursorCreatedAt, Long cursorId, int size) {
         Long userId = null;
         if (userDetails != null) {
             try {
@@ -55,9 +53,9 @@ public class PostServiceImpl implements PostService {
             }
         }
         Post findPost = postRepository.findVisiblePost(id, userId)
-            .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
         CursorResponseDto<CommentItem> comments = commentService.getComments(cursorCreatedAt,
-            cursorId, id, size, userDetails);
+                cursorId, id, size, userDetails);
 
         return new PostResponseDto.GetPost(findPost, comments);
     }
@@ -69,15 +67,15 @@ public class PostServiceImpl implements PostService {
         }
         Long userId = Long.valueOf(userDetails.getUsername()); // userDetails에서 userId 추출
         User user = userRepository.findById(userId)   // userDetails에서 userId가 null인지 또 확인
-            .orElseThrow(() -> new ApiException(
-                ErrorType.USER_NOT_FOUND)); // db에 임의의 숫자를 입력하는 경우, 존재하지 않는 유저 에러
+                .orElseThrow(() -> new ApiException(
+                        ErrorType.USER_NOT_FOUND)); // db에 임의의 숫자를 입력하는 경우, 존재하지 않는 유저 에러
         Post post = Post.builder()
-            .title(dto.getTitle())
-            .content(dto.getContent())
-            .hashtag(dto.getHashtag())
-            .isPostPublic(dto.isPostPublic())
-            .user(user) // DB에서 실제 user객체 조회하도록 수정
-            .build();
+                .title(dto.getTitle())
+                .content(dto.getContent())
+                .hashtag(dto.getHashtag())
+                .isPostPublic(dto.isPostPublic())
+                .user(user) // DB에서 실제 user객체 조회하도록 수정
+                .build();
         Post saved = postRepository.save(post);
         return PostResponseDto.Create.fromPostEntity(saved);
     }
@@ -90,7 +88,7 @@ public class PostServiceImpl implements PostService {
         }
         Long userId = Long.parseLong(userDetails.getUsername());
         Post post = postRepository.findById(postId) // 삭제할 게시물이 존재하는지 db에서 조회
-            .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
         if (!post.getUser().getId().equals(userId)) { // 게시글 작성자 본인인지 확인
             throw new ApiException(ErrorType.NO_PERMISSION);
         }
@@ -100,7 +98,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public CursorResponseDto<NewsFeed> getNewsFeed(LocalDateTime cursorUpdatedAt, Long cursorId,
-        int size, UserDetails userDetails) {
+                                                   int size, UserDetails userDetails) {
 
         // 첫 번째 조회.
         if (cursorUpdatedAt == null || cursorId == null) {
@@ -122,7 +120,7 @@ public class PostServiceImpl implements PostService {
             }
 
             newsFeed = postRepository.getLoginNewsFeed(cursorUpdatedAt, cursorId,
-                userId, pageable);
+                    userId, pageable);
         } else {
             newsFeed = postRepository.getNewsFeed(cursorUpdatedAt, cursorId, pageable);
         }
@@ -159,7 +157,7 @@ public class PostServiceImpl implements PostService {
     public void likePost(long postId, UserDetails userDetails) {
         long userId = Long.parseLong(userDetails.getUsername());
         Post findPost = postRepository.findById(postId)
-            .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
         Optional<PostLike> postLike = postLikeRepository.findByPostIdAndUserId(postId, userId);
 
         if (postLike.isPresent()) {
@@ -178,7 +176,7 @@ public class PostServiceImpl implements PostService {
      */
     @Override
     public CursorResponseDto<PostResponseDto.SearchList> getSearchList(PostRequestDto.Search dto,
-        LocalDateTime cursorUpdatedAt, Long cursorId) {
+                                                                       LocalDateTime cursorUpdatedAt, Long cursorId) {
 
         // 첫 번째 조회.
         if (cursorUpdatedAt == null || cursorId == null) {
@@ -190,14 +188,12 @@ public class PostServiceImpl implements PostService {
         Pageable pageable = PageRequest.of(0, 10, Sort.by("updatedAt").descending());
 
         List<PostResponseDto.SearchList> postList = switch (dto.getSearchType()) {
-            case MENTION ->
-                postRepository.findByMention(dto.getValue(), LIKE_MINIMUM, cursorUpdatedAt,
+            case MENTION -> postRepository.findByMention(dto.getValue(), LIKE_MINIMUM, cursorUpdatedAt,
                     cursorId, pageable);
-            case HASHTAG ->
-                postRepository.findByHashTag(dto.getValue(), LIKE_MINIMUM, cursorUpdatedAt,
+            case HASHTAG -> postRepository.findByHashTag(dto.getValue(), LIKE_MINIMUM, cursorUpdatedAt,
                     cursorId, pageable);
             default -> postRepository.findByKeyword(dto.getValue(), LIKE_MINIMUM, cursorUpdatedAt,
-                cursorId, pageable);
+                    cursorId, pageable);
         };
 
         // 다음 커서 정보 저장

@@ -1,13 +1,13 @@
 package org.example.postory.domain.user.controller;
 
-import org.example.postory.domain.user.dto.*;
-import org.example.postory.global.common.pagination.CursorResponseDto;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.postory.domain.user.dto.*;
 import org.example.postory.domain.user.service.UserService;
+import org.example.postory.global.common.pagination.CursorResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,8 +36,8 @@ public class UserController {
      */
     @GetMapping("/profile/{UserId}")
     public ResponseEntity<UserProfileResponseDto> getUserInfo(
-        @PathVariable Long UserId,
-        @AuthenticationPrincipal UserDetails userDetails
+            @PathVariable Long UserId,
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(userService.getProfile(userDetails, UserId));
@@ -48,11 +48,11 @@ public class UserController {
      */
     @PatchMapping("/profile")
     public ResponseEntity<UserResponseDto.UpdateProfile> updateProfile(
-        @AuthenticationPrincipal UserDetails userDetails,
-        @RequestBody @Valid UserRequestDto.UpdateProfile profile
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody @Valid UserRequestDto.UpdateProfile profile
     ) {
         return ResponseEntity.status(HttpStatus.OK)
-            .body(userService.updateProfile(Long.parseLong(userDetails.getUsername()), profile));
+                .body(userService.updateProfile(Long.parseLong(userDetails.getUsername()), profile));
     }
 
     /**
@@ -112,8 +112,8 @@ public class UserController {
      */
     @DeleteMapping("/deactivate")
     public ResponseEntity<String> deactivateUser(
-        @AuthenticationPrincipal UserDetails userDetails
-    ){
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
         userService.deactivateUser(Long.parseLong(userDetails.getUsername()));
         return ResponseEntity.status(HttpStatus.OK).body("계정이 비활성화됩니다.");
     }

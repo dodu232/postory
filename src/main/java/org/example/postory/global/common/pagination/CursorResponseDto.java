@@ -1,7 +1,8 @@
 package org.example.postory.global.common.pagination;
 
-import java.util.List;
 import lombok.Getter;
+
+import java.util.List;
 
 @Getter
 public class CursorResponseDto<T> {

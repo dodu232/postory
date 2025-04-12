@@ -1,22 +1,9 @@
 package org.example.postory.domain.auth.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
-import java.security.Key;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.example.postory.domain.user.service.UserService;
 import org.example.postory.global.error.ApiException;
@@ -29,6 +16,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+
+import java.security.Key;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -60,33 +51,33 @@ public class JwtProvider {
 
         // Access Token 생성
         String accessToken = Jwts.builder()
-            .setSubject(String.valueOf(userId))
-            .claim("auth", "ROLE_USER")
-            .claim("iss", "off")
-            .setExpiration(new Date(now + 1800000))
-            .setIssuedAt(issuedAt)
-            .signWith(key, SignatureAlgorithm.HS256)
-            .compact();
+                .setSubject(String.valueOf(userId))
+                .claim("auth", "ROLE_USER")
+                .claim("iss", "off")
+                .setExpiration(new Date(now + 1800000))
+                .setIssuedAt(issuedAt)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
 
         // Refresh Token이 만료된 경우에만 생성
         String refreshToken = userService.getRefreshToken(userId);
         if (refreshToken == null || isRefreshTokenExpired(refreshToken)) {
             refreshToken = Jwts.builder()
-                .setSubject(String.valueOf(userId))
-                .claim("iss", "off")
-                .claim("add", "ref")
-                .setExpiration(new Date(now + 604800000))
-                .setIssuedAt(issuedAt)
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
+                    .setSubject(String.valueOf(userId))
+                    .claim("iss", "off")
+                    .claim("add", "ref")
+                    .setExpiration(new Date(now + 604800000))
+                    .setIssuedAt(issuedAt)
+                    .signWith(key, SignatureAlgorithm.HS256)
+                    .compact();
             userService.saveToken(userId, refreshToken);
         }
 
         return JwtToken.builder()
-            .grantType("Bearer")
-            .accessToken(accessToken)
-            .refreshToken(refreshToken)
-            .build();
+                .grantType("Bearer")
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 
     /**
@@ -100,9 +91,9 @@ public class JwtProvider {
         }
 
         Collection<? extends GrantedAuthority> authorities = Arrays.stream(
-                claims.get("auth").toString().split(","))
-            .map(SimpleGrantedAuthority::new)
-            .collect(Collectors.toList());
+                        claims.get("auth").toString().split(","))
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
 
         UserDetails principal = new User(claims.getSubject(), "", authorities);
 
@@ -174,10 +165,10 @@ public class JwtProvider {
     private Long extractUserId(String token) {
         try {
             Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
             return Long.valueOf(claims.getSubject());
         } catch (SignatureException e) {
             throw new ApiException(ErrorType.INVALID_JWT_SIGNATURE);
@@ -192,7 +183,7 @@ public class JwtProvider {
     private Claims parseClaims(String accessToken) {
         try {
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken)
-                .getBody();
+                    .getBody();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }

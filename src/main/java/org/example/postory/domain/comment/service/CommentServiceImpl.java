@@ -1,8 +1,5 @@
 package org.example.postory.domain.comment.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.comment.dto.CommentRequestDto;
 import org.example.postory.domain.comment.dto.CommentResponseDto;
@@ -25,6 +22,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
@@ -46,23 +47,23 @@ public class CommentServiceImpl implements CommentService {
      */
     @Override
     public CommentResponseDto.CommentItem createComment(long authUserId,
-        CommentRequestDto.CommentItem requestDto, Long postId) {
+                                                        CommentRequestDto.CommentItem requestDto, Long postId) {
         Post findPost = postRepository.findVisiblePost(postId, authUserId)
-            .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
 
         Comment comment = Comment.builder().content(requestDto.getContents())
-            .user(userRepository.findByUserIdOrElseThrow(authUserId)).post(findPost).build();
+                .user(userRepository.findByUserIdOrElseThrow(authUserId)).post(findPost).build();
         Comment savedComment = commentRepository.save(comment);
         return new CommentItem(savedComment);
     }
 
     @Override
     public CursorResponseDto<CommentItem> getComments(LocalDateTime cursorUpdatedAt, Long cursorId,
-        Long postId, int size, UserDetails userDetails) {
+                                                      Long postId, int size, UserDetails userDetails) {
 
         // 포스트의 공개 여부 확인
         Post post = postRepository.findById(postId)
-            .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
         if (!post.isPostPublic()) {
             if (userDetails == null || !post.getUser().getId().equals(Long.valueOf(userDetails.getUsername()))) {
                 throw new ApiException(ErrorType.POST_NOT_PUBLIC);
@@ -79,7 +80,7 @@ public class CommentServiceImpl implements CommentService {
         Pageable pageable = PageRequest.of(0, size);
 
         List<Comment> comments = commentRepository.getComments(cursorUpdatedAt, cursorId, postId,
-            pageable);
+                pageable);
         List<CommentItem> commentsDto = comments.stream().map(CommentItem::new).toList();
 
         // 다음 커서 정보 저장
@@ -97,9 +98,9 @@ public class CommentServiceImpl implements CommentService {
     public void likeComment(long commentId, UserDetails userDetails) {
         long userId = Long.parseLong(userDetails.getUsername());
         Comment findComment = commentRepository.findById(commentId)
-            .orElseThrow(() -> new ApiException(ErrorType.COMMENT_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorType.COMMENT_NOT_FOUND));
         Optional<CommentLike> commentLike = commentLikeRepository.findByCommentIdAndUserId(
-            commentId, userId);
+                commentId, userId);
 
         if (commentLike.isPresent()) {
             findComment.downLikeCount();
@@ -124,7 +125,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Override
     public CommentItem updateComment(Long authUserId,
-        CommentRequestDto.CommentItem requestDto, Long commentId) {
+                                     CommentRequestDto.CommentItem requestDto, Long commentId) {
         Comment comment = commentRepository.getCommentByIdOrElseThrow(commentId);
 
         //작성자 본인만 수정가능
@@ -149,7 +150,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public void deleteAllMyComments(Long authUserId) {
         List<Comment> myAllComments = commentRepository.getAllByUser_IdAndDeletedAtIsNull(
-            authUserId);
+                authUserId);
         myAllComments.forEach(Comment::markAsDeleted);
     }
 }

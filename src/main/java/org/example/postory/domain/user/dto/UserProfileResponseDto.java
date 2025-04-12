@@ -1,11 +1,11 @@
 package org.example.postory.domain.user.dto;
 
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
+
+import java.util.List;
 
 /**
  * 유저 프로필 반환하는 Dto
@@ -34,7 +34,7 @@ public class UserProfileResponseDto {
     private final List<NewsFeed> postList;
 
     public UserProfileResponseDto(Long id, String username, String introduction, boolean isUserPublic,
-        int followingCnt, int followerCnt, List<NewsFeed> postList) {
+                                  int followingCnt, int followerCnt, List<NewsFeed> postList) {
         this.id = id;
         this.username = username;
         this.introduction = introduction;
@@ -46,7 +46,7 @@ public class UserProfileResponseDto {
     }
 
     public UserProfileResponseDto(Long id, String username, String introduction, boolean isUserPublic,
-        int followingCnt, int followerCnt, boolean isFollowing, List<NewsFeed> postList) {
+                                  int followingCnt, int followerCnt, boolean isFollowing, List<NewsFeed> postList) {
         this.id = id;
         this.username = username;
         this.introduction = introduction;

@@ -1,41 +1,35 @@
 package org.example.postory.domain.user.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-
 import org.example.postory.domain.comment.entity.Comment;
 import org.example.postory.domain.comment.repository.CommentLikeRepository;
 import org.example.postory.domain.comment.repository.CommentRepository;
+import org.example.postory.domain.post.dto.PostResponseDto;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
 import org.example.postory.domain.post.entity.Post;
 import org.example.postory.domain.post.repository.PostLikeRepository;
-
-import org.example.postory.domain.post.dto.PostResponseDto;
-
 import org.example.postory.domain.post.repository.PostRepository;
 import org.example.postory.domain.user.dto.*;
-import org.example.postory.domain.user.dto.SignupRequestDto;
-import org.example.postory.domain.user.dto.SignupResponseDto;
 import org.example.postory.domain.user.dto.UserRequestDto.UpdateProfile;
-import org.example.postory.global.common.pagination.CursorDto;
-import org.example.postory.global.common.pagination.CursorResponseDto;
-import org.example.postory.global.util.PasswordEncoder;
-
-import static org.example.postory.global.error.response.ErrorType.*;
-
-import org.example.postory.domain.user.dto.UserProfileResponseDto;
 import org.example.postory.domain.user.entity.Following;
 import org.example.postory.domain.user.entity.User;
 import org.example.postory.domain.user.repository.FollowingRepository;
 import org.example.postory.domain.user.repository.UserRepository;
+import org.example.postory.global.common.pagination.CursorDto;
+import org.example.postory.global.common.pagination.CursorResponseDto;
 import org.example.postory.global.error.ApiException;
 import org.example.postory.global.error.response.ErrorType;
+import org.example.postory.global.util.PasswordEncoder;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.example.postory.global.error.response.ErrorType.*;
 
 @Service
 @RequiredArgsConstructor
@@ -55,7 +49,7 @@ public class UserServiceImpl implements UserService {
     public String getRefreshToken(long id) {
 
         User findUser = userRepository.findById(id)
-            .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
         return findUser.getRefreshToken();
     }
 
@@ -65,13 +59,13 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void saveToken(long id, String refreshToken) {
         User findUser = userRepository.findById(id)
-            .orElseThrow(() -> new ApiException(USER_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(USER_NOT_FOUND));
         findUser.updateToken(refreshToken);
     }
 
     public User getByEmail(String email) {
         return userRepository.findByEmail(email)
-            .orElseThrow(() -> new ApiException(EMAIL_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(EMAIL_NOT_FOUND));
     }
 
     @Override
@@ -110,13 +104,13 @@ public class UserServiceImpl implements UserService {
         if (userDetails != null) {
             Long loginUserId = Long.parseLong(userDetails.getUsername());
             User user = userRepository.findByUserIdOrElseThrow(UserId);
-          
+
             if (user.getDeletedAt() != null) {
                 throw new ApiException(DISABLE_USER);
             }
-          
+
             if (!loginUserId.equals(UserId) && !followingRepository.existsByUserIdAndFollowingUserId(
-            loginUserId, UserId) && !user.isUserPublic()) {
+                    loginUserId, UserId) && !user.isUserPublic()) {
                 throw new ApiException(FORBIDDEN_PROFILE);
             }
 
@@ -129,15 +123,15 @@ public class UserServiceImpl implements UserService {
                 List<NewsFeed> posts = postRepository.getAllMyPosts(loginUserId);
 
                 return new UserProfileResponseDto(user.getId(), user.getName(), user.getIntroduction(),
-                    user.isUserPublic(), followingCnt.intValue(), followerCnt.intValue(), posts);
+                        user.isUserPublic(), followingCnt.intValue(), followerCnt.intValue(), posts);
             } else {
                 List<NewsFeed> posts = postRepository.getAllByUser_IdAndDeletedAtIsNullAndIsPostPublicIsTrueOrderByUpdatedAt(
-                        UserId)
-                    .stream().map(PostResponseDto.NewsFeed::new).collect(Collectors.toList());
+                                UserId)
+                        .stream().map(PostResponseDto.NewsFeed::new).collect(Collectors.toList());
 
                 return new UserProfileResponseDto(user.getId(), user.getName(), user.getIntroduction(),
-                    user.isUserPublic(), followingCnt.intValue(), followerCnt.intValue(),
-                    followingRepository.existsByUserIdAndFollowingUserId(loginUserId, UserId), posts);
+                        user.isUserPublic(), followingCnt.intValue(), followerCnt.intValue(),
+                        followingRepository.existsByUserIdAndFollowingUserId(loginUserId, UserId), posts);
             }
         } else {
             return getProfileByNonLoginUser(UserId);
@@ -148,11 +142,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserProfileResponseDto getProfileByNonLoginUser(Long UserId) {
         User user = userRepository.findByUserIdOrElseThrow(UserId);
-      
+
         if (user.getDeletedAt() != null) {
             throw new ApiException(DISABLE_USER);
         }
-      
+
         if (!user.isUserPublic()) {
             throw new ApiException(FORBIDDEN_PROFILE);
         }
@@ -195,19 +189,19 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = userRepository.findById(loginUserId)
-            .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
 
         User targetUser = userRepository.findById(followingId)
-            .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
 
         if (followingRepository.existsByUserIdAndFollowingUserId(loginUserId, followingId)) {
             throw new ApiException(ErrorType.ALREADY_FOLLOWING);
         }
 
         Following following = Following.builder()
-            .followingUser(targetUser)
-            .user(user)
-            .build();
+                .followingUser(targetUser)
+                .user(user)
+                .build();
 
         followingRepository.save(following);
     }
@@ -215,18 +209,18 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void unfollow(Long loginUserId, Long followingId) {
         userRepository.findById(loginUserId)
-            .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
 
         userRepository.findById(followingId)
-            .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
+                .orElseThrow(() -> new ApiException(ErrorType.USER_NOT_FOUND));
 
         if (!followingRepository.existsByUserIdAndFollowingUserId(loginUserId, followingId)) {
             throw new ApiException(ErrorType.NOT_FOLLOWING);
         }
 
         Integer count = followingRepository.deleteByUserIdAndFollowingUserId(loginUserId,
-                followingId)
-            .orElseThrow(() -> new ApiException(UNFOLLOW_FAILED));
+                        followingId)
+                .orElseThrow(() -> new ApiException(UNFOLLOW_FAILED));
 
         if (count != 1) {
             throw new ApiException(UNFOLLOW_FAILED);
@@ -247,12 +241,12 @@ public class UserServiceImpl implements UserService {
 
         // 커서 기반으로 팔로잉 유저 목록 조회 (최근에 팔로우한 순)
         List<Following> followings = followingRepository.findFollowingsByCursor(userId, cursorId,
-            pageable);
+                pageable);
 
         List<FollowingResponseDto> followingResponseDtos = followings.stream()
-            .map(f -> new FollowingResponseDto(f.getFollowingUser().getId(),
-                f.getFollowingUser().getName()))
-            .collect(Collectors.toList());
+                .map(f -> new FollowingResponseDto(f.getFollowingUser().getId(),
+                        f.getFollowingUser().getName()))
+                .collect(Collectors.toList());
 
         // 다음 커서 설정
         CursorDto nextCursor = getCursorDto(followings);
@@ -342,8 +336,8 @@ public class UserServiceImpl implements UserService {
         //postLikeRepository.deleteAllByUser_Id(authUserId);
         //게시글 모두 비활성화
         List<Post> myAllPosts = postRepository.getAllByUser_IdAndDeletedAtIsNullOrderByUpdatedAt(
-            authUserId);
-        for( Post post : myAllPosts){
+                authUserId);
+        for (Post post : myAllPosts) {
             post.markAsDeleted();
             //해당 게시글이나 유저와 관련된 게시글 좋아요 삭제
             //postLikeRepository.deleteAllByPost_Id(post.getId());
@@ -354,9 +348,9 @@ public class UserServiceImpl implements UserService {
         //commentLikeRepository.deleteAllByUser_Id(authUserId);
         //덧글 모두 비활성화
         List<Comment> myAllComments = commentRepository.getAllByUser_IdAndDeletedAtIsNull(
-            authUserId);
+                authUserId);
         myAllComments.forEach(Comment::markAsDeleted);
-        for( Comment comment : myAllComments){
+        for (Comment comment : myAllComments) {
             comment.markAsDeleted();
             //해당 게시글이나 유저와 관련된 게시글 좋아요 삭제
             //commentLikeRepository.deleteAllByComment_Id(comment.getId());

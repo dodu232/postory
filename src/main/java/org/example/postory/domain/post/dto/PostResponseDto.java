@@ -1,6 +1,5 @@
 package org.example.postory.domain.post.dto;
 
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.example.postory.domain.comment.dto.CommentResponseDto.CommentItem;
 import org.example.postory.domain.post.entity.Post;
 import org.example.postory.global.common.pagination.CursorResponseDto;
+
+import java.time.LocalDateTime;
 
 public class PostResponseDto {
 
@@ -54,20 +55,19 @@ public class PostResponseDto {
         private boolean isPostPublic;
 
 
-
         public static Create fromPostEntity(Post post) {
             return Create.builder()   // builder() : dto 객체를 직접 new 생성하지 않고 명시적으로 필드 지정해서 생성
-                .id(post.getId())
-                .title(post.getTitle())
-                .content(post.getContent())
-                .hashtag(post.getHashtag())
-                .postLikeCount(post.getPostLikeCount())
-                .isPostPublic(post.isPostPublic())
-                .isUpdated(!post.getCreatedAt().isEqual(post.getUpdatedAt()))
-                .writer(post.getUser().getName())
-                .createdAt(post.getCreatedAt())
-                .updatedAt(post.getUpdatedAt())
-                .build();  // build() : builder()를 바탕으로 실제 객체를 만듦
+                    .id(post.getId())
+                    .title(post.getTitle())
+                    .content(post.getContent())
+                    .hashtag(post.getHashtag())
+                    .postLikeCount(post.getPostLikeCount())
+                    .isPostPublic(post.isPostPublic())
+                    .isUpdated(!post.getCreatedAt().isEqual(post.getUpdatedAt()))
+                    .writer(post.getUser().getName())
+                    .createdAt(post.getCreatedAt())
+                    .updatedAt(post.getUpdatedAt())
+                    .build();  // build() : builder()를 바탕으로 실제 객체를 만듦
         }
     }
 

@@ -21,19 +21,19 @@ public interface FollowingRepository extends JpaRepository<Following, Long> {
     Optional<Integer> deleteByUserIdAndFollowingUserId(Long userId, Long followingUserId);
 
     @Query("""
-        SELECT f FROM Following f
-        WHERE f.user.id = :userId
-            AND f.id < :cursorId
-        ORDER BY f.id DESC
-    """)
+                SELECT f FROM Following f
+                WHERE f.user.id = :userId
+                    AND f.id < :cursorId
+                ORDER BY f.id DESC
+            """)
     List<Following> findFollowingsByCursor(Long userId, Long cursorId, Pageable pageable);
 
     @Query("""
-        SELECT f FROM Following f
-        WHERE f.followingUser.id = :userId
-            AND f.id < :cursorId
-        ORDER BY f.id DESC
-    """)
+                SELECT f FROM Following f
+                WHERE f.followingUser.id = :userId
+                    AND f.id < :cursorId
+                ORDER BY f.id DESC
+            """)
     List<Following> findFollowersByCursor(Long userId, Long cursorId, Pageable pageable);
 
     void deleteAllByUser_Id(Long authUserId);
