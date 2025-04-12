@@ -57,17 +57,17 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("""
             SELECT p FROM Post p
             LEFT JOIN Following f 
-                    ON f.followingUser.id = p.user.id AND f.user.id = :authUserId
+            ON f.followingUser.id = p.user.id AND f.user.id = :authUserId
             WHERE ((p.updatedAt < :cursorUpdatedAt)
             OR (p.updatedAt = :cursorUpdatedAt AND p.id < :cursorId))
             AND p.isPostPublic = true
             AND p.deletedAt IS NULL
-            ORDER BY CASE 
+            ORDER BY CASE\s
                         WHEN f.followingUser.id IS NOT NULL THEN 1
-                        ELSE 2 
-                     END, 
+                        ELSE 2\s
+                     END,\s
                      p.updatedAt DESC, p.id DESC
-        """)
+       \s""")
     List<Post> getLoginNewsFeed(
         @Param("cursorUpdatedAt") LocalDateTime cursorUpdatedAt,
         @Param("cursorId") Long cursorId,

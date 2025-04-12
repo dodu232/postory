@@ -112,8 +112,15 @@ public class PostServiceImpl implements PostService {
         List<Post> newsFeed = new ArrayList<>();
         //로그인 여부확인
         if(userDetails != null){
+            Long userId = null;
+            try {
+                userId = Long.valueOf(userDetails.getUsername());
+            } catch (NumberFormatException e) {
+                throw new ApiException(ErrorType.UNAUTHORIZED_USER);
+            }
+
             newsFeed = postRepository.getLoginNewsFeed(cursorUpdatedAt, cursorId,
-                Long.valueOf(userDetails.getUsername()), pageable);
+                userId, pageable);
         }else{
             newsFeed = postRepository.getNewsFeed(cursorUpdatedAt, cursorId, pageable);
         }
