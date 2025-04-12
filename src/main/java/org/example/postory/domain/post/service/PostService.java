@@ -1,7 +1,6 @@
 package org.example.postory.domain.post.service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import org.example.postory.domain.post.dto.PostRequestDto;
 import org.example.postory.domain.post.dto.PostResponseDto;
 import org.example.postory.domain.post.dto.PostResponseDto.NewsFeed;
@@ -21,7 +20,8 @@ public interface PostService {
     void deletePost(long postId, UserDetails userDetails);
 
     // 뉴스피드 조회
-    CursorResponseDto<NewsFeed> getNewsFeed(LocalDateTime cursorUpdatedAt, Long cursorId, int size);
+    CursorResponseDto<NewsFeed> getNewsFeed(LocalDateTime cursorUpdatedAt, Long cursorId, int size,
+        UserDetails userDetails);
 
     // 게시물 수정
     void updatePost(long id, PostRequestDto.Update postRequestDto, Long userId);

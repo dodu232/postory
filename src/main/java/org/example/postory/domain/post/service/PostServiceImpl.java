@@ -3,6 +3,7 @@ package org.example.postory.domain.post.service;
 import static org.example.postory.global.error.response.ErrorType.FORBIDDEN_POST_UPDATE;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,6 +29,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClient;
 
 
 @Service
@@ -42,7 +44,8 @@ public class PostServiceImpl implements PostService {
     private final int LIKE_MINIMUM = 0;
 
     @Override
-    public PostResponseDto.GetPost getPost(long id, UserDetails userDetails, LocalDateTime cursorCreatedAt, Long cursorId, int size) {
+    public PostResponseDto.GetPost getPost(long id, UserDetails userDetails,
+        LocalDateTime cursorCreatedAt, Long cursorId, int size) {
         Long userId = null;
         if (userDetails != null) {
             try {
@@ -53,7 +56,8 @@ public class PostServiceImpl implements PostService {
         }
         Post findPost = postRepository.findVisiblePost(id, userId)
             .orElseThrow(() -> new ApiException(ErrorType.POST_NOT_FOUND));
-        CursorResponseDto<CommentItem> comments = commentService.getComments(cursorCreatedAt, cursorId, id, size, userDetails);
+        CursorResponseDto<CommentItem> comments = commentService.getComments(cursorCreatedAt,
+            cursorId, id, size, userDetails);
 
         return new PostResponseDto.GetPost(findPost, comments);
     }
@@ -96,7 +100,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public CursorResponseDto<NewsFeed> getNewsFeed(LocalDateTime cursorUpdatedAt, Long cursorId,
-        int size) {
+        int size, UserDetails userDetails) {
 
         // 첫 번째 조회.
         if (cursorUpdatedAt == null || cursorId == null) {
@@ -107,18 +111,30 @@ public class PostServiceImpl implements PostService {
         // 한 번에 10개씩 가져오도록 고정.
         Pageable pageable = PageRequest.of(0, size);
 
-        List<Post> newsFeed = postRepository.getNewsFeed(cursorUpdatedAt, cursorId, pageable);
-        List<NewsFeed> newsFeedDto = newsFeed.stream().map(NewsFeed::new).toList();
+        List<Post> newsFeed;
+        //로그인 여부확인
+        if (userDetails != null) {
+            Long userId;
+            try {
+                userId = Long.valueOf(userDetails.getUsername());
+            } catch (NumberFormatException e) {
+                throw new ApiException(ErrorType.UNAUTHORIZED_USER);
+            }
 
+            newsFeed = postRepository.getLoginNewsFeed(cursorUpdatedAt, cursorId,
+                userId, pageable);
+        } else {
+            newsFeed = postRepository.getNewsFeed(cursorUpdatedAt, cursorId, pageable);
+        }
+
+        List<NewsFeed> newsFeedDto = newsFeed.stream().map(NewsFeed::new).toList();
         // 다음 커서 정보 저장
         CursorDto nextCursor = null;
         if (!newsFeed.isEmpty()) {
             Post lastFeed = newsFeed.get(newsFeed.size() - 1);
             nextCursor = new CursorDto(lastFeed.getUpdatedAt(), lastFeed.getId());
         }
-
         return CursorResponseDto.of(newsFeedDto, nextCursor);
-
     }
 
     // 게시물 수정
@@ -156,7 +172,6 @@ public class PostServiceImpl implements PostService {
             postLikeRepository.save(new PostLike(user, post));
         }
     }
-
 
     /**
      * 좋아요 30개 이상 update 순으로 정렬

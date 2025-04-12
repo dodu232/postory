@@ -3,6 +3,7 @@ package org.example.postory.domain.post.controller;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.postory.domain.post.dto.PostRequestDto;
 import org.example.postory.domain.post.dto.PostResponseDto;
 import org.example.postory.domain.post.dto.PostResponseDto.GetPost;
@@ -11,7 +12,10 @@ import org.example.postory.domain.post.service.PostService;
 import org.example.postory.global.common.pagination.CursorResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,10 +44,11 @@ public class PostController {
     public ResponseEntity<CursorResponseDto<NewsFeed>> getNewsFeed(
         @RequestParam(required = false) LocalDateTime cursorUpdatedAt,
         @RequestParam(required = false) Long cursorId,
-        @RequestParam(defaultValue = "10") int size
+        @RequestParam(defaultValue = "10") int size,
+        @AuthenticationPrincipal UserDetails userDetails
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(postService.getNewsFeed(cursorUpdatedAt, cursorId, size));
+            .body(postService.getNewsFeed(cursorUpdatedAt, cursorId, size, userDetails));
     }
 
     // 게시물 생성
